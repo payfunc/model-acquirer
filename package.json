@@ -54,7 +54,11 @@
 		"prepare": "npm run build",
 		"clean": "rm -rf dist node_modules coverage"
 	},
-	"dependencies": {},
+	"dependencies": {
+		"@payfunc/model-card": "^0.2.5",
+		"authly": "^0.2.3",
+		"isoly": "0.0.26"
+	},
 	"devDependencies": {
 		"@babel/core": "^7.11.0",
 		"@types/jest": "^26.0.14",
