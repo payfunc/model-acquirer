@@ -1,14 +1,14 @@
 {
-	"name": "template-library",
+	"name": "@payfunc/model-acquirer",
 	"version": "0.0.1",
-	"description": "Template for NPM library",
+	"description": "Model for Acquirer.",
 	"author": "PayFunc",
 	"license": "MIT",
-	"repository": "https://github.com/payfunc/template-library",
+	"repository": "https://github.com/payfunc/model-acquirer",
 	"bugs": {
-		"url": "https://github.com/payfunc/template-library/issues"
+		"url": "https://github.com/payfunc/model-acquirer/issues"
 	},
-	"homepage": "https://payfunc.com/open-source/template-library",
+	"homepage": "https://payfunc.com/open-source/model-acquirer",
 	"private": false,
 	"main": "dist/index.js",
 	"typings": "dist/index.d.ts",
