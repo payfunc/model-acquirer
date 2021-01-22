@@ -1,5 +1,5 @@
 export class Creatable {
 	number?: string
-	amount: number
+	amount?: number
 	descriptor?: string
 }

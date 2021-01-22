@@ -3,19 +3,19 @@ import * as authly from "authly"
 import * as model from "@payfunc/model-card"
 import { Capture } from "../Capture"
 import { Refund } from "../Refund"
+import { Change as AChange } from "./Change"
 import { Creatable as ACreatable } from "./Creatable"
 
 export interface Authorization {
 	id: authly.Identifier
 	number?: string
 	reference: string
-	token: authly.Token
 	created: isoly.DateTime
 	amount: number
 	currency: isoly.Currency
-	card: authly.Token | model.Card
+	card: model.Card
 	descriptor?: string
-	client?: model.Browser
+	change?: AChange[]
 	capture?: Capture[]
 	refund?: Refund[]
 	void?: isoly.DateTime
@@ -23,4 +23,5 @@ export interface Authorization {
 
 export namespace Authorization {
 	export type Creatable = ACreatable
+	export type Change = AChange
 }
