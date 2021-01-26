@@ -15,7 +15,7 @@ export interface Authorization {
 	currency: isoly.Currency
 	card: model.Card
 	descriptor?: string
-	previous?: AChange[]
+	history?: AChange[]
 	capture?: Capture[]
 	refund?: Refund[]
 	void?: isoly.DateTime
