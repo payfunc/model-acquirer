@@ -1,3 +1,4 @@
+import * as gracely from "gracely"
 import * as isoly from "isoly"
 import { Creatable as ChangeCreatable } from "./Creatable"
 
@@ -8,5 +9,31 @@ export interface Change {
 }
 
 export namespace Change {
+	export function is(value: Change | any): value is Change {
+		return (
+			typeof value == "object" &&
+			(value.number == undefined || typeof value.number == "string") &&
+			isoly.DateTime.is(value.created) &&
+			typeof value.amount == "number"
+		)
+	}
+	export function flaw(value: Change | any): gracely.Flaw {
+		return {
+			type: "Authorization.Change",
+			flaws:
+				typeof value != "object"
+					? undefined
+					: ([
+							value.number == undefined ||
+								typeof value.number == "string" || { property: "number", type: "string | undefined" },
+							isoly.DateTime.is(value.created) || { property: "created", type: "isoly.DateTime" },
+							typeof value.amount == "number" || { property: "amount", type: "number" },
+					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
+		}
+	}
 	export type Creatable = ChangeCreatable
+	export namespace Creatable {
+		export const is = ChangeCreatable.is
+		export const flaw = ChangeCreatable.flaw
+	}
 }
