@@ -1,14 +1,13 @@
 import * as isoly from "isoly"
-import * as authly from "authly"
 import { Creatable as RCreatable } from "./Creatable"
 
 export class Refund {
-	id: authly.Identifier
 	number?: string
-	reference: string
 	created: isoly.DateTime
+	approved?: isoly.DateTime
 	amount: number
 	descriptor?: string
+	status: "approved" | "pending"
 }
 
 export namespace Refund {
