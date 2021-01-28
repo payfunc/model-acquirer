@@ -1,3 +1,4 @@
+import * as gracely from "gracely"
 import * as isoly from "isoly"
 import * as authly from "authly"
 import * as model from "@payfunc/model-card"
@@ -22,6 +23,72 @@ export interface Authorization {
 }
 
 export namespace Authorization {
+	export function is(value: Authorization | any): value is Authorization {
+		return (
+			typeof value == "object" &&
+			authly.Identifier.is(value.id) &&
+			(value.number == undefined || typeof value.number == "string") &&
+			typeof value.reference == "string" &&
+			isoly.DateTime.is(value.created) &&
+			typeof value.amount == "number" &&
+			isoly.Currency.is(value.currency) &&
+			model.Card.is(value.card) &&
+			(value.descriptor == undefined || typeof value.descriptor == "string") &&
+			(value.history == undefined || (Array.isArray(value.history) && value.history.every(AChange.is))) &&
+			(value.capture == undefined || (Array.isArray(value.capture) && value.capture.every(Capture.is))) &&
+			(value.refund == undefined || (Array.isArray(value.refund) && value.history.every(Refund.is))) &&
+			(value.void == undefined || isoly.DateTime.is(value.void))
+		)
+	}
+	export function flaw(value: Authorization | any): gracely.Flaw {
+		return {
+			type: "Authorization",
+			flaws:
+				typeof value != "object"
+					? undefined
+					: ([
+							authly.Identifier.is(value.id) || { property: "id", type: "authly.Identifier" },
+							value.number == undefined || typeof value.number == "string" || { property: "", type: "" },
+							typeof value.reference == "string" || { property: "reference", type: "string" },
+							isoly.DateTime.is(value.created) || { property: "created", type: "isoly.DateTime" },
+							typeof value.amount == "number" || { property: "amount", type: "number" },
+							isoly.Currency.is(value.currency) || { property: "currency", type: "isoly.Currency" },
+							model.Card.is(value.card) || { property: "card", type: "model.Card" },
+							value.descriptor == undefined ||
+								typeof value.descriptor == "string" || { property: "descriptor", type: "string | undefined" },
+							value.history == undefined ||
+								(Array.isArray(value.history) && value.history.every(AChange.is)) || {
+									property: "history",
+									type: "Authorization.Change[] | undefined",
+								},
+							value.capture == undefined ||
+								(Array.isArray(value.capture) && value.capture.every(Capture.is)) || {
+									property: "capture",
+									type: "Capture[] | undefined",
+								},
+							value.refund == undefined ||
+								(Array.isArray(value.refund) && value.history.every(Refund.is)) || {
+									property: "refund",
+									type: "Refund[] | undefined",
+								},
+							value.void == undefined ||
+								isoly.DateTime.is(value.void) || { property: "void", type: "isoly.DateTime | undefined" },
+					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
+		}
+	}
 	export type Creatable = ACreatable
+	export namespace Creatable {
+		export const is = ACreatable.is
+		export const flaw = ACreatable.flaw
+	}
 	export type Change = AChange
+	export namespace Change {
+		export const is = AChange.is
+		export const flaw = AChange.flaw
+		export type Creatable = AChange.Creatable
+		export namespace Creatable {
+			export const is = AChange.Creatable.is
+			export const flaw = AChange.Creatable.flaw
+		}
+	}
 }
