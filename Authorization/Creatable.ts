@@ -16,7 +16,7 @@ export namespace Creatable {
 	export function is(value: Creatable | any): value is Creatable {
 		return (
 			typeof value == "object" &&
-			(value.id == undefined || authly.Identifier.is(value.id)) &&
+			(value.id == undefined || authly.Identifier.is(value.id, 16)) &&
 			(value.number == undefined || typeof value.number == "string") &&
 			typeof value.amount == "number" &&
 			isoly.Currency.is(value.currency) &&
