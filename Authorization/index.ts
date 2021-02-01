@@ -26,7 +26,7 @@ export namespace Authorization {
 	export function is(value: Authorization | any): value is Authorization {
 		return (
 			typeof value == "object" &&
-			authly.Identifier.is(value.id) &&
+			authly.Identifier.is(value.id, 16) &&
 			(value.number == undefined || typeof value.number == "string") &&
 			typeof value.reference == "string" &&
 			isoly.DateTime.is(value.created) &&
