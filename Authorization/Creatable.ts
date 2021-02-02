@@ -4,7 +4,6 @@ import * as authly from "authly"
 import * as model from "@payfunc/model-card"
 
 export interface Creatable {
-	id?: authly.Identifier
 	number?: string
 	amount: number
 	currency: isoly.Currency
@@ -16,7 +15,6 @@ export namespace Creatable {
 	export function is(value: Creatable | any): value is Creatable {
 		return (
 			typeof value == "object" &&
-			(value.id == undefined || authly.Identifier.is(value.id, 16)) &&
 			(value.number == undefined || typeof value.number == "string") &&
 			typeof value.amount == "number" &&
 			isoly.Currency.is(value.currency) &&
@@ -32,8 +30,6 @@ export namespace Creatable {
 				typeof value != "object"
 					? undefined
 					: ([
-							value.id == undefined ||
-								authly.Identifier.is(value.id) || { property: "id", type: "authly.Identifier | undefined" },
 							value.number == undefined ||
 								typeof value.number == "string" || { property: "number", type: "string | undefined" },
 							typeof value.amount == "number" || { property: "amount", type: "number" },
