@@ -55,13 +55,15 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"@payfunc/model-card": "^0.2.5",
-		"authly": "^0.2.3",
-		"isoly": "0.0.26",
-		"gracely": "0.1.1"
+		"@payfunc/model-card": "^0.1.15",
+		"authly": "^0.1.7",
+		"isoly": "0.0.27",
+		"isomorphic-fetch": "^3.0.0",
+		"gracely": "0.0.40"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.0",
+		"@types/isomorphic-fetch": "0.0.35",
 		"@types/jest": "^26.0.14",
 		"@types/node": "^14.0.13",
 		"@typescript-eslint/eslint-plugin": "4.1.1",
