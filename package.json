@@ -1,6 +1,6 @@
 {
 	"name": "@payfunc/model-acquirer",
-	"version": "0.0.8",
+	"version": "0.1.0",
 	"description": "Model for Acquirer.",
 	"author": "PayFunc",
 	"license": "MIT",
@@ -62,6 +62,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.0",
+		"@types/isomorphic-fetch": "0.0.35",
 		"@types/jest": "^26.0.14",
 		"@types/node": "^14.0.13",
 		"@typescript-eslint/eslint-plugin": "4.1.1",
@@ -71,6 +72,7 @@
 		"eslint": "7.9.0",
 		"eslint-plugin-prettierx": "github:nilssonemma/eslint-plugin-prettierx#master",
 		"eslint-plugin-simple-import-sort": "^7.0.0",
+		"isomorphic-fetch": "^3.0.0",
 		"jest": "^26.4.2",
 		"prettierx": "github:simonmika/prettierx#newline-before-clause",
 		"ts-jest": "^26.4.0",
