@@ -1,6 +1,7 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
 import * as authly from "authly"
+import { Payout as MerchantPayout } from "./Payout"
 import { Reconciliation } from "./Reconciliation"
 import { Rules } from "./Rules"
 export interface Merchant {
@@ -56,5 +57,9 @@ export namespace Merchant {
 							Rules.is(value.rules) || Rules.flaw(value.rules),
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
+	}
+	export type Payout = MerchantPayout
+	export namespace Payout {
+		export const is = MerchantPayout.is
 	}
 }

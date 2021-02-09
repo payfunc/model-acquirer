@@ -5,12 +5,16 @@ export type Transaction = {
 		| {
 				debit: {
 					percentage: number
-					minimum: number
+					minimum?: number
 				}
 				credit: {
 					percentage: number
-					minimum: number
+					minimum?: number
 				}
+		  }
+		| {
+				percentage: number
+				minimum?: number
 		  }
 		| undefined
 }
@@ -24,10 +28,15 @@ export namespace Transaction {
 					model.Card.Scheme.is(scheme) &&
 					(value[scheme] == undefined ||
 						(typeof value[scheme] == "object" &&
+							typeof value[scheme].percentage == "number" &&
+							(value[scheme].minimum == undefined || typeof value[scheme].minimum == "number")) ||
+						(typeof value[scheme] == "object" &&
 							typeof value[scheme].debit == "object" &&
 							typeof value[scheme].debit.percentage == "number" &&
+							(value[scheme].debit.minimum == undefined || typeof value[scheme].debit.minimum == "number") &&
 							typeof value[scheme].credit == "object" &&
-							typeof value[scheme].credit.percentage == "number"))
+							typeof value[scheme].credit.percentage == "number" &&
+							(value[scheme].credit.minimum == undefined || typeof value[scheme].credit.minimum == "number")))
 			)
 		)
 	}

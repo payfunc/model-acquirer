@@ -7,7 +7,7 @@ export interface Reconciliation {
 	account: Account
 	currency: isoly.Currency
 	fees: Fees
-	reserves: {
+	reserves?: {
 		percentage: number
 		days?: number
 	}
@@ -20,9 +20,10 @@ export namespace Reconciliation {
 			Account.is(value.account) &&
 			isoly.Currency.is(value.currency) &&
 			Fees.is(value.fees) &&
-			typeof value.reserves == "object" &&
-			typeof value.reserves.percentage == "number" &&
-			(value.reserves.days == undefined || typeof value.reserves.days == "number")
+			(value.reserves == undefined ||
+				(typeof value.reserves == "object" &&
+					typeof value.reserves.percentage == "number" &&
+					(value.reserves.days == undefined || typeof value.reserves.days == "number")))
 		)
 	}
 	export function flaw(value: any | Reconciliation): gracely.Flaw {
