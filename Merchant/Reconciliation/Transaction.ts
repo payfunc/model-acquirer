@@ -1,7 +1,7 @@
 import * as isoly from "isoly"
-import { Account } from "./Account"
-// Moving money from an account to another account, needs toCSV function
-export interface Payout {
+import { Account } from "../Account"
+
+export interface Transaction {
 	from: Account
 	to: Account
 	amount: number
@@ -10,8 +10,8 @@ export interface Payout {
 	reference: string
 }
 
-export namespace Payout {
-	export function is(value: any | Payout): value is Payout {
+export namespace Transaction {
+	export function is(value: any | Transaction): value is Transaction {
 		return (
 			typeof value == "object" &&
 			Account.is(value.from) &&

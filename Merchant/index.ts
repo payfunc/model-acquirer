@@ -1,8 +1,7 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
 import * as authly from "authly"
-import { Payout as MerchantPayout } from "./Payout"
-import { Reconciliation } from "./Reconciliation"
+import { Reconciliation as MerchantReconciliation } from "./Reconciliation"
 import { Rules } from "./Rules"
 export interface Merchant {
 	id: authly.Identifier
@@ -12,7 +11,7 @@ export interface Merchant {
 	reference: string
 	descriptor?: string
 	name: string
-	reconciliation: Reconciliation
+	reconciliation: MerchantReconciliation
 	country: isoly.CountryCode.Alpha2
 	categoryCode: string //mcc
 	rules: Rules
@@ -29,7 +28,7 @@ export namespace Merchant {
 			typeof value.reference == "string" &&
 			(value.descriptor == undefined || typeof value.descriptor == "string") &&
 			typeof value.name == "string" &&
-			Reconciliation.is(value.reconciliation) &&
+			MerchantReconciliation.is(value.reconciliation) &&
 			isoly.CountryCode.Alpha2.is(value.country) &&
 			typeof value.categoryCode == "string" &&
 			Rules.is(value.rules)
@@ -51,15 +50,20 @@ export namespace Merchant {
 							value.descriptor == undefined ||
 								typeof value.descriptor == "string" || { property: "descriptor", type: "string | undefined" },
 							typeof value.name == "string" || { property: "name", type: "string" },
-							Reconciliation.is(value.reconciliation) || Reconciliation.flaw(value.reconciliation),
+							MerchantReconciliation.is(value.reconciliation) || MerchantReconciliation.flaw(value.reconciliation),
 							isoly.CountryCode.Alpha2.is(value.country) || { property: "country", type: "isoly.CountryCode.Alpha2" },
 							typeof value.categoryCode == "string" || { property: "categoryCode", type: "string" },
 							Rules.is(value.rules) || Rules.flaw(value.rules),
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
-	export type Payout = MerchantPayout
-	export namespace Payout {
-		export const is = MerchantPayout.is
+	export type Reconciliation = MerchantReconciliation
+	export namespace Reconciliation {
+		export const is = MerchantReconciliation.is
+		export const flaw = MerchantReconciliation.flaw
+		export type Transaction = MerchantReconciliation.Transaction
+		export namespace Transaction {
+			export const is = MerchantReconciliation.Transaction.is
+		}
 	}
 }
