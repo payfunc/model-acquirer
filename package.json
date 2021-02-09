@@ -57,8 +57,9 @@
 	"dependencies": {
 		"@payfunc/model-card": "^0.2.5",
 		"authly": "^0.2.3",
+		"gracely": "0.1.1",
 		"isoly": "0.0.26",
-		"gracely": "0.1.1"
+		"selectively": "0.0.24"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.0",

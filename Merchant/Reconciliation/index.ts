@@ -36,7 +36,7 @@ export namespace Reconciliation {
 					: ([
 							Account.is(value.account) || { property: "accoun", type: "Merchant.Account" },
 							isoly.Currency.is(value.currency) || { property: "currency", type: "isoly.Currency" },
-							Fee.is(value.fees) || { property: "fees", type: "Merchant.Fees" },
+							Fee.is(value.fees) || { property: "fees", type: "Merchant.Fee" },
 							typeof value.reserves == "object" || { property: "reserves", type: "object" },
 							typeof value.reserves.percentage == "number" || { property: "reserves.percentage", type: "number" },
 							value.reserves.days == undefined ||
