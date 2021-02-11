@@ -1,8 +1,11 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
 import * as authly from "authly"
+import { Fee as MerchantFee } from "./Fee"
+import { Operation as MerchantOperation } from "./Operation"
 import { Reconciliation as MerchantReconciliation } from "./Reconciliation"
-import { Rules } from "./Rules"
+import { Rule as MerchantRule } from "./Rule"
+import { Rules as MerchantRules } from "./Rules"
 export interface Merchant {
 	id: authly.Identifier
 	number?: string
@@ -14,7 +17,7 @@ export interface Merchant {
 	reconciliation: MerchantReconciliation
 	country: isoly.CountryCode.Alpha2
 	categoryCode: string //mcc
-	rules: Rules
+	rules: MerchantRules
 }
 
 export namespace Merchant {
@@ -31,7 +34,7 @@ export namespace Merchant {
 			MerchantReconciliation.is(value.reconciliation) &&
 			isoly.CountryCode.Alpha2.is(value.country) &&
 			typeof value.categoryCode == "string" &&
-			Rules.is(value.rules)
+			MerchantRules.is(value.rules)
 		)
 	}
 	export function flaw(value: any | Merchant): gracely.Flaw {
@@ -53,10 +56,39 @@ export namespace Merchant {
 							MerchantReconciliation.is(value.reconciliation) || MerchantReconciliation.flaw(value.reconciliation),
 							isoly.CountryCode.Alpha2.is(value.country) || { property: "country", type: "isoly.CountryCode.Alpha2" },
 							typeof value.categoryCode == "string" || { property: "categoryCode", type: "string" },
-							Rules.is(value.rules) || Rules.flaw(value.rules),
+							MerchantRules.is(value.rules) || MerchantRules.flaw(value.rules),
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
+	export type Operation = MerchantOperation
+	export namespace Operation {
+		export const is = MerchantOperation.is
+		export const types = MerchantOperation.types
+	}
+	export type Fee = MerchantFee
+	export namespace Fee {
+		export const is = MerchantFee.is
+		export type Transaction = MerchantFee.Transaction
+		export namespace Transaction {
+			export const is = MerchantFee.Transaction.is
+		}
+	}
+	export type Rules = MerchantRules
+	export namespace Rules {
+		export const is = MerchantRules.is
+		export const flaw = MerchantRules.flaw
+		export const apply = MerchantRules.apply
+		export const parse = MerchantRules.parse
+	}
+	export type Rule = MerchantRule
+	export namespace Rule {
+		export const is = MerchantRule.is
+		export const apply = MerchantRule.apply
+		export const parse = MerchantRule.parse
+		export const stringify = MerchantRule.stringify
+		export const toFlaw = MerchantRule.toFlaw
+	}
+
 	export type Reconciliation = MerchantReconciliation
 	export namespace Reconciliation {
 		export const is = MerchantReconciliation.is

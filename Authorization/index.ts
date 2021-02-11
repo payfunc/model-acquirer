@@ -76,6 +76,12 @@ export namespace Authorization {
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
+	export function captured(captures: Capture[]): number {
+		return captures.reduce<number>((total, capture) => total + capture.amount, 0)
+	}
+	export function refunded(refunds: Refund[]): number {
+		return refunds.reduce<number>((total, refund) => total + refund.amount, 0)
+	}
 	export type Creatable = ACreatable
 	export namespace Creatable {
 		export const is = ACreatable.is

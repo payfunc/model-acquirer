@@ -1,7 +1,7 @@
 import * as model from "@payfunc/model-card"
 //Cost of a transaction
 export type Transaction = {
-	[scheme in model.Card.Scheme]:
+	[scheme in model.Card.Scheme]?:
 		| {
 				debit: {
 					percentage: number
@@ -16,7 +16,6 @@ export type Transaction = {
 				percentage: number
 				minimum?: number
 		  }
-		| undefined
 }
 
 export namespace Transaction {
