@@ -1,6 +1,6 @@
 import * as isoly from "isoly"
 import * as authly from "authly"
-import { Merchant } from "./Merchant"
+import { Transaction } from "./Transaction"
 
 export interface Settlement {
 	reference: string
@@ -15,13 +15,5 @@ export interface Settlement {
 	fee: number
 	net: number
 	currency: isoly.Currency
-	transactions: {
-		authorization: authly.Identifier
-		reference: string
-		type: Merchant.Operation
-		created: isoly.Date
-		gross: number
-		fee: number
-		net: number
-	}[]
+	transactions: Transaction[]
 }
