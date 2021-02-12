@@ -1,6 +1,6 @@
 import * as isoly from "isoly"
 import * as authly from "authly"
-import { Transaction } from "./Transaction"
+import { Transaction as SettlementTransaction } from "./Transaction"
 
 export interface Settlement {
 	reference: string
@@ -15,7 +15,7 @@ export interface Settlement {
 	fee: number
 	net: number
 	currency: isoly.Currency
-	transactions: Transaction[]
+	transactions: SettlementTransaction[]
 }
 
 export namespace Settlement {
@@ -34,7 +34,11 @@ export namespace Settlement {
 			typeof value.net == "number" &&
 			isoly.Currency.is(value.currency) &&
 			Array.isArray(value.transactions) &&
-			value.transactions.every(Transaction.is)
+			value.transactions.every(SettlementTransaction.is)
 		)
+	}
+	export type Transaction = SettlementTransaction
+	export namespace Transaction {
+		export const is = SettlementTransaction.is
 	}
 }
