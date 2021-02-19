@@ -1,4 +1,5 @@
 import * as isoly from "isoly"
+import { Transaction as SettlementTransaction } from "../../Settlement/Transaction"
 import { Operation } from "../Operation"
 import { Transaction as TransactionFee } from "./Transaction"
 
@@ -21,8 +22,23 @@ export namespace Fee {
 			TransactionFee.is(value.other)
 		)
 	}
+	export function apply(transaction: SettlementTransaction, fee: Fee): number {
+		return (
+			(fee[transaction.type] ?? 0) +
+			TransactionFee.apply(
+				transaction.scheme,
+				transaction.card,
+				fee[transaction.area] ?? isoly.CountryCode.Alpha2.isEEA(transaction.area)
+					? fee["eea"] ?? fee["other"]
+					: fee["other"],
+				transaction.gross
+			)
+		)
+	}
 	export type Transaction = TransactionFee
 	export namespace Transaction {
 		export const is = TransactionFee.is
+		export const isUnified = TransactionFee.isUnified
+		export const apply = TransactionFee.apply
 	}
 }

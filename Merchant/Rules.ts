@@ -28,7 +28,7 @@ export namespace Rules {
 	export function apply(value: any, rules: Rules | Rule[], operation: Operation): true | gracely.Flaw {
 		let result: true | gracely.Flaw
 		if (Rules.is(rules))
-			result = apply(value, parse(rules), operation)
+			result = rules.length == 0 ? true : apply(value, parse(rules), operation)
 		else {
 			const failed = rules
 				.filter(rule => rule.operation == operation || rule.operation == "all")

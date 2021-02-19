@@ -68,9 +68,12 @@ export namespace Merchant {
 	export type Fee = MerchantFee
 	export namespace Fee {
 		export const is = MerchantFee.is
+		export const apply = MerchantFee.apply
 		export type Transaction = MerchantFee.Transaction
 		export namespace Transaction {
 			export const is = MerchantFee.Transaction.is
+			export const isUnified = MerchantFee.Transaction.isUnified
+			export const apply = MerchantFee.Transaction.apply
 		}
 	}
 	export type Rules = MerchantRules
