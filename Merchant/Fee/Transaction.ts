@@ -39,4 +39,24 @@ export namespace Transaction {
 			)
 		)
 	}
+	export function isUnified(value: any): value is { percentage: number; minimum?: number } {
+		return typeof value == "object" && value.debit == undefined && value.credit == undefined
+	}
+	export function apply(
+		scheme: model.Card.Scheme,
+		card: "debit" | "credit",
+		transaction: Transaction,
+		gross: number
+	): number {
+		let result: number
+		let feeModel = transaction[scheme]
+		if (!feeModel)
+			result = 0
+		else {
+			feeModel = isUnified(feeModel) ? feeModel : feeModel[card]
+			const fee = feeModel.percentage * gross
+			result = fee < (feeModel.minimum ?? 0) ? feeModel.minimum ?? 0 : fee
+		}
+		return result
+	}
 }

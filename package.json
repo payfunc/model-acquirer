@@ -57,7 +57,7 @@
 	"dependencies": {
 		"@payfunc/model-card": "^0.1.15",
 		"authly": "^0.1.7",
-		"isoly": "0.0.27",
+		"isoly": "0.0.28",
 		"isomorphic-fetch": "^3.0.0",
 		"gracely": "0.0.40",
 		"selectively": "0.0.24"
