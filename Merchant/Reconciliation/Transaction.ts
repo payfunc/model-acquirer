@@ -22,4 +22,10 @@ export namespace Transaction {
 			typeof value.reference == "string"
 		)
 	}
+	export function toCsv(transactions: Transaction[]): string {
+		let result = "from,to,amount,currency,date,reference\r\n"
+		for (const value of transactions)
+			result += `"${value.from}","${value.to}","${value.amount}","${value.currency}","${value.date}","${value.reference}"\r\n`
+		return result
+	}
 }

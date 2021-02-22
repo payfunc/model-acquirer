@@ -99,6 +99,7 @@ export namespace Merchant {
 		export type Transaction = MerchantReconciliation.Transaction
 		export namespace Transaction {
 			export const is = MerchantReconciliation.Transaction.is
+			export const toCsv = MerchantReconciliation.Transaction.toCsv
 		}
 	}
 }
