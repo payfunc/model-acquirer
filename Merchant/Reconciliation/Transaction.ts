@@ -6,7 +6,7 @@ export interface Transaction {
 	to: Account
 	amount: number
 	currency: isoly.Currency
-	date: isoly.Date
+	schedule: isoly.Date | "hold"
 	reference: string
 }
 
@@ -18,7 +18,7 @@ export namespace Transaction {
 			Account.is(value.to) &&
 			typeof value.amount == "number" &&
 			isoly.Currency.is(value.currency) &&
-			isoly.Date.is(value.date) &&
+			isoly.Date.is(value.schedule) && //FINDEME FIX TYPEGUARD
 			typeof value.reference == "string"
 		)
 	}
