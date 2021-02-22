@@ -32,4 +32,10 @@ export namespace Transaction {
 			typeof value.net == "number"
 		)
 	}
+	export function toCsv(transactions: Transaction[]): string {
+		let result = "authorization,reference,type,card,scheme,area,created,gross,fee,net\r\n"
+		for (const value of transactions)
+			result += `"${value.authorization}","${value.reference}","${value.type}","${value.card}","${value.scheme}","${value.area}","${value.created}","${value.gross}","${value.fee}","${value.net}"\r\n`
+		return result
+	}
 }

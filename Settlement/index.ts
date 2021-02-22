@@ -40,5 +40,14 @@ export namespace Settlement {
 	export type Transaction = SettlementTransaction
 	export namespace Transaction {
 		export const is = SettlementTransaction.is
+		export const toCsv = SettlementTransaction.toCsv
+	}
+	export function toCsv(settlements: Settlement[]): string {
+		let result = "reference,merchant,start date,end date,payout date,created,gross,fee,net,currency\r\n"
+		for (const value of settlements) {
+			result += `"${value.reference}","${value.merchant}","${value.period.start}","${value.period.end}","${value.payout}","${value.created}","${value.gross}","${value.fee}","${value.net}","${value.currency}"\r\n`
+			result += value.transactions.length > 0 ? SettlementTransaction.toCsv(value.transactions) : ""
+		}
+		return result
 	}
 }
