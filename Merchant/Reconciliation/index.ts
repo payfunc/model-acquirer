@@ -47,5 +47,6 @@ export namespace Reconciliation {
 	export type Transaction = ReconciliationTransaction
 	export namespace Transaction {
 		export const is = ReconciliationTransaction.is
+		export const toCsv = ReconciliationTransaction.toCsv
 	}
 }
