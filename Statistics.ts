@@ -17,12 +17,21 @@ export namespace Statistics {
 			authly.Identifier.is(value.merchant) &&
 			isoly.Currency.is(value.currency) &&
 			typeof value.captured == "object" &&
-			Object.entries(value.captured).every(o => isoly.Date.is(o[0]) && typeof o[1] == "number") &&
+			Object.entries(value.captured).every(e => isoly.Date.is(e[0]) && typeof e[1] == "number") &&
 			typeof value.settled == "object" &&
-			Object.entries(value.settled).every(o => isoly.Date.is(o[0]) && typeof o[1] == "number") &&
+			Object.entries(value.settled).every(e => isoly.Date.is(e[0]) && typeof e[1] == "number") &&
 			typeof value.fees == "object" &&
-			Object.entries(value.fees).every(o => isoly.Date.is(o[0]) && typeof o[1] == "number") &&
+			Object.entries(value.fees).every(e => isoly.Date.is(e[0]) && typeof e[1] == "number") &&
 			typeof value.fees == "number"
 		)
+	}
+	export function sum(record: Record<isoly.Date, number>, days?: number): number {
+		const date = new Date()
+		date.setDate(date.getDate() - (days ?? 0))
+		const result = Object.entries(record).reduce(
+			(r, e) => (!days || isoly.Date.parse(e[0]) >= date ? (r += e[1]) : r),
+			0
+		)
+		return result
 	}
 }
