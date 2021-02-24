@@ -4,7 +4,7 @@ import { default as fetch } from "isomorphic-fetch"
 export class Connection {
 	private constructor(readonly url: string, readonly token: string) {}
 
-	async post<Request, Response>(path: string, request: Request): Promise<Response | gracely.Error> {
+	async post<Response>(path: string, request: any): Promise<Response | gracely.Error> {
 		const response = await fetch(this.url + "/" + path, {
 			method: "POST",
 			headers: {
