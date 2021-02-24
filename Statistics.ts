@@ -14,7 +14,7 @@ export namespace Statistics {
 	export function is(value: any | Statistics): value is Statistics {
 		return (
 			typeof value == "object" &&
-			authly.Identifier.is(value.merchant) &&
+			authly.Identifier.is(value.merchant, 8) &&
 			isoly.Currency.is(value.currency) &&
 			typeof value.captured == "object" &&
 			Object.entries(value.captured).every(e => isoly.Date.is(e[0]) && typeof e[1] == "number") &&
@@ -25,13 +25,15 @@ export namespace Statistics {
 			typeof value.fees == "number"
 		)
 	}
-	export function sum(record: Record<isoly.Date, number>, days?: number): number {
-		const date = new Date()
-		date.setDate(date.getDate() - (days ?? 0))
-		const result = Object.entries(record).reduce(
-			(r, e) => (!days || isoly.Date.parse(e[0]) >= date ? (r += e[1]) : r),
+	export function sum(record: Record<isoly.Date, number>, from?: isoly.Date | number, to?: isoly.Date): number {
+		if (typeof from == "number") {
+			const date = new Date()
+			date.setDate(date.getDate() - (from ?? 0))
+			from = isoly.Date.create(date)
+		}
+		return Object.entries(record).reduce(
+			(r, e) => ((!from || e[0] >= from) && e[0] <= (to ?? isoly.Date.now()) ? (r += e[1]) : r),
 			0
 		)
-		return result
 	}
 }
