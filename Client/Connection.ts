@@ -22,8 +22,8 @@ export class Connection {
 	async post<Response>(path: string, request: any): Promise<Response | gracely.Error> {
 		return await this.fetch<Response>(path, "POST", request)
 	}
-	async get<Response>(path: string, request: any): Promise<Response | gracely.Error> {
-		return await this.fetch<Response>(path, "GET", request)
+	async get<Response>(path: string): Promise<Response | gracely.Error> {
+		return await this.fetch<Response>(path, "GET")
 	}
 	async remove<Response>(path: string): Promise<Response | gracely.Error> {
 		return await this.fetch<Response>(path, "DELETE")
