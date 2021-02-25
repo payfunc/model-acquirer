@@ -16,9 +16,9 @@ export interface Authorization {
 	currency: isoly.Currency
 	card: model.Card
 	descriptor?: string
-	history?: AChange[]
-	capture?: Capture[]
-	refund?: Refund[]
+	history: AChange[]
+	capture: Capture[]
+	refund: Refund[]
 	void?: isoly.DateTime
 }
 
@@ -34,9 +34,12 @@ export namespace Authorization {
 			isoly.Currency.is(value.currency) &&
 			model.Card.is(value.card) &&
 			(value.descriptor == undefined || typeof value.descriptor == "string") &&
-			(value.history == undefined || (Array.isArray(value.history) && value.history.every(AChange.is))) &&
-			(value.capture == undefined || (Array.isArray(value.capture) && value.capture.every(Capture.is))) &&
-			(value.refund == undefined || (Array.isArray(value.refund) && value.history.every(Refund.is))) &&
+			Array.isArray(value.history) &&
+			value.history.every(AChange.is) &&
+			Array.isArray(value.capture) &&
+			value.capture.every(Capture.is) &&
+			Array.isArray(value.refund) &&
+			value.refund.every(Refund.is) &&
 			(value.void == undefined || isoly.DateTime.is(value.void))
 		)
 	}
@@ -59,17 +62,17 @@ export namespace Authorization {
 							value.history == undefined ||
 								(Array.isArray(value.history) && value.history.every(AChange.is)) || {
 									property: "history",
-									type: "Authorization.Change[] | undefined",
+									type: "Authorization.Change[]",
 								},
 							value.capture == undefined ||
 								(Array.isArray(value.capture) && value.capture.every(Capture.is)) || {
 									property: "capture",
-									type: "Capture[] | undefined",
+									type: "Capture[]",
 								},
 							value.refund == undefined ||
 								(Array.isArray(value.refund) && value.history.every(Refund.is)) || {
 									property: "refund",
-									type: "Refund[] | undefined",
+									type: "Refund[]",
 								},
 							value.void == undefined ||
 								isoly.DateTime.is(value.void) || { property: "void", type: "isoly.DateTime | undefined" },
