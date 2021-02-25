@@ -39,7 +39,7 @@ export namespace Authorization {
 			Array.isArray(value.capture) &&
 			value.capture.every(Capture.is) &&
 			Array.isArray(value.refund) &&
-			value.history.every(Refund.is) &&
+			value.refund.every(Refund.is) &&
 			(value.void == undefined || isoly.DateTime.is(value.void))
 		)
 	}
