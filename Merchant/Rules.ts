@@ -1,4 +1,5 @@
 import * as gracely from "gracely"
+import { Statistics } from "../Statistics"
 import { Operation } from "./Operation"
 import { Rule } from "./Rule"
 
@@ -25,7 +26,14 @@ export namespace Rules {
 	export function parse(rules: Rules): Rule[] {
 		return rules.map(rule => Rule.parse(rule)).filter(Rule.is)
 	}
-	export function apply(value: any, rules: Rules | Rule[], operation: Operation): true | gracely.Flaw {
+	export function apply(
+		value: {
+			statistic: Statistics
+			verification?: "verified" | "noServiceAvailable" | "rejected"
+		} & Record<string, any>,
+		rules: Rules | Rule[],
+		operation: Operation
+	): true | gracely.Flaw {
 		let result: true | gracely.Flaw
 		if (Rules.is(rules))
 			result = rules.length == 0 ? true : apply(value, parse(rules), operation)
