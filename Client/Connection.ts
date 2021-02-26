@@ -4,9 +4,9 @@ import { default as fetch } from "isomorphic-fetch"
 export class Connection {
 	private constructor(readonly url: string, readonly token: string) {}
 
-	async post<Request, Response>(path: string, request: Request): Promise<Response | gracely.Error> {
+	async fetch<Response>(path: string, method: string, request?: any): Promise<Response | gracely.Error> {
 		const response = await fetch(this.url + "/" + path, {
-			method: "POST",
+			method,
 			headers: {
 				"Content-Type": "application/json; charset=utf-8",
 				Authorization: "Bearer " + this.token,
@@ -19,20 +19,14 @@ export class Connection {
 			? response.json()
 			: response.text()
 	}
+	async post<Response>(path: string, request: any): Promise<Response | gracely.Error> {
+		return await this.fetch<Response>(path, "POST", request)
+	}
+	async get<Response>(path: string): Promise<Response | gracely.Error> {
+		return await this.fetch<Response>(path, "GET")
+	}
 	async remove<Response>(path: string): Promise<Response | gracely.Error> {
-		const response = await fetch(this.url + "/" + path, {
-			method: "DELETE",
-			headers: {
-				"Content-Type": "application/json; charset=utf-8",
-				Authorization: "Bearer " + this.token,
-			},
-		}).catch(_ => undefined)
-
-		return !response
-			? gracely.server.unavailable()
-			: response.headers.get("Content-Type")?.startsWith("application/json")
-			? response.json()
-			: response.text()
+		return await this.fetch<Response>(path, "DELETE")
 	}
 	static open(url: string | undefined, token: string | undefined): Connection | undefined {
 		return token && url ? new Connection(url, token) : undefined
