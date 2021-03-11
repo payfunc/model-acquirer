@@ -21,7 +21,7 @@ export class Authorization {
 	load(authorization: ModelAuthorization | string): (ModelAuthorization | { id: string }) & Operations {
 		const result = {
 			...(typeof authorization == "string" ? { id: authorization } : authorization),
-			cancel: (): Promise<gracely.Result> => this.client.connection.remove("authorization/" + result.id + "/cancel"),
+			cancel: (): Promise<gracely.Result> => this.client.connection.remove("authorization/" + result.id),
 			capture: (capture: Capture.Creatable): Promise<Capture | gracely.Error> =>
 				this.client.connection.post("authorization/" + result.id + "/capture", capture),
 			refund: (refund: Refund.Creatable): Promise<Refund | gracely.Error> =>
