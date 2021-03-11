@@ -24,9 +24,9 @@ export namespace Transaction {
 		)
 	}
 	export function toCsv(transactions: Transaction[], merchant: Merchant): string {
-		let result = "merchant,from,to,amount,currency,schedule,settlement\r\n"
+		let result = "from,to,amount,currency,schedule,settlement,merchant\r\n"
 		for (const value of transactions)
-			result += `"${merchant.name}","${value.from}","${value.to}","${value.amount}","${value.currency}","${value.schedule}","${value.reference}"\r\n`
+			result += `"${value.from}","${value.to}","${value.amount}","${value.currency}","${value.schedule}","${value.reference}","${merchant.name}"\r\n`
 		return result
 	}
 }
