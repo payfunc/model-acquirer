@@ -54,7 +54,7 @@ export namespace Transaction {
 			result = 0
 		else {
 			feeModel = isUnified(feeModel) ? feeModel : feeModel[card]
-			const fee = feeModel.percentage * gross
+			const fee = (feeModel.percentage / 100) * gross
 			result = fee < (feeModel.minimum ?? 0) ? feeModel.minimum ?? 0 : fee
 		}
 		return result
