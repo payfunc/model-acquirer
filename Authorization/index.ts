@@ -20,6 +20,7 @@ export interface Authorization {
 	capture: Capture[]
 	refund: Refund[]
 	void?: isoly.DateTime
+	recurring?: "initial" | "use"
 }
 
 export namespace Authorization {

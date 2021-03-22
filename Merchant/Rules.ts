@@ -1,4 +1,5 @@
 import * as gracely from "gracely"
+import { Merchant } from "../Merchant"
 import { Statistics } from "../Statistics"
 import { Operation } from "./Operation"
 import { Rule } from "./Rule"
@@ -45,4 +46,14 @@ export namespace Rules {
 		}
 		return result
 	}
+}
+
+export interface RuleValue {
+	refundable?: number
+	verification?: "verified" | "noServiceAvailable" | "rejected"
+	risk: number
+	amount: number
+	authorized?: number
+	captured?: number
+	merchant?: Partial<Merchant>
 }

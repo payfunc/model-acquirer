@@ -17,7 +17,7 @@ export interface Merchant {
 	reconciliation: MerchantReconciliation
 	country: isoly.CountryCode.Alpha2
 	categoryCode: string //mcc
-	rules: MerchantRules
+	rules: Record<string, MerchantRules> & { master: MerchantRules }
 }
 
 export namespace Merchant {
