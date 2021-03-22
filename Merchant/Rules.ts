@@ -1,10 +1,10 @@
 import * as gracely from "gracely"
 import { Merchant } from "../Merchant"
-import { Statistics } from "../Statistics"
+import * as State from "../State"
 import { Operation } from "./Operation"
 import { Rule } from "./Rule"
 
-export type Rules = string[]
+export type Rules = Record<string, string[] | undefined> & Record<"master", string[]>
 
 export namespace Rules {
 	export function is(value: any | Rules): value is Rules {
@@ -28,10 +28,7 @@ export namespace Rules {
 		return rules.map(rule => Rule.parse(rule)).filter(Rule.is)
 	}
 	export function apply(
-		value: {
-			statistic: Statistics
-			verification?: "verified" | "noServiceAvailable" | "rejected"
-		} & Record<string, any>,
+		value: State.PreAuthorization | State.PostAuthorization,
 		rules: Rules | Rule[],
 		operation: Operation
 	): true | gracely.Flaw {
