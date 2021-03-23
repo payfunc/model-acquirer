@@ -13,7 +13,7 @@ export interface PostAuthorization {
 	authorization: {
 		amount: number
 		currency: isoly.Currency
-		card: Card & { csc?: "matched" | "mismatched" }
+		card: Card
 		created: isoly.DateTime
 		captured?: { amount: number; latest: isoly.DateTime; auto?: true }
 		refunded?: { amount: number; latest: isoly.DateTime }
@@ -33,7 +33,6 @@ export namespace PostAuthorization {
 			typeof value.authorization.amount == "number" &&
 			isoly.Currency.is(value.authorization.currency) &&
 			Card.is(value.authorization.card) &&
-			(value.authorization.card.csc == undefined || ["matched", "mismatched"].includes(value.authorization.card.csc)) &&
 			isoly.DateTime.is(value.authorization.created) &&
 			(value.authorization.captured == undefined ||
 				(typeof value.authorization.captured == "object" &&

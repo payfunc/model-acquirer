@@ -1,7 +1,7 @@
 import * as isoly from "isoly"
 import * as model from "@payfunc/model-card"
 
-export type Card = Omit<model.Card, "expires"> & { expires: isoly.Date; csc?: "matched" | "mismatched" | "present" }
+export type Card = Omit<model.Card, "expires"> & { expires: isoly.Date }
 export namespace Card {
 	export function is(value: any | Card): value is Card {
 		return (
@@ -16,15 +16,9 @@ export namespace Card {
 			(value.csc == undefined || ["matched", "mismatched", "present"].includes(value.csc))
 		)
 	}
-	export function from(
-		card: model.Card.Creatable
-	): Omit<model.Card, "expires"> & { expires: isoly.Date; csc?: "present" }
-	export function from(
-		card: model.Card
-	): Omit<model.Card, "expires"> & { expires: isoly.Date; csc?: "matched" | "mismatched" }
-	export function from(
-		card: model.Card.Creatable | model.Card
-	): Omit<model.Card, "expires"> & { expires: isoly.Date; csc?: "matched" | "mismatched" | "present" } {
+	export function from(card: model.Card.Creatable): Card & { csc?: "present" }
+	export function from(card: model.Card): Card
+	export function from(card: model.Card.Creatable | model.Card): Card {
 		return {
 			...(model.Card.is(card) ? card : model.Card.from(card)),
 			expires:
