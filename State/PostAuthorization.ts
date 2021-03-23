@@ -1,11 +1,10 @@
 import * as isoly from "isoly"
-import * as model from "@payfunc/model-card"
 import { Authorization } from "../Authorization"
 import { Capture } from "../Capture"
 import { Merchant as AcquirerMerchant } from "../Merchant"
 import { Refund } from "../Refund"
 import { Statistics } from "../Statistics"
-import { lastDayOfMonth } from "./index"
+import { Card } from "./Card"
 import { Merchant } from "./Merchant"
 
 export interface PostAuthorization {
@@ -14,7 +13,7 @@ export interface PostAuthorization {
 	authorization: {
 		amount: number
 		currency: isoly.Currency
-		card: Omit<model.Card, "expires"> & { expires: isoly.Date }
+		card: Card & { csc?: "matched" | "mismatched" }
 		created: isoly.DateTime
 		captured?: { amount: number; latest: isoly.DateTime; auto?: true }
 		refunded?: { amount: number; latest: isoly.DateTime }
@@ -33,16 +32,7 @@ export namespace PostAuthorization {
 			typeof value.authorization == "object" &&
 			typeof value.authorization.amount == "number" &&
 			isoly.Currency.is(value.authorization.currency) &&
-			typeof value.authorization.card == "object" &&
-			model.Card.Scheme.is(value.authorization.card.scheme) &&
-			typeof value.authorization.card.iin == "string" &&
-			value.authorization.card.iin.length == 6 &&
-			typeof value.authorization.card.last4 == "string" &&
-			value.authorization.card.last4.length == 4 &&
-			isoly.Date.is(value.authorization.card.expires) &&
-			(value.authorization.card.type == undefined || model.Card.Type.is(value.authorization.card.type)) &&
-			Array.isArray(value.authorization.card.scheme) &&
-			value.authorization.card.scheme.every(model.Card.Scheme.is) &&
+			Card.is(value.authorization.card) &&
 			(value.authorization.card.csc == undefined || ["matched", "mismatched"].includes(value.authorization.card.csc)) &&
 			isoly.DateTime.is(value.authorization.created) &&
 			(value.authorization.captured == undefined ||
@@ -74,7 +64,7 @@ export namespace PostAuthorization {
 			authorization: {
 				amount: isoly.Currency.round(authorization.amount * factor, merchant.reconciliation.currency),
 				currency: authorization.currency,
-				card: fromCard(authorization.card),
+				card: Card.from(authorization.card),
 				created: authorization.created,
 				captured: fromHistory(authorization.capture),
 				refunded: fromHistory(authorization.refund),
@@ -100,17 +90,5 @@ export namespace PostAuthorization {
 					},
 					{ amount: 0, latest: "" }
 			  )
-	}
-	function fromCard(card: model.Card): Omit<model.Card, "expires"> & { expires: isoly.Date } {
-		return {
-			...card,
-			expires:
-				(2000 + card.expires[1]).toString() +
-				"-" +
-				card.expires[0].toString().padStart(2, "0") +
-				"-" +
-				lastDayOfMonth(2000 + card.expires[1], card.expires[0]),
-			csc: card.csc,
-		}
 	}
 }
