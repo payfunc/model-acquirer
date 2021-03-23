@@ -16,11 +16,11 @@ export interface Authorization {
 	currency: isoly.Currency
 	card: model.Card
 	descriptor?: string
+	recurring?: "initial" | "subsequent"
 	history: AChange[]
 	capture: Capture[]
 	refund: Refund[]
 	void?: isoly.DateTime
-	recurring?: "initial" | "use"
 }
 
 export namespace Authorization {
@@ -35,6 +35,7 @@ export namespace Authorization {
 			isoly.Currency.is(value.currency) &&
 			model.Card.is(value.card) &&
 			(value.descriptor == undefined || typeof value.descriptor == "string") &&
+			(value.recurring == undefined || ["initial", "subsequent"].includes(value.recurring)) &&
 			Array.isArray(value.history) &&
 			value.history.every(AChange.is) &&
 			Array.isArray(value.capture) &&
@@ -57,9 +58,13 @@ export namespace Authorization {
 							isoly.DateTime.is(value.created) || { property: "created", type: "isoly.DateTime" },
 							typeof value.amount == "number" || { property: "amount", type: "number" },
 							isoly.Currency.is(value.currency) || { property: "currency", type: "isoly.Currency" },
-							model.Card.is(value.card) || { property: "card", type: "model.Card" },
 							value.descriptor == undefined ||
 								typeof value.descriptor == "string" || { property: "descriptor", type: "string | undefined" },
+							value.recurring == undefined ||
+								["initial", "subsequent"].includes(value.recurring) || {
+									property: "recurring",
+									type: `"initial" | "subsequent" | undefined`,
+								},
 							value.history == undefined ||
 								(Array.isArray(value.history) && value.history.every(AChange.is)) || {
 									property: "history",

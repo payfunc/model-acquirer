@@ -55,7 +55,7 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"@payfunc/model-card": "^0.2.5",
+		"@payfunc/model-card": "payfunc/model-card#csc-matched",
 		"authly": "^0.2.3",
 		"gracely": "0.1.1",
 		"isoly": "0.1.3",
