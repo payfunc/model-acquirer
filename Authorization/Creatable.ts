@@ -10,6 +10,7 @@ export interface Creatable {
 	card: authly.Token | model.Card.Creatable
 	descriptor?: string
 	capture?: "auto"
+	recurring?: "initial" | "subsequent"
 }
 export namespace Creatable {
 	export function is(value: Creatable | any): value is Creatable {
@@ -20,7 +21,8 @@ export namespace Creatable {
 			isoly.Currency.is(value.currency) &&
 			(authly.Token.is(value.card) || model.Card.Creatable.is(value.card)) &&
 			(value.descriptor == undefined || typeof value.descriptor == "string") &&
-			(value.capture == undefined || ["auto"].some(v => v == value.capture))
+			(value.capture == undefined || ["auto"].some(v => v == value.capture)) &&
+			(value.recurring == undefined || ["initial", "subsequent"].includes(value.recurring))
 		)
 	}
 	export function flaw(value: Creatable | any): gracely.Flaw {
@@ -43,6 +45,11 @@ export namespace Creatable {
 								typeof value.descriptor == "string" || { property: "descriptor", type: "string | undefined" },
 							value.capture == undefined ||
 								["auto"].some(v => v == value.capture) || { property: "capture", type: '"auto" | undefined' },
+							value.recurring == undefined ||
+								["initial", "subsequent"].includes(value.recurring) || {
+									property: "recurring",
+									type: `"initial" | "subsequent" | undefined`,
+								},
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
