@@ -1,3 +1,4 @@
+import * as isoly from "isoly"
 import * as model from "@payfunc/model-card"
 import { Authorization } from "../Authorization"
 import { Merchant as AcquirerMerchant } from "../Merchant"
@@ -81,7 +82,7 @@ describe("State.PostAuthorization tests", () => {
 				scheme: [],
 				settled: 0,
 			},
-			now: "2021-03-23",
+			now: isoly.Date.now(),
 		}
 		expect(postAuthorization).toEqual(expectedOutput)
 		expect(PostAuthorization.is(postAuthorization)).toBeTruthy()
