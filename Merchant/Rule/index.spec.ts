@@ -2,7 +2,12 @@ import * as selectively from "selectively"
 import { Rule } from "./index"
 
 describe("Rule", () => {
-	const rule: Rule = { action: "reject", operation: "authorization", condition: selectively.parse("exists field") }
+	const rule: Rule = {
+		action: "reject",
+		operation: "authorization",
+		condition: selectively.parse("exists field"),
+		verification: false,
+	}
 	it("Typeguard", () => {
 		expect(Rule.is(rule)).toEqual(true)
 	})
@@ -21,6 +26,7 @@ describe("Rule", () => {
 			action: "reject",
 			operation: "authorization",
 			condition: selectively.has("verification"),
+			verification: true,
 		})
 	})
 	it("invert rules", () => {
