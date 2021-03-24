@@ -7,6 +7,7 @@ export interface Rule {
 	action: Action
 	operation: Operation
 	condition: selectively.Rule
+	verification: boolean
 }
 
 export namespace Rule {
@@ -18,7 +19,8 @@ export namespace Rule {
 			typeof value.condition == "object" &&
 			typeof value.condition.is == "function" &&
 			typeof value.condition.filter == "function" &&
-			typeof value.condition.toString == "function"
+			typeof value.condition.toString == "function" &&
+			typeof value.verification == "boolean"
 		)
 	}
 	export function stringify(rule: Rule): string {
@@ -29,7 +31,13 @@ export namespace Rule {
 		const result = {
 			action: split[0],
 			operation: split[1],
-			condition: selectively.parse(split.splice(2, split.length - 2).join(" ")),
+			condition: selectively.parse(
+				split
+					.splice(2, split.length - 2)
+					.join(" ")
+					.replace(/^\s?if/, "")
+			),
+			verification: rule.includes("verification"),
 		}
 		return is(result) ? result : undefined
 	}
@@ -38,7 +46,7 @@ export namespace Rule {
 	}
 	export function toFlaw(failed: Rule[]): gracely.Flaw {
 		return {
-			type: "Rule Violation",
+			type: failed.every(f => f.verification) ? "verification required" : "Rule Violation",
 			flaws: failed.map(rule => {
 				return { type: rule.action, condition: rule.condition.toString() }
 			}),
