@@ -1,13 +1,10 @@
 import * as isoly from "isoly"
 import * as model from "@payfunc/model-card"
-import { Authorization } from "../Authorization"
-import { Merchant as AcquirerMerchant } from "../Merchant"
-import { Statistics } from "../Statistics"
-import { PostAuthorization } from "./PostAuthorization"
+import * as acquirer from "../index"
 
 describe("State.PostAuthorization tests", () => {
 	it("State.PostAuthorization minimal information test", () => {
-		const merchant: AcquirerMerchant = {
+		const merchant: acquirer.Merchant = {
 			id: "testtest",
 			type: "test",
 			agent: "master",
@@ -18,7 +15,7 @@ describe("State.PostAuthorization tests", () => {
 			reference: "123456",
 			rules: { master: [] },
 		}
-		const statistics: Statistics = {
+		const statistics: acquirer.Statistics = {
 			merchant: "testtest",
 			currency: "SEK",
 			captured: {},
@@ -33,7 +30,7 @@ describe("State.PostAuthorization tests", () => {
 			expires: [2, 28],
 			csc: "matched",
 		}
-		const authorization: Authorization = {
+		const authorization: acquirer.Authorization = {
 			id: "1234567890123456",
 			reference: "123412341234",
 			amount: 100,
@@ -46,7 +43,7 @@ describe("State.PostAuthorization tests", () => {
 			history: [],
 			created: "2021-01-01T12:30:30.000Z",
 		}
-		let postAuthorization: PostAuthorization = PostAuthorization.from(
+		let postAuthorization: acquirer.State.PostAuthorization = acquirer.State.PostAuthorization.from(
 			authorization,
 			{ amount: 110 },
 			merchant,
@@ -85,8 +82,8 @@ describe("State.PostAuthorization tests", () => {
 			now: isoly.Date.now(),
 		}
 		expect(postAuthorization).toEqual(expectedOutput)
-		expect(PostAuthorization.is(postAuthorization)).toBeTruthy()
-		postAuthorization = PostAuthorization.from(
+		expect(acquirer.State.PostAuthorization.is(postAuthorization)).toBeTruthy()
+		postAuthorization = acquirer.State.PostAuthorization.from(
 			{ ...authorization, currency: "GBP" },
 			{ amount: 105 },
 			{ ...merchant, reconciliation: { ...merchant.reconciliation, currency: "USD" } },
@@ -99,6 +96,6 @@ describe("State.PostAuthorization tests", () => {
 			merchant: { ...expectedOutput.merchant, currency: "USD" },
 			authorization: { ...expectedOutput.authorization, currency: "GBP", amount: 100 },
 		})
-		expect(PostAuthorization.is(postAuthorization)).toBeTruthy()
+		expect(acquirer.State.PostAuthorization.is(postAuthorization)).toBeTruthy()
 	})
 })

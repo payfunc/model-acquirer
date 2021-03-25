@@ -1,13 +1,10 @@
 import * as isoly from "isoly"
 import * as model from "@payfunc/model-card"
-import { Authorization } from "../Authorization"
-import { Merchant as AcquirerMerchant } from "../Merchant"
-import { Statistics } from "../Statistics"
-import { PreAuthorization } from "./PreAuthorization"
+import * as acquirer from "../index"
 
 describe("State.PreAuthorization tests", () => {
 	it("State.PreAuthorization test", () => {
-		const merchant: AcquirerMerchant = {
+		const merchant: acquirer.Merchant = {
 			id: "testtest",
 			type: "test",
 			agent: "master",
@@ -18,7 +15,7 @@ describe("State.PreAuthorization tests", () => {
 			reference: "123456",
 			rules: { master: [] },
 		}
-		const statistics: Statistics = {
+		const statistics: acquirer.Statistics = {
 			merchant: "testtest",
 			currency: "SEK",
 			captured: {},
@@ -31,18 +28,24 @@ describe("State.PreAuthorization tests", () => {
 			expires: [2, 28],
 			csc: "987",
 		}
-		const authorization: Authorization.Creatable & { card: model.Card.Creatable } = {
+		const authorization: acquirer.Authorization.Creatable & { card: model.Card.Creatable } = {
 			amount: 100,
 			currency: "SEK",
 			descriptor: "test transaction",
 			number: "12345678",
 			card,
 		}
-		let preAuthorization: PreAuthorization = PreAuthorization.from(authorization, merchant, statistics, "verified", {
-			EUR: 9.5,
-			SEK: 1,
-		})
-		const expectedOutput: PreAuthorization = {
+		let preAuthorization: acquirer.State.PreAuthorization = acquirer.State.PreAuthorization.from(
+			authorization,
+			merchant,
+			statistics,
+			"verified",
+			{
+				EUR: 9.5,
+				SEK: 1,
+			}
+		)
+		const expectedOutput: acquirer.State.PreAuthorization = {
 			authorization: {
 				amount: 100,
 				card: {
@@ -70,11 +73,14 @@ describe("State.PreAuthorization tests", () => {
 			now: isoly.Date.now(),
 		}
 		expect(preAuthorization).toEqual(expectedOutput)
-		expect(PreAuthorization.is(preAuthorization)).toBeTruthy()
-		preAuthorization = PreAuthorization.from(authorization, merchant, statistics, "verified", { EUR: 9.5, SEK: 8.8 })
+		expect(acquirer.State.PreAuthorization.is(preAuthorization)).toBeTruthy()
+		preAuthorization = acquirer.State.PreAuthorization.from(authorization, merchant, statistics, "verified", {
+			EUR: 9.5,
+			SEK: 8.8,
+		})
 		expect(preAuthorization).toEqual(expectedOutput)
-		expect(PreAuthorization.is(preAuthorization)).toBeTruthy()
-		preAuthorization = PreAuthorization.from(
+		expect(acquirer.State.PreAuthorization.is(preAuthorization)).toBeTruthy()
+		preAuthorization = acquirer.State.PreAuthorization.from(
 			authorization,
 			{ ...merchant, reconciliation: { ...merchant.reconciliation, currency: "EUR" } },
 			{ ...statistics, currency: "EUR" },
@@ -86,6 +92,6 @@ describe("State.PreAuthorization tests", () => {
 			merchant: { ...expectedOutput.merchant, currency: "EUR" },
 			authorization: { ...expectedOutput.authorization, amount: 10 },
 		})
-		expect(PreAuthorization.is(preAuthorization)).toBeTruthy()
+		expect(acquirer.State.PreAuthorization.is(preAuthorization)).toBeTruthy()
 	})
 })
