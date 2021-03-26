@@ -1,13 +1,20 @@
 import * as gracely from "gracely"
-import { Statistics } from "../Statistics"
+import { Merchant } from "../Merchant"
+import * as State from "../State"
 import { Operation } from "./Operation"
 import { Rule } from "./Rule"
 
-export type Rules = string[]
+export type Rules = Record<string, string[] | undefined> & Record<"master", string[]>
 
 export namespace Rules {
 	export function is(value: any | Rules): value is Rules {
-		return Array.isArray(value) && value.every(rule => typeof rule == "string" && !!Rule.parse(rule))
+		return (
+			typeof value == "object" &&
+			Object.keys(value).some(key => key == "master") &&
+			Object.values(value).every(
+				entry => Array.isArray(entry) && entry.every(rule => typeof rule == "string" && !!Rule.parse(rule))
+			)
+		)
 	}
 	export function flaw(value: any | Rules): gracely.Flaw {
 		return {
@@ -24,19 +31,19 @@ export namespace Rules {
 		}
 	}
 	export function parse(rules: Rules): Rule[] {
-		return rules.map(rule => Rule.parse(rule)).filter(Rule.is)
+		return Object.values(rules).reduce<Rule[]>(
+			(r, v) => r.concat(v?.map(rule => Rule.parse(rule)).filter(Rule.is) ?? []),
+			[]
+		)
 	}
 	export function apply(
-		value: {
-			statistic: Statistics
-			verification?: "verified" | "noServiceAvailable" | "rejected"
-		} & Record<string, any>,
+		value: State.PreAuthorization | State.PostAuthorization,
 		rules: Rules | Rule[],
 		operation: Operation
 	): true | gracely.Flaw {
 		let result: true | gracely.Flaw
 		if (Rules.is(rules))
-			result = rules.length == 0 ? true : apply(value, parse(rules), operation)
+			result = apply(value, parse(rules), operation)
 		else {
 			const failed = rules
 				.filter(rule => rule.operation == operation || rule.operation == "all")
@@ -45,4 +52,14 @@ export namespace Rules {
 		}
 		return result
 	}
+}
+
+export interface RuleValue {
+	refundable?: number
+	verification?: "verified" | "noServiceAvailable" | "rejected"
+	risk: number
+	amount: number
+	authorized?: number
+	captured?: number
+	merchant?: Partial<Merchant>
 }
