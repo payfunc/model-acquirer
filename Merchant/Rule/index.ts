@@ -29,7 +29,12 @@ export namespace Rule {
 		const result = {
 			action: split[0],
 			operation: split[1],
-			condition: selectively.parse(split.splice(2, split.length - 2).join(" ")),
+			condition: selectively.parse(
+				split
+					.splice(2, split.length - 2)
+					.join(" ")
+					.replace(/^\s?if/, "")
+			),
 		}
 		return is(result) ? result : undefined
 	}
