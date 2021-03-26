@@ -35,15 +35,15 @@ describe("Rule", () => {
 		expect(
 			model.Merchant.Rules.apply({ statistic, verification: "noServiceAvailable" }, rules, "authorization")
 		).toEqual({
-			type: "Rule Violation",
+			type: "verification required",
 			flaws: [{ type: "reject", condition: "verification:(noServiceAvailable | rejected)" }],
 		})
 		expect(model.Merchant.Rules.apply({ statistic, verification: "rejected" }, rules, "authorization")).toEqual({
-			type: "Rule Violation",
+			type: "verification required",
 			flaws: [{ type: "reject", condition: "verification:(noServiceAvailable | rejected)" }],
 		})
 		expect(model.Merchant.Rules.apply({ statistic }, rules, "authorization")).toEqual({
-			type: "Rule Violation",
+			type: "verification required",
 			flaws: [{ type: "reject", condition: "!(has(verification))" }],
 		})
 	})
