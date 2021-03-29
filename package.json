@@ -55,12 +55,11 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"@payfunc/model-card": "^0.1.15",
+		"@payfunc/model-card": "^0.1.17",
 		"authly": "^0.1.7",
-		"isoly": "0.0.29",
-		"isomorphic-fetch": "^3.0.0",
 		"gracely": "0.0.40",
-		"selectively": "0.0.27"
+		"isoly": "0.0.29",
+		"selectively": "0.0.34"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.0",
@@ -74,6 +73,7 @@
 		"eslint": "7.9.0",
 		"eslint-plugin-prettierx": "github:nilssonemma/eslint-plugin-prettierx#master",
 		"eslint-plugin-simple-import-sort": "^7.0.0",
+		"isomorphic-fetch": "^3.0.0",
 		"jest": "^26.4.2",
 		"prettierx": "github:simonmika/prettierx#newline-before-clause",
 		"ts-jest": "^26.4.0",
