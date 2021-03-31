@@ -57,6 +57,7 @@ describe("State.PreAuthorization tests", () => {
 				},
 				currency: "SEK",
 				descriptor: "test transaction",
+				number: "12345678",
 				verification: "verified",
 			},
 			merchant: {

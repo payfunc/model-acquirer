@@ -14,6 +14,7 @@ export interface PreAuthorization {
 		card: Card & { csc?: "present" }
 		capture?: "auto"
 		descriptor?: string
+		number?: string
 		verification?: "verified" | "unavailable" | "rejected"
 		recurring?: "initial" | "subsequent"
 	}
@@ -31,6 +32,7 @@ export namespace PreAuthorization {
 			(value.authorization.card.csc == undefined || value.authorization.card.csc == "present") &&
 			(value.authorization.capture == undefined || value.authorization.capture == "auto") &&
 			(value.authorization.descriptor == undefined || typeof value.authorization.descriptor == "string") &&
+			(value.authorization.number == undefined || typeof value.authorization.number == "string") &&
 			(value.authorization.verification == undefined ||
 				["verified", "unavailable", "rejected"].includes(value.authorization.verification)) &&
 			(value.authorization.recurring == undefined ||
@@ -55,6 +57,7 @@ export namespace PreAuthorization {
 				card: Card.from(authorization.card),
 				capture: authorization.capture,
 				descriptor: authorization.descriptor,
+				number: authorization.number,
 				verification,
 				recurring: authorization.recurring,
 			},
