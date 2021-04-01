@@ -60,9 +60,7 @@ export namespace FailedAuthorization {
 			const update = log.created > result.created
 			if (update) {
 				const state = log.entries.find(e => e.point == "PreAuthorization State")?.data.state
-				result.authorization = PreAuthorization.is(state)
-					? { ...state.authorization, number: log.reference?.number }
-					: { number: log.reference?.number }
+				result.authorization = PreAuthorization.is(state) ? state.authorization : { number: log.reference?.number }
 				result.created = log.created
 				result.merchant = log.merchant
 				const response = log.entries.find(e => e.point == "response")?.data.body
@@ -76,19 +74,15 @@ export namespace FailedAuthorization {
 		return result
 	}
 	export function load(authorizations: acquirer.Authorization[], logs: Log[]): FailedAuthorization[] {
-		const result: FailedAuthorization[] = []
 		const registry: Record<string, Log[]> = {}
 		logs.forEach(log => {
 			if (
 				log.reference?.number &&
-				log.reference.type == "authorization" &&
+				["authorization"].includes(log.reference.type) &&
 				authorizations.every(a => log.reference?.id != a.id && log.reference?.number != a.number)
-			) {
+			)
 				registry[log.reference.number] = [...(registry[log.reference.number] ?? []), log]
-			}
 		})
-		for (const logs of Object.values(registry))
-			result.push(from(logs))
-		return result
+		return Object.values(registry).map(from)
 	}
 }

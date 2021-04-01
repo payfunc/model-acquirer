@@ -74,7 +74,7 @@ describe("State.FailedAuthorization tests", () => {
 				[
 					{
 						agent: "PayFunc",
-						reference: { id: "1234567890abcdef", number: "1234567890123455", type: "authorization" },
+						reference: { id: "1234567890abcdef", number: "1234123412341234", type: "authorization" },
 						merchant: "testtest",
 						client: "",
 						resource: { method: "GET", location: "http://example.com" },
@@ -133,6 +133,7 @@ describe("State.FailedAuthorization tests", () => {
 												csc: "present",
 											},
 											descriptor: "string",
+											number: "1234123412341234",
 										},
 										now: "2021-03-31",
 									},
@@ -193,7 +194,7 @@ describe("State.FailedAuthorization tests", () => {
 					},
 					currency: "EUR",
 					descriptor: "string",
-					number: "1234567890123455",
+					number: "1234123412341234",
 				},
 				created: "2021-02-02T23:59:59.000Z",
 				log: [
@@ -242,6 +243,7 @@ describe("State.FailedAuthorization tests", () => {
 											},
 											currency: "EUR",
 											descriptor: "string",
+											number: "1234123412341234",
 										},
 										merchant: {
 											captured: 10,
@@ -302,7 +304,7 @@ describe("State.FailedAuthorization tests", () => {
 						merchant: "testtest",
 						reference: {
 							id: "1234567890abcdef",
-							number: "1234567890123455",
+							number: "1234123412341234",
 							type: "authorization",
 						},
 						resource: {
