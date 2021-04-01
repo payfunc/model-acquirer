@@ -16,6 +16,17 @@ export namespace Card {
 			(value.csc == undefined || ["matched", "mismatched", "present"].includes(value.csc))
 		)
 	}
+	export function isPartial(value: any | Partial<Card>): value is Partial<Card> {
+		return (
+			typeof value == "object" &&
+			(value.scheme == undefined || model.Card.Scheme.is(value.scheme)) &&
+			(value.iin == undefined || (typeof value.iin == "string" && value.iin.length == 6)) &&
+			(value.last4 == undefined || (typeof value.last4 == "string" && value.last4.length == 4)) &&
+			(value.expires == undefined || isoly.Date.is(value.expires)) &&
+			(value.type == undefined || model.Card.Type.is(value.type)) &&
+			(value.csc == undefined || ["matched", "mismatched", "present"].includes(value.csc))
+		)
+	}
 	export function from(card: model.Card.Creatable): Card & { csc?: "present" }
 	export function from(card: model.Card): Card
 	export function from(card: model.Card.Creatable | model.Card): Card {
