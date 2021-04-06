@@ -5,6 +5,9 @@ import { Connection } from "./Connection"
 
 export class Settlement {
 	constructor(readonly client: { connection: Connection }) {}
+	async load(): Promise<ModelSettlement[] | gracely.Error>
+	async load(id?: authly.Identifier): Promise<ModelSettlement | gracely.Error>
+	async load(id?: authly.Identifier[]): Promise<ModelSettlement[] | gracely.Error>
 	async load(
 		id?: authly.Identifier | authly.Identifier[]
 	): Promise<ModelSettlement | ModelSettlement[] | gracely.Error> {
