@@ -66,7 +66,10 @@ export namespace FailedAuthorization {
 				const response = log.entries.find(e => e.point == "response")?.data.body
 				result.reason =
 					(response.details && response.details.message) ??
-					(response.content && response.content.type) ??
+					(response.content &&
+						(response.content.description && response.content.description.length <= 30
+							? response.content.description
+							: response.content.type)) ??
 					response.type ??
 					"unknown failure"
 			}
