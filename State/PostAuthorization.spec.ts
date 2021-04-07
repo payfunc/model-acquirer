@@ -32,6 +32,7 @@ describe("State.PostAuthorization tests", () => {
 		}
 		const authorization: acquirer.Authorization = {
 			id: "1234567890123456",
+			merchant: "testtest",
 			reference: "123412341234",
 			amount: 100,
 			currency: "EUR",
