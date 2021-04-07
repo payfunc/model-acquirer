@@ -9,6 +9,7 @@ import { Creatable as ACreatable } from "./Creatable"
 
 export interface Authorization {
 	id: authly.Identifier
+	merchant: authly.Identifier
 	number?: string
 	reference: string
 	created: isoly.DateTime
@@ -28,6 +29,7 @@ export namespace Authorization {
 		return (
 			typeof value == "object" &&
 			authly.Identifier.is(value.id, 16) &&
+			authly.Identifier.is(value.merchant) &&
 			(value.number == undefined || typeof value.number == "string") &&
 			typeof value.reference == "string" &&
 			isoly.DateTime.is(value.created) &&
@@ -53,6 +55,7 @@ export namespace Authorization {
 					? undefined
 					: ([
 							authly.Identifier.is(value.id) || { property: "id", type: "authly.Identifier" },
+							authly.Identifier.is(value.merchant) || { property: "merchant", type: "authly.Identifier" },
 							value.number == undefined || typeof value.number == "string" || { property: "", type: "" },
 							typeof value.reference == "string" || { property: "reference", type: "string" },
 							isoly.DateTime.is(value.created) || { property: "created", type: "isoly.DateTime" },
