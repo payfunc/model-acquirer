@@ -59,6 +59,7 @@
 		"authly": "^0.1.7",
 		"gracely": "0.0.40",
 		"isoly": "0.0.29",
+		"isomorphic-fetch": "^3.0.0",
 		"selectively": "0.0.34"
 	},
 	"devDependencies": {
@@ -73,7 +74,6 @@
 		"eslint": "7.9.0",
 		"eslint-plugin-prettierx": "github:nilssonemma/eslint-plugin-prettierx#master",
 		"eslint-plugin-simple-import-sort": "^7.0.0",
-		"isomorphic-fetch": "^3.0.0",
 		"jest": "^26.4.2",
 		"prettierx": "github:simonmika/prettierx#newline-before-clause",
 		"ts-jest": "^26.4.0",
