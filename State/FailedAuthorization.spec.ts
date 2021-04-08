@@ -60,6 +60,7 @@ describe("State.FailedAuthorization tests", () => {
 				[
 					{
 						id: "1234567890000000",
+						merchant: "testtest",
 						number: "1234567890123456",
 						created: "2021-02-01T23:59:59.000Z",
 						currency: "SEK",
