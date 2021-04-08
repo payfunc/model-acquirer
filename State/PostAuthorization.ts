@@ -15,6 +15,7 @@ export interface PostAuthorization {
 		currency: isoly.Currency
 		card: Card
 		created: isoly.DateTime
+		number?: string
 		captured?: { amount: number; latest: isoly.DateTime; auto?: true }
 		refunded?: { amount: number; latest: isoly.DateTime }
 		voided?: isoly.DateTime
@@ -34,6 +35,7 @@ export namespace PostAuthorization {
 			isoly.Currency.is(value.authorization.currency) &&
 			Card.is(value.authorization.card) &&
 			isoly.DateTime.is(value.authorization.created) &&
+			(value.authorization.number == undefined || typeof value.authorization.number == "string") &&
 			(value.authorization.captured == undefined ||
 				(typeof value.authorization.captured == "object" &&
 					typeof value.authorization.captured.amount == "string" &&
@@ -66,6 +68,7 @@ export namespace PostAuthorization {
 				currency: authorization.currency,
 				card: Card.from(authorization.card),
 				created: authorization.created,
+				number: authorization.number,
 				captured: fromHistory(authorization.capture),
 				refunded: fromHistory(authorization.refund),
 				voided: authorization.void,

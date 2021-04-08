@@ -67,6 +67,7 @@ describe("State.PostAuthorization tests", () => {
 				},
 				created: "2021-01-01T12:30:30.000Z",
 				currency: "EUR",
+				number: "12345678",
 			},
 			descriptor: "test transaction",
 			merchant: {
