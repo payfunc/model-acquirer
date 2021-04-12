@@ -1,5 +1,6 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
+import { Settlement } from "../Settlement"
 import { Creatable as RCreatable } from "./Creatable"
 
 export class Refund {
@@ -9,7 +10,8 @@ export class Refund {
 	approved?: isoly.DateTime
 	amount: number
 	descriptor?: string
-	status: "approved" | "pending"
+	settlement?: Settlement.Transaction
+	status: "approved" | "pending" | "settled"
 }
 
 export namespace Refund {

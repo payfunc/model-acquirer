@@ -6,6 +6,7 @@ import { Capture } from "../Capture"
 import { Refund } from "../Refund"
 import { Change as AChange } from "./Change"
 import { Creatable as ACreatable } from "./Creatable"
+import { Status as AuthorizationStatus } from "./Status"
 
 export interface Authorization {
 	id: authly.Identifier
@@ -22,6 +23,7 @@ export interface Authorization {
 	capture: Capture[]
 	refund: Refund[]
 	void?: isoly.DateTime
+	status: Partial<Record<AuthorizationStatus, number>>
 }
 
 export namespace Authorization {
@@ -88,11 +90,37 @@ export namespace Authorization {
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
+	export function authorized(initial: number, history: AChange[]): number {
+		return initial + history.reduce<number>((total, change) => total + change.amount, 0)
+	}
 	export function captured(captures: Capture[]): number {
 		return captures.reduce<number>((total, capture) => total + capture.amount, 0)
 	}
 	export function refunded(refunds: Refund[]): number {
 		return refunds.reduce<number>((total, refund) => total + refund.amount, 0)
+	}
+	export function calculateStatus(authorization: Omit<Authorization, "status">): Authorization {
+		const capture = captured(authorization.capture)
+		const refund = refunded(authorization.refund)
+		const status: Record<AuthorizationStatus, number> = {
+			authorized: isoly.Currency.round(
+				authorized(authorization.amount, authorization.history) - capture,
+				authorization.currency
+			),
+			captured: isoly.Currency.round(capture - refund, authorization.currency),
+			refunded: isoly.Currency.round(refund, authorization.currency),
+			settled: isoly.Currency.round(
+				authorization.capture
+					.concat(authorization.refund)
+					.filter(p => p.settlement)
+					.reduce<number>((r, p) => r + (p.settlement?.gross ?? 0), 0),
+				authorization.currency
+			),
+		}
+		for (const key of AuthorizationStatus.types)
+			if (status[key] <= 0)
+				delete status[key]
+		return { ...authorization, status }
 	}
 	export type Creatable = ACreatable
 	export namespace Creatable {
@@ -108,5 +136,10 @@ export namespace Authorization {
 			export const is = AChange.Creatable.is
 			export const flaw = AChange.Creatable.flaw
 		}
+	}
+	export type Status = AuthorizationStatus
+	export namespace Status {
+		export const types = AuthorizationStatus.types
+		export const is = AuthorizationStatus.is
 	}
 }
