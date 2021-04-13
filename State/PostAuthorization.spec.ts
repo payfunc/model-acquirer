@@ -19,9 +19,10 @@ describe("State.PostAuthorization tests", () => {
 			merchant: "testtest",
 			currency: "SEK",
 			captured: {},
-			refundable: 130,
+			refunded: {},
 			settled: {},
 			fees: {},
+			reserves: {},
 		}
 		const card: model.Card = {
 			iin: "411111",
@@ -30,7 +31,7 @@ describe("State.PostAuthorization tests", () => {
 			expires: [2, 28],
 			csc: "matched",
 		}
-		const authorization: acquirer.Authorization = {
+		const authorization: acquirer.Authorization = acquirer.Authorization.calculateStatus({
 			id: "1234567890123456",
 			merchant: "testtest",
 			reference: "123412341234",
@@ -43,7 +44,7 @@ describe("State.PostAuthorization tests", () => {
 			capture: [],
 			history: [],
 			created: "2021-01-01T12:30:30.000Z",
-		}
+		})
 		let postAuthorization: acquirer.State.PostAuthorization = acquirer.State.PostAuthorization.from(
 			authorization,
 			{ amount: 110 },
@@ -77,7 +78,7 @@ describe("State.PostAuthorization tests", () => {
 				descriptor: "Test Merchant",
 				fees: 0,
 				name: "Test Merchant",
-				refundable: 130,
+				refundable: 0,
 				scheme: [],
 				settled: 0,
 			},

@@ -29,6 +29,9 @@ export namespace Settlement {
 			isoly.Date.is(value.period.start) &&
 			isoly.Date.is(value.period.end) &&
 			(value.payout == undefined || isoly.Date.is(value.payout)) &&
+			typeof value.reserve == "object" &&
+			typeof value.reserve.amount == "number" &&
+			(value.reserve.payout == undefined || isoly.Date.is(value.reserve.payout)) &&
 			isoly.Date.is(value.created) &&
 			typeof value.gross == "number" &&
 			typeof value.fee == "number" &&
@@ -43,9 +46,10 @@ export namespace Settlement {
 		export const is = SettlementTransaction.is
 	}
 	export function toCsv(settlements: Settlement[]): string {
-		let result = "reference,merchant,start date,end date,payout date,created,gross,fee,net,currency\r\n"
+		let result =
+			"reference,merchant,start date,end date,payout date,reserve amount,reserve payout,created,gross,fee,net,currency\r\n"
 		for (const value of settlements) {
-			result += `"${value.reference}","${value.merchant}","${value.period.start}","${value.period.end}","${value.payout}","${value.created}","${value.gross}","${value.fee}","${value.net}","${value.currency}"\r\n`
+			result += `"${value.reference}","${value.merchant}","${value.period.start}","${value.period.end}","${value.payout}","${value.reserve?.amount}","${value.reserve?.payout}","${value.created}","${value.gross}","${value.fee}","${value.net}","${value.currency}"\r\n`
 			result += value.transactions.length > 0 ? SettlementTransaction.toCsv(value.transactions) : ""
 		}
 		return result
