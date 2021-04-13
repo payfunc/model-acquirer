@@ -14,6 +14,43 @@ describe("Statistics", () => {
 		"2020-02-18": 0.2,
 		"2021-02-19": 0.1,
 	}
+	const statistics: Statistics = {
+		merchant: "testtest",
+		currency: "SEK",
+		captured: {
+			"2020-02-16": 40.1,
+			"2020-02-17": 30.1,
+			"2020-02-18": 20.1,
+			"2020-02-22": 10.1,
+		},
+		refunded: {
+			"2020-02-17": 5,
+			"2020-02-19": 20.1,
+		},
+		settled: {
+			"2020-02-17": 25.1,
+			"2020-02-18": 17.1,
+			"2020-02-19": 13.1,
+			"2020-02-20": -20.1,
+			"2020-02-23": 6.8,
+		},
+		reserves: {
+			"2020-02-17": 15,
+			"2020-02-18": 8,
+			"2020-02-19": 7,
+			"2020-02-23": 3.3,
+			"2020-05-17": -15,
+			"2020-05-18": -8,
+			"2020-05-19": -7,
+			"2020-05-23": -3.3,
+		},
+		fees: {
+			"2020-02-16": 0,
+			"2020-02-17": 0,
+			"2020-02-18": 0,
+			"2020-02-19": 0,
+		},
+	}
 	it("sum", () => {
 		const sum = Statistics.sum(records)
 		expect(sum).toEqual(100)
@@ -41,6 +78,26 @@ describe("Statistics", () => {
 		expect(sum).toEqual(1.1888800000000002)
 		sum = Statistics.sum(decimalNumbers, "SEK")
 		expect(sum).toEqual(1.19)
+	})
+	it("refundable Statistics", () => {
+		expect(Statistics.refundable(statistics, "2020-02-16", "2020-05-23")).toEqual(75.3)
+		expect(Statistics.refundable(statistics, "2020-02-16", "2020-02-23")).toEqual(75.3)
+		expect(Statistics.refundable(statistics, "2020-02-16", "2020-02-16")).toEqual(40.1)
+		expect(Statistics.refundable(statistics, "2020-02-16", "2020-02-17")).toEqual(65.2)
+		expect(Statistics.refundable(statistics, "2020-02-16", "2020-02-18")).toEqual(0)
+		expect(Statistics.refundable(statistics, "2020-02-16", "2020-02-19")).toEqual(0)
+		expect(Statistics.refundable(statistics, "2020-02-16", "2020-02-22")).toEqual(0)
+		expect(Statistics.refundable(statistics, "2020-02-16", "2020-02-22")).toEqual(0)
+		expect(Statistics.refundable(statistics, "2020-02-16", "2020-02-24")).toEqual(0)
+		// expect(Statistics.summarize(statistics)).toEqual({
+		// 	merchant: "testtest",
+		// 	currency: "SEK",
+		// 	captured: 0.12,
+		// 	refunded: 1.78,
+		// 	reserves: 11.89,
+		// 	settled: 118.89,
+		// 	fees: 0.01,
+		// })
 	})
 	it("summarize Statistics", () => {
 		const statistics: Statistics = {

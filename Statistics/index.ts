@@ -29,9 +29,16 @@ export namespace Statistics {
 			Object.entries(value.reserves).every(e => isoly.Date.is(e[0]) && typeof e[1] == "number")
 		)
 	}
-	export function refundable(statistics: Statistics): number {
+	export function refundable(statistics: Statistics, from?: isoly.Date | number, to?: isoly.Date): number {
+		if (typeof from == "number") {
+			const date = new Date()
+			date.setDate(date.getDate() - (from ?? 0))
+			from = isoly.Date.create(date)
+		}
 		return isoly.Currency.round(
-			sum(statistics.captured, undefined, 1) - sum(statistics.refunded, undefined, 1) + sum(statistics.reserves),
+			sum(statistics.captured, undefined, from ?? 1, to) -
+				sum(statistics.refunded, undefined, from ?? 1, to) +
+				sum(statistics.reserves),
 			statistics.currency
 		)
 	}
