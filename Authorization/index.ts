@@ -90,25 +90,19 @@ export namespace Authorization {
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
-	export function authorized(
-		authorization: Omit<Authorization, "status"> & { status?: Partial<Record<AuthorizationStatus, number>> }
-	): number {
+	export function authorized(authorization: Omit<Authorization, "status">): number {
 		return isoly.Currency.round(
 			authorization.amount + authorization.history.reduce<number>((total, change) => total + change.amount, 0),
 			authorization.currency
 		)
 	}
-	export function captured(
-		authorization: Omit<Authorization, "status"> & { status?: Partial<Record<AuthorizationStatus, number>> }
-	): number {
+	export function captured(authorization: Omit<Authorization, "status">): number {
 		return isoly.Currency.round(
 			authorization.capture.reduce<number>((total, capture) => total + capture.amount, 0),
 			authorization.currency
 		)
 	}
-	export function refunded(
-		authorization: Omit<Authorization, "status"> & { status?: Partial<Record<AuthorizationStatus, number>> }
-	): number {
+	export function refunded(authorization: Omit<Authorization, "status">): number {
 		return isoly.Currency.round(
 			authorization.refund.reduce<number>((total, refund) => total + refund.amount, 0),
 			authorization.currency
