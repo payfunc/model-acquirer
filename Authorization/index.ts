@@ -90,19 +90,25 @@ export namespace Authorization {
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
-	export function authorized(authorization: Authorization): number {
+	export function authorized(
+		authorization: Omit<Authorization, "status"> & { status?: Partial<Record<AuthorizationStatus, number>> }
+	): number {
 		return isoly.Currency.round(
 			authorization.amount + authorization.history.reduce<number>((total, change) => total + change.amount, 0),
 			authorization.currency
 		)
 	}
-	export function captured(authorization: Authorization): number {
+	export function captured(
+		authorization: Omit<Authorization, "status"> & { status?: Partial<Record<AuthorizationStatus, number>> }
+	): number {
 		return isoly.Currency.round(
 			authorization.capture.reduce<number>((total, capture) => total + capture.amount, 0),
 			authorization.currency
 		)
 	}
-	export function refunded(authorization: Authorization): number {
+	export function refunded(
+		authorization: Omit<Authorization, "status"> & { status?: Partial<Record<AuthorizationStatus, number>> }
+	): number {
 		return isoly.Currency.round(
 			authorization.refund.reduce<number>((total, refund) => total + refund.amount, 0),
 			authorization.currency
@@ -111,12 +117,9 @@ export namespace Authorization {
 	export function calculateStatus(
 		authorization: Omit<Authorization, "status"> & { status?: Partial<Record<AuthorizationStatus, number>> }
 	): Authorization {
-		const capture = captured({ ...authorization, status: {} })
-		const refund = refunded({ ...authorization, status: {} })
-		const authorize = isoly.Currency.round(
-			authorized({ ...authorization, status: {} }) - capture,
-			authorization.currency
-		)
+		const capture = captured(authorization)
+		const refund = refunded(authorization)
+		const authorize = isoly.Currency.round(authorized(authorization) - capture, authorization.currency)
 		const status: Record<AuthorizationStatus, number> = {
 			authorized: !authorization.void ? authorize : 0,
 			captured: isoly.Currency.round(capture - refund, authorization.currency),
