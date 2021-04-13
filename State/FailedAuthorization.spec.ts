@@ -19,9 +19,10 @@ describe("State.FailedAuthorization tests", () => {
 			merchant: "testtest",
 			currency: "SEK",
 			captured: {},
-			refundable: 130,
+			refunded: {},
 			settled: {},
 			fees: {},
+			reserves: {},
 		}
 		const card: model.Card.Creatable = {
 			pan: "4111111111111111",
@@ -58,7 +59,7 @@ describe("State.FailedAuthorization tests", () => {
 		expect(
 			acquirer.State.FailedAuthorization.load(
 				[
-					{
+					acquirer.Authorization.calculateStatus({
 						id: "1234567890000000",
 						merchant: "testtest",
 						number: "1234567890123456",
@@ -70,7 +71,7 @@ describe("State.FailedAuthorization tests", () => {
 						capture: [],
 						card: { iin: "123456", last4: "1234", expires: [3, 24], csc: "present", scheme: "visa", type: "debit" },
 						amount: 100,
-					},
+					}),
 				],
 				[
 					{

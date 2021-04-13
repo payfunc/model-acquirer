@@ -6,6 +6,7 @@ import { Capture } from "../Capture"
 import { Refund } from "../Refund"
 import { Change as AChange } from "./Change"
 import { Creatable as ACreatable } from "./Creatable"
+import { Status as AuthorizationStatus } from "./Status"
 
 export interface Authorization {
 	id: authly.Identifier
@@ -22,6 +23,7 @@ export interface Authorization {
 	capture: Capture[]
 	refund: Refund[]
 	void?: isoly.DateTime
+	status: Partial<Record<AuthorizationStatus, number>>
 }
 
 export namespace Authorization {
@@ -88,11 +90,49 @@ export namespace Authorization {
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
-	export function captured(captures: Capture[]): number {
-		return captures.reduce<number>((total, capture) => total + capture.amount, 0)
+	export function authorized(authorization: Omit<Authorization, "status">): number {
+		return isoly.Currency.round(
+			authorization.amount + authorization.history.reduce<number>((total, change) => total + change.amount, 0),
+			authorization.currency
+		)
 	}
-	export function refunded(refunds: Refund[]): number {
-		return refunds.reduce<number>((total, refund) => total + refund.amount, 0)
+	export function captured(authorization: Omit<Authorization, "status">): number {
+		return isoly.Currency.round(
+			authorization.capture.reduce<number>((total, capture) => total + capture.amount, 0),
+			authorization.currency
+		)
+	}
+	export function refunded(authorization: Omit<Authorization, "status">): number {
+		return isoly.Currency.round(
+			authorization.refund.reduce<number>((total, refund) => total + refund.amount, 0),
+			authorization.currency
+		)
+	}
+	export function calculateStatus(
+		authorization: Omit<Authorization, "status"> & { status?: Partial<Record<AuthorizationStatus, number>> }
+	): Authorization {
+		const capture = captured(authorization)
+		const refund = refunded(authorization)
+		const authorize = isoly.Currency.round(authorized(authorization) - capture, authorization.currency)
+		const status: Record<AuthorizationStatus, number> = {
+			authorized: !authorization.void ? authorize : 0,
+			captured: isoly.Currency.round(capture - refund, authorization.currency),
+			refunded: isoly.Currency.round(refund, authorization.currency),
+			settled: isoly.Currency.round(
+				authorization.capture
+					.concat(authorization.refund)
+					.filter(p => p.settlement)
+					.reduce<number>((r, p) => r + (p.settlement?.gross ?? 0), 0),
+				authorization.currency
+			),
+			cancelled: authorization.void ? authorize : 0,
+		}
+		for (const key of AuthorizationStatus.types)
+			if (status[key] <= 0)
+				delete status[key]
+		if (Object.entries(status).length < 1)
+			status[authorization.void ? "cancelled" : "authorized"] = 0
+		return { ...authorization, status }
 	}
 	export type Creatable = ACreatable
 	export namespace Creatable {
@@ -108,5 +148,10 @@ export namespace Authorization {
 			export const is = AChange.Creatable.is
 			export const flaw = AChange.Creatable.flaw
 		}
+	}
+	export type Status = AuthorizationStatus
+	export namespace Status {
+		export const types = AuthorizationStatus.types
+		export const is = AuthorizationStatus.is
 	}
 }
