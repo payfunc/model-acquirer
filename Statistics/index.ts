@@ -30,7 +30,10 @@ export namespace Statistics {
 		)
 	}
 	export function refundable(statistics: Statistics): number {
-		return 0
+		return isoly.Currency.round(
+			sum(statistics.captured, undefined, 1) - sum(statistics.refunded, undefined, 1) + sum(statistics.reserves),
+			statistics.currency
+		)
 	}
 	export function sum(
 		record: Record<isoly.Date, number>,
