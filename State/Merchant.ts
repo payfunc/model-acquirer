@@ -38,7 +38,7 @@ export namespace Merchant {
 			name: merchant.name,
 			currency: merchant.reconciliation.currency,
 			scheme: Object.keys(merchant.reconciliation.fees).filter(model.Card.Scheme.is),
-			refundable: statistics.refundable,
+			refundable: Statistics.refundable(statistics),
 			captured: calculate(statistics.captured, limit),
 			settled: calculate(statistics.settled, limit),
 			fees: calculate(statistics.fees, limit),

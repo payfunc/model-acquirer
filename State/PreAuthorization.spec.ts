@@ -19,9 +19,10 @@ describe("State.PreAuthorization tests", () => {
 			merchant: "testtest",
 			currency: "SEK",
 			captured: {},
-			refundable: 130,
+			refunded: {},
 			settled: {},
 			fees: {},
+			reserves: {},
 		}
 		const card: model.Card.Creatable = {
 			pan: "4111111111111111",
@@ -67,7 +68,7 @@ describe("State.PreAuthorization tests", () => {
 				descriptor: "Test Merchant",
 				fees: 0,
 				name: "Test Merchant",
-				refundable: 130,
+				refundable: 0,
 				scheme: [],
 				settled: 0,
 			},
