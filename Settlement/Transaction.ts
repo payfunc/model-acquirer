@@ -14,6 +14,7 @@ export interface Transaction {
 	gross: number
 	fee: number
 	net: number
+	reserve?: { amount: number; payout?: isoly.Date }
 }
 
 export namespace Transaction {

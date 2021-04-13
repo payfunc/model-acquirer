@@ -10,6 +10,7 @@ export interface Settlement {
 		end: isoly.Date
 	}
 	payout?: isoly.Date
+	reserve?: { amount: number; payout?: isoly.Date }
 	created: isoly.Date
 	gross: number
 	fee: number
