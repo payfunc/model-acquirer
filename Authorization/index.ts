@@ -134,15 +134,23 @@ export namespace Authorization {
 			status[authorization.void ? "cancelled" : "authorized"] = 0
 		return { ...authorization, status }
 	}
-	export function toCsv(authorizations: Authorization | Authorization[], detailed?: boolean): string {
-		let result =
-			"id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n"
+	export function toCsv(authorizations: Authorization[]): string
+	export function toCsv(authorizations: Authorization | Authorization[], detailed?: false | undefined): string
+	export function toCsv(authorizations: Authorization | Authorization[], detailed?: true): Record<string, string>
+	export function toCsv(
+		authorizations: Authorization | Authorization[],
+		detailed?: boolean
+	): string | Record<string, string> {
 		detailed = typeof detailed == "boolean" ? detailed : !Array.isArray(authorizations)
+		let result: Record<string, string> = {
+			authorizations:
+				"id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n",
+		}
 		authorizations = Array.isArray(authorizations) ? authorizations : [authorizations]
 		for (const value of authorizations) {
-			result += `${value.id},${value.merchant},${value.number ?? ""},${value.reference},${value.created},${
-				value.amount
-			},${value.currency},${value.card.type ?? "unknown"},${value.card.scheme},${
+			result.authorizations += `${value.id},${value.merchant},${value.number ?? ""},${value.reference},${
+				value.created
+			},${value.amount},${value.currency},${value.card.type ?? "unknown"},${value.card.scheme},${
 				value.card.iin + "**********" + value.card.last4
 			},${value.card.expires[0].toString().padStart(2, "0") + "/" + (2000 + value.card.expires[1]).toString()},${
 				value.descriptor ?? ""
@@ -151,12 +159,17 @@ export namespace Authorization {
 				value.currency
 			)},${captured(value)},${refunded(value)},${value.void ?? "not voided"},${Object.keys(value.status).join(" ")}\r\n`
 			if (detailed) {
-				result += Change.toCsv(value.history)
-				result += Capture.toCsv(value.capture)
-				result += Refund.toCsv(value.refund)
+				result["history" + value.id] = Change.toCsv(value.history)
+				result["capture" + value.id] = Capture.toCsv(value.capture)
+				result["refund" + value.id] = Refund.toCsv(value.refund)
 			}
 		}
-		return result
+		result = Object.entries(result).reduce((r, c) => {
+			if (!c[1])
+				delete r[c[0]]
+			return r
+		}, result)
+		return !detailed ? result.authorizations : result
 	}
 	export type Creatable = ACreatable
 	export namespace Creatable {

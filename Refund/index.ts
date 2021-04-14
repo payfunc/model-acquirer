@@ -52,8 +52,7 @@ export namespace Refund {
 		}
 	}
 	export function toCsv(refunds: Refund[]): string {
-		let result =
-			refunds.length > 0 ? "refund number,created,reference,approved,amount,settlement,descriptor,status\r\n" : ""
+		let result = refunds.length > 0 ? "number,created,reference,approved,amount,settlement,descriptor,status\r\n" : ""
 		for (const value of refunds)
 			result += `${value.number ?? ""},${value.created},${value.reference ?? ""},${value.approved ?? "false"},${
 				value.amount

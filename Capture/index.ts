@@ -57,7 +57,7 @@ export namespace Capture {
 	export function toCsv(captures: Capture[]): string {
 		let result =
 			captures.length > 0
-				? "capture number,created,reference,approved,amount,auto capture,settlement,descriptor,status\r\n"
+				? "number,created,reference,approved,amount,auto capture,settlement,descriptor,status\r\n"
 				: ""
 		for (const value of captures)
 			result += `${value.number ?? ""},${value.created},${value.reference ?? ""},${value.approved ?? "false"},${
