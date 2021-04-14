@@ -60,9 +60,11 @@ export namespace Capture {
 				? "capture number,created,reference,approved,amount,auto capture,settlement,descriptor,status\r\n"
 				: ""
 		for (const value of captures)
-			result += `"${value.number}","${value.created}","${value.reference}","${value.approved}","${value.amount}","${
-				value.auto ?? false
-			}","${value.settlement?.reference ?? "not settled"}","${value.descriptor}","${value.status}"\r\n`
+			result += `${value.number ?? ""},${value.created},${value.reference ?? ""},${value.approved ?? "false"},${
+				value.amount
+			},${value.auto ?? false},${value.settlement?.reference ?? "not settled"},${value.descriptor ?? ""},${
+				value.status
+			}\r\n`
 		return result
 	}
 	export type Creatable = CCreatable
