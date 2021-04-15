@@ -1,5 +1,6 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
+import { Settlement } from "../Settlement"
 import { Creatable as CCreatable } from "./Creatable"
 
 export class Capture {
@@ -9,8 +10,9 @@ export class Capture {
 	approved?: isoly.DateTime
 	amount: number
 	auto?: true
+	settlement?: Settlement.Transaction
 	descriptor?: string
-	status: "approved" | "pending"
+	status: "approved" | "pending" | "settled"
 }
 
 export namespace Capture {
