@@ -1,8 +1,6 @@
 import * as isoly from "isoly"
 import * as authly from "authly"
-import { Capture } from "../Capture"
 import * as acquirer from "../index"
-import { Refund } from "../Refund"
 import { Card } from "./Card"
 import { Merchant } from "./Merchant"
 
@@ -10,17 +8,19 @@ export interface Authorization {
 	merchant: Merchant | { id: authly.Identifier }
 	authorization: {
 		id: string
+		number?: string
+		reference: string
+		created: isoly.DateTime
 		amount: number
 		currency: isoly.Currency
 		card: Card
-		created: isoly.DateTime
 		descriptor?: string
-		number?: string
-		reference?: string
-		captured?: { amount: number; latest: isoly.DateTime; auto?: true }
-		refunded?: { amount: number; latest: isoly.DateTime }
-		voided?: isoly.DateTime
 		recurring?: "initial" | "subsequent"
+		history: acquirer.Authorization.Change[]
+		capture: acquirer.Capture[]
+		refund: acquirer.Refund[]
+		voided?: isoly.DateTime
+		status: Partial<Record<acquirer.Authorization.Status, number>>
 	}
 	created: isoly.DateTime
 }
@@ -70,28 +70,14 @@ export namespace Authorization {
 				descriptor: authorization.descriptor,
 				number: authorization.number,
 				reference: authorization.reference,
-				captured: fromHistory(authorization.capture),
-				refunded: fromHistory(authorization.refund),
+				history: authorization.history,
+				capture: authorization.capture,
+				refund: authorization.refund,
 				voided: authorization.void,
 				recurring: authorization.recurring,
+				status: authorization.status,
 			},
 			created: authorization.created,
 		}
-	}
-	function fromHistory(
-		history: (Capture | Refund)[]
-	): { amount: number; latest: isoly.DateTime; auto?: true } | undefined {
-		return history.length == 0
-			? undefined
-			: history.reduce<{ amount: number; latest: isoly.DateTime; auto?: true }>(
-					(r, c) => {
-						return {
-							amount: r.amount + c.amount,
-							latest: r.latest < c.created ? c.created : r.latest,
-							auto: Capture.is(c) && c.auto ? c.auto : r.auto,
-						}
-					},
-					{ amount: 0, latest: "" }
-			  )
 	}
 }
