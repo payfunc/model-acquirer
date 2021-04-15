@@ -4,6 +4,7 @@ import * as acquirer from "../../index"
 function generatePreAuthorization(): acquirer.State.PreAuthorization {
 	return {
 		merchant: {
+			id: "testtest",
 			name: "Example AB",
 			descriptor: "Example Company",
 			country: "SE",
@@ -36,6 +37,7 @@ function generatePreAuthorization(): acquirer.State.PreAuthorization {
 function generatePostAuthorization(): acquirer.State.PostAuthorization {
 	return {
 		merchant: {
+			id: "testtest",
 			name: "Example AB",
 			descriptor: "Example Company",
 			country: "SE",

@@ -1,41 +1,44 @@
 import * as isoly from "isoly"
-import { Authorization } from "../Authorization"
+import * as authly from "authly"
 import { Capture } from "../Capture"
-import { Merchant as AcquirerMerchant } from "../Merchant"
+import * as acquirer from "../index"
 import { Refund } from "../Refund"
-import { Statistics } from "../Statistics"
 import { Card } from "./Card"
 import { Merchant } from "./Merchant"
 
-export interface PostAuthorization {
-	merchant: Merchant
-	amount: number
+export interface Authorization {
+	merchant: Merchant | { id: authly.Identifier }
 	authorization: {
+		id: string
 		amount: number
 		currency: isoly.Currency
 		card: Card
 		created: isoly.DateTime
+		descriptor?: string
 		number?: string
+		reference?: string
 		captured?: { amount: number; latest: isoly.DateTime; auto?: true }
 		refunded?: { amount: number; latest: isoly.DateTime }
 		voided?: isoly.DateTime
 		recurring?: "initial" | "subsequent"
 	}
-	descriptor?: string
-	now: isoly.Date
+	created: isoly.DateTime
 }
-export namespace PostAuthorization {
-	export function is(value: PostAuthorization | any): value is PostAuthorization {
+
+export namespace Authorization {
+	export function is(value: any | Authorization): value is Authorization {
 		return (
 			typeof value == "object" &&
-			Merchant.is(value.merchant) &&
-			typeof value.amount == "number" &&
+			(Merchant.is(value.merchant) || (typeof value.merchant == "object" && authly.Identifier.is(value.merchant.id))) &&
 			typeof value.authorization == "object" &&
+			typeof value.authorization.id == "string" &&
 			typeof value.authorization.amount == "number" &&
 			isoly.Currency.is(value.authorization.currency) &&
 			Card.is(value.authorization.card) &&
 			isoly.DateTime.is(value.authorization.created) &&
+			(value.authorization.descriptor == undefined || typeof value.authorization.descriptor == "string") &&
 			(value.authorization.number == undefined || typeof value.authorization.number == "string") &&
+			(value.authorization.reference == undefined || typeof value.authorization.reference == "string") &&
 			(value.authorization.captured == undefined ||
 				(typeof value.authorization.captured == "object" &&
 					typeof value.authorization.captured.amount == "number" &&
@@ -47,36 +50,33 @@ export namespace PostAuthorization {
 			(value.authorization.voided == undefined || isoly.DateTime.is(value.authorization.voided)) &&
 			(value.authorization.recurring == undefined ||
 				["initial", "subsequent"].includes(value.authorization.recurring)) &&
-			(value.descriptor == undefined || typeof value.descriptor == "string") &&
-			isoly.Date.is(value.now)
+			isoly.DateTime.is(value.created)
 		)
 	}
 	export function from(
-		authorization: Authorization,
-		creatable: (Capture.Creatable | Refund.Creatable) & { amount: number },
-		merchant: AcquirerMerchant,
-		statistics: Statistics,
-		rate?: Record<string, number>
-	): PostAuthorization {
-		const factor =
-			rate && merchant.reconciliation.currency != authorization.currency ? rate[authorization.currency] ?? 1 : 1
-		return clear({
-			merchant: Merchant.from(merchant, statistics),
-			amount: isoly.Currency.round(creatable.amount * factor, merchant.reconciliation.currency),
+		authorization: acquirer.Authorization,
+		merchant: acquirer.Merchant | { id: string },
+		statistics?: acquirer.Statistics
+	): Authorization {
+		return {
+			merchant:
+				statistics && acquirer.Merchant.is(merchant) ? Merchant.from(merchant, statistics) : { id: merchant.id },
 			authorization: {
-				amount: isoly.Currency.round(authorization.amount * factor, merchant.reconciliation.currency),
+				id: authorization.id,
+				amount: authorization.amount,
 				currency: authorization.currency,
 				card: Card.from(authorization.card),
 				created: authorization.created,
+				descriptor: authorization.descriptor,
 				number: authorization.number,
+				reference: authorization.reference,
 				captured: fromHistory(authorization.capture),
 				refunded: fromHistory(authorization.refund),
 				voided: authorization.void,
 				recurring: authorization.recurring,
 			},
-			descriptor: authorization.descriptor,
-			now: isoly.Date.now(),
-		})
+			created: authorization.created,
+		}
 	}
 	function fromHistory(
 		history: (Capture | Refund)[]
@@ -93,15 +93,5 @@ export namespace PostAuthorization {
 					},
 					{ amount: 0, latest: "" }
 			  )
-	}
-	function clear(value: PostAuthorization): PostAuthorization
-	function clear(value: Record<string, any>): Record<string, any> {
-		for (const entry of Object.entries(value)) {
-			if (entry[1] == undefined)
-				delete value[entry[0]]
-			else if (typeof entry[1] == "object")
-				value[entry[0]] = clear(entry[1])
-		}
-		return value
 	}
 }
