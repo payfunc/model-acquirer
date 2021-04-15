@@ -1,9 +1,11 @@
 import * as isoly from "isoly"
+import * as authly from "authly"
 import * as model from "@payfunc/model-card"
 import { Merchant as AcquirerMerchant } from "../Merchant"
 import { Statistics } from "../Statistics"
 
 export interface Merchant {
+	id: authly.Identifier
 	descriptor: string
 	country: isoly.CountryCode.Alpha2
 	name: string
@@ -18,6 +20,7 @@ export namespace Merchant {
 	export function is(value: any | Merchant): value is Merchant {
 		return (
 			typeof value == "object" &&
+			authly.Identifier.is(value.id) &&
 			typeof value.descriptor == "string" &&
 			isoly.CountryCode.Alpha2.is(value.country) &&
 			typeof value.name == "string" &&
@@ -33,6 +36,7 @@ export namespace Merchant {
 	export function from(merchant: AcquirerMerchant, statistics: Statistics): Merchant {
 		const limit = isoly.Date.create(new Date(Date.now() - 1000 * 60 * 60 * 24 * 30))
 		return {
+			id: merchant.id,
 			descriptor: merchant.descriptor ?? merchant.name,
 			country: merchant.country,
 			name: merchant.name,

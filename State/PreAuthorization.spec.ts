@@ -62,6 +62,7 @@ describe("State.PreAuthorization tests", () => {
 				verification: "verified",
 			},
 			merchant: {
+				id: "testtest",
 				captured: 0,
 				country: "SE",
 				currency: "SEK",
