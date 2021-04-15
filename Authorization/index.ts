@@ -134,42 +134,21 @@ export namespace Authorization {
 			status[authorization.void ? "cancelled" : "authorized"] = 0
 		return { ...authorization, status }
 	}
-	export function toCsv(authorizations: Authorization[]): string
-	export function toCsv(authorizations: Authorization | Authorization[], detailed?: false | undefined): string
-	export function toCsv(authorizations: Authorization | Authorization[], detailed?: true): Record<string, string>
-	export function toCsv(
-		authorizations: Authorization | Authorization[],
-		detailed?: boolean
-	): string | Record<string, string> {
-		detailed = typeof detailed == "boolean" ? detailed : !Array.isArray(authorizations)
-		let result: Record<string, string> = {
-			authorizations:
-				"id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n",
-		}
-		authorizations = Array.isArray(authorizations) ? authorizations : [authorizations]
-		for (const value of authorizations) {
-			result.authorizations += `${value.id},${value.merchant},${value.number ?? ""},${value.reference},${
-				value.created
-			},${value.amount},${value.currency},${value.card.type ?? "unknown"},${value.card.scheme},${
+	export function toCsv(authorizations: Authorization[]): string {
+		let result =
+			"id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n"
+		for (const value of authorizations)
+			result += `${value.id},${value.merchant},${value.number ?? ""},${value.reference},${value.created},${
+				value.amount
+			},${value.currency},${value.card.type ?? "unknown"},${value.card.scheme},${
 				value.card.iin + "**********" + value.card.last4
 			},${value.card.expires[0].toString().padStart(2, "0") + "/" + (2000 + value.card.expires[1]).toString()},${
 				value.descriptor ?? ""
-			},${value.recurring ?? false},${isoly.Currency.round(
+			},${value.recurring ?? ""},${isoly.Currency.round(
 				value.history.reduce((r, h) => r + h.amount, 0),
 				value.currency
-			)},${captured(value)},${refunded(value)},${value.void ?? "not voided"},${Object.keys(value.status).join(" ")}\r\n`
-			if (detailed) {
-				result["history" + value.id] = Change.toCsv(value.history)
-				result["capture" + value.id] = Capture.toCsv(value.capture)
-				result["refund" + value.id] = Refund.toCsv(value.refund)
-			}
-		}
-		result = Object.entries(result).reduce((r, c) => {
-			if (!c[1])
-				delete r[c[0]]
-			return r
-		}, result)
-		return !detailed ? result.authorizations : result
+			)},${captured(value)},${refunded(value)},${value.void ?? ""},${Object.keys(value.status).join(" ")}\r\n`
+		return result
 	}
 	export type Creatable = ACreatable
 	export namespace Creatable {
@@ -180,7 +159,6 @@ export namespace Authorization {
 	export namespace Change {
 		export const is = AChange.is
 		export const flaw = AChange.flaw
-		export const toCsv = AChange.toCsv
 		export type Creatable = AChange.Creatable
 		export namespace Creatable {
 			export const is = AChange.Creatable.is

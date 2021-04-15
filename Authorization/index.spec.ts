@@ -92,41 +92,36 @@ describe("Authorization tests", () => {
 			status: "pending",
 		})
 		authorization = Authorization.calculateStatus({ ...authorization, id: "1234123412341234" })
-		const onlyAuthorized = Authorization.calculateStatus(createExample())
+		const authorized = Authorization.calculateStatus(createExample())
+		let captured = Authorization.calculateStatus({ ...createExample(), id: "1234000012340000" })
+		captured.capture.push({
+			reference: "1234567891003",
+			amount: 101.1,
+			created: "2021-04-06T10:00:00.000Z",
+			approved: "2021-04-06T10:00:00.000Z",
+			status: "approved",
+		})
+		captured = Authorization.calculateStatus(captured)
+		let voided = Authorization.calculateStatus({
+			...createExample(),
+			id: "1234000012340001",
+			amount: 40.4,
+			currency: "EUR",
+		})
+		voided.void = "2021-04-06T12:00:00.000Z"
+		voided = Authorization.calculateStatus(voided)
 		const header = `id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n`
 		const data = [
-			`1234123412341234,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,false,20.66,22.66,18.66,not voided,authorized captured refunded settled\r\n`,
-			`1234567890123456,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,false,0,0,0,not voided,authorized\r\n`,
+			`1234123412341234,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,20.66,22.66,18.66,,authorized captured refunded settled\r\n`,
+			`1234567890123456,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,0,0,0,,authorized\r\n`,
+			`1234000012340000,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,0,101.1,0,,captured\r\n`,
+			`1234000012340001,testtest,,12341234,2021-04-01T09:00:00.000Z,40.4,EUR,debit,visa,123456**********1111,02/2028,,,0,0,0,2021-04-06T12:00:00.000Z,cancelled\r\n`,
 		]
-		const details: Record<"capture" | "refund" | "history", string> = {
-			history:
-				`number,created,amount\r\n` + `,2021-04-01T10:00:00.000Z,10.33\r\n` + `,2021-04-05T10:00:00.000Z,10.33\r\n`,
-			capture:
-				`number,created,reference,approved,amount,auto capture,settlement,descriptor,status\r\n` +
-				`,2021-04-02T10:00:00.000Z,1234567891001,2021-04-02T10:00:00.000Z,11.33,false,234242,,settled\r\n` +
-				`,2021-04-06T10:00:00.000Z,1234567891002,false,11.33,false,not settled,,pending\r\n`,
-			refund:
-				`number,created,reference,approved,amount,settlement,descriptor,status\r\n` +
-				`,2021-04-03T10:00:00.000Z,1234567891011,2021-04-03T10:00:00.000Z,9.33,not settled,,approved\r\n` +
-				`,2021-04-07T10:00:00.000Z,1234567891012,false,9.33,not settled,,pending\r\n`,
-		}
-		expect(Authorization.toCsv([authorization, onlyAuthorized])).toEqual(header + data[0] + data[1])
-		expect(Authorization.toCsv([authorization, onlyAuthorized], true)).toEqual({
-			authorizations: header + data[0] + data[1],
-			history1234123412341234: details.history,
-			capture1234123412341234: details.capture,
-			refund1234123412341234: details.refund,
-		})
 		expect(Authorization.toCsv([authorization])).toEqual(header + data[0])
-		const singleDetailed: Record<string, string> = {
-			authorizations: header + data[0],
-			history1234123412341234: details.history,
-			capture1234123412341234: details.capture,
-			refund1234123412341234: details.refund,
-		}
-		expect(Authorization.toCsv([authorization], true)).toEqual(singleDetailed)
-		expect(Authorization.toCsv(authorization)).toEqual(singleDetailed)
-		expect(Authorization.toCsv(authorization, false)).toEqual(header + data[0])
-		expect(Authorization.toCsv(authorization, true)).toEqual(singleDetailed)
+		expect(Authorization.toCsv([authorization, authorized])).toEqual(header + data[0] + data[1])
+		expect(Authorization.toCsv([authorization, authorized, captured])).toEqual(header + data[0] + data[1] + data[2])
+		expect(Authorization.toCsv([authorization, authorized, captured, voided])).toEqual(
+			header + data[0] + data[1] + data[2] + data[3]
+		)
 	})
 })

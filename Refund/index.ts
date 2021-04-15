@@ -51,14 +51,6 @@ export namespace Refund {
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
-	export function toCsv(refunds: Refund[]): string {
-		let result = refunds.length > 0 ? "number,created,reference,approved,amount,settlement,descriptor,status\r\n" : ""
-		for (const value of refunds)
-			result += `${value.number ?? ""},${value.created},${value.reference ?? ""},${value.approved ?? "false"},${
-				value.amount
-			},${value.settlement?.reference ?? "not settled"},${value.descriptor ?? ""},${value.status}\r\n`
-		return result
-	}
 	export type Creatable = RCreatable
 	export namespace Creatable {
 		export const is = RCreatable.is
