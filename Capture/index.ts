@@ -54,7 +54,6 @@ export namespace Capture {
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
-
 	export type Creatable = CCreatable
 	export namespace Creatable {
 		export const is = CCreatable.is
