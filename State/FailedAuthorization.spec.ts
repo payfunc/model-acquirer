@@ -55,7 +55,7 @@ describe("State.FailedAuthorization tests", () => {
 		}
 		expect(acquirer.State.FailedAuthorization.is(lateFailure)).toBeTruthy()
 	})
-	it.skip("load", () => {
+	it("load", () => {
 		expect(
 			acquirer.State.FailedAuthorization.load(
 				[
@@ -315,7 +315,7 @@ describe("State.FailedAuthorization tests", () => {
 						},
 					},
 				],
-				merchant: "testtest",
+				merchant: { id: "testtest" },
 				reason: "Internal error",
 			},
 		])
