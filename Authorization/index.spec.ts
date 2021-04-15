@@ -3,7 +3,7 @@ import { Authorization } from "./index"
 describe("Authorization tests", () => {
 	function createExample(): Omit<Authorization, "status"> {
 		return {
-			id: "123456789023456",
+			id: "1234567890123456",
 			merchant: "testtest",
 			amount: 101.1,
 			currency: "SEK",
@@ -25,8 +25,18 @@ describe("Authorization tests", () => {
 	it("Authorization status tests", () => {
 		const authorization = createExample()
 		authorization.history.push({ amount: 10.33, created: "2021-04-01T10:00:00.000Z" })
-		authorization.capture.push({ amount: 11.33, created: "2021-04-02T10:00:00.000Z", status: "approved" })
-		authorization.refund.push({ amount: 9.33, created: "2021-04-03T10:00:00.000Z", status: "approved" })
+		authorization.capture.push({
+			reference: "1234567891020",
+			amount: 11.33,
+			created: "2021-04-02T10:00:00.000Z",
+			status: "approved",
+		})
+		authorization.refund.push({
+			reference: "1234567891021",
+			amount: 9.33,
+			created: "2021-04-03T10:00:00.000Z",
+			status: "approved",
+		})
 		expect(Authorization.calculateStatus(authorization).status).toEqual({
 			authorized: 100.1,
 			captured: 2,
@@ -43,6 +53,7 @@ describe("Authorization tests", () => {
 		let authorization: Authorization = Authorization.calculateStatus(createExample())
 		authorization.history.push({ amount: 10.33, created: "2021-04-01T10:00:00.000Z" })
 		authorization.capture.push({
+			reference: "1234567891001",
 			amount: 11.33,
 			created: "2021-04-02T10:00:00.000Z",
 			approved: "2021-04-02T10:00:00.000Z",
@@ -61,28 +72,56 @@ describe("Authorization tests", () => {
 			},
 		})
 		authorization.refund.push({
+			reference: "1234567891011",
 			amount: 9.33,
 			created: "2021-04-03T10:00:00.000Z",
 			approved: "2021-04-03T10:00:00.000Z",
 			status: "approved",
 		})
 		authorization.history.push({ amount: 10.33, created: "2021-04-05T10:00:00.000Z" })
-		authorization.capture.push({ amount: 11.33, created: "2021-04-06T10:00:00.000Z", status: "pending" })
-		authorization.refund.push({ amount: 9.33, created: "2021-04-07T10:00:00.000Z", status: "pending" })
-		authorization = Authorization.calculateStatus(authorization)
-		expect(Authorization.toCsv([Authorization.calculateStatus(createExample()), authorization])).toEqual(
-			`id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n` +
-				`"123456789023456","testtest","undefined","12341234","2021-04-01T09:00:00.000Z","101.1","SEK","debit","visa","123456** **** ****1111","02/2028","undefined","false","0","0","0","not voided","authorized"\r\n` +
-				`"123456789023456","testtest","undefined","12341234","2021-04-01T09:00:00.000Z","101.1","SEK","debit","visa","123456** **** ****1111","02/2028","undefined","false","20.66","22.66","18.66","not voided","authorized captured refunded settled"\r\n` +
-				`change number,created,amount\r\n` +
-				`"undefined","2021-04-01T10:00:00.000Z","10.33"\r\n` +
-				`"undefined","2021-04-05T10:00:00.000Z","10.33"\r\n` +
-				`capture number,created,reference,approved,amount,auto capture,settlement,descriptor,status\r\n` +
-				`"undefined","2021-04-02T10:00:00.000Z","undefined","2021-04-02T10:00:00.000Z","11.33","false","234242","undefined","settled"\r\n` +
-				`"undefined","2021-04-06T10:00:00.000Z","undefined","undefined","11.33","false","not settled","undefined","pending"\r\n` +
-				`refund number,created,reference,approved,amount,settlement,descriptor,status\r\n` +
-				`"undefined","2021-04-03T10:00:00.000Z","undefined","2021-04-03T10:00:00.000Z","9.33","not settled","undefined","approved"\r\n` +
-				`"undefined","2021-04-07T10:00:00.000Z","undefined","undefined","9.33","not settled","undefined","pending"\r\n`
+		authorization.capture.push({
+			reference: "1234567891002",
+			amount: 11.33,
+			created: "2021-04-06T10:00:00.000Z",
+			status: "pending",
+		})
+		authorization.refund.push({
+			reference: "1234567891012",
+			amount: 9.33,
+			created: "2021-04-07T10:00:00.000Z",
+			status: "pending",
+		})
+		authorization = Authorization.calculateStatus({ ...authorization, id: "1234123412341234" })
+		const authorized = Authorization.calculateStatus(createExample())
+		let captured = Authorization.calculateStatus({ ...createExample(), id: "1234000012340000" })
+		captured.capture.push({
+			reference: "1234567891003",
+			amount: 101.1,
+			created: "2021-04-06T10:00:00.000Z",
+			approved: "2021-04-06T10:00:00.000Z",
+			status: "approved",
+		})
+		captured = Authorization.calculateStatus(captured)
+		let voided = Authorization.calculateStatus({
+			...createExample(),
+			id: "1234000012340001",
+			amount: 40.4,
+			currency: "EUR",
+		})
+		voided.void = "2021-04-06T12:00:00.000Z"
+		voided = Authorization.calculateStatus(voided)
+		const header = `id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n`
+		const data = [
+			`1234123412341234,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,20.66,22.66,18.66,,authorized captured refunded settled\r\n`,
+			`1234567890123456,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,0,0,0,,authorized\r\n`,
+			`1234000012340000,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,0,101.1,0,,captured\r\n`,
+			`1234000012340001,testtest,,12341234,2021-04-01T09:00:00.000Z,40.4,EUR,debit,visa,123456**********1111,02/2028,,,0,0,0,2021-04-06T12:00:00.000Z,cancelled\r\n`,
+		]
+		expect(Authorization.toCsv([authorization])).toEqual(header + data[0])
+		expect(Authorization.toCsv([authorization, authorized])).toEqual(header + data[0] + data[1])
+		expect(Authorization.toCsv([authorization, authorized, captured])).toEqual(header + data[0] + data[1] + data[2])
+		expect(Authorization.toCsv([authorization, authorized, captured, voided])).toEqual(
+			header + data[0] + data[1] + data[2] + data[3]
 		)
 	})
 })

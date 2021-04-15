@@ -31,12 +31,6 @@ export namespace Change {
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
-	export function toCsv(history: Change[]): string {
-		let result = history.length > 0 ? "change number,created,amount\r\n" : ""
-		for (const value of history)
-			result += `"${value.number}","${value.created}","${value.amount}"\r\n`
-		return result
-	}
 	export type Creatable = ChangeCreatable
 	export namespace Creatable {
 		export const is = ChangeCreatable.is

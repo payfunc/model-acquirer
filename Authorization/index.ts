@@ -137,23 +137,17 @@ export namespace Authorization {
 	export function toCsv(authorizations: Authorization[]): string {
 		let result =
 			"id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n"
-		for (const value of authorizations) {
-			result += `"${value.id}","${value.merchant}","${value.number}","${value.reference}","${value.created}","${
+		for (const value of authorizations)
+			result += `${value.id},${value.merchant},${value.number ?? ""},${value.reference},${value.created},${
 				value.amount
-			}","${value.currency}","${value.card.type ?? "unknown"}","${value.card.scheme}","${
-				value.card.iin + "** **** ****" + value.card.last4
-			}","${value.card.expires[0].toString().padStart(2, "0") + "/" + (2000 + value.card.expires[1]).toString()}","${
-				value.descriptor
-			}","${value.recurring ?? false}","${isoly.Currency.round(
+			},${value.currency},${value.card.type ?? "unknown"},${value.card.scheme},${
+				value.card.iin + "**********" + value.card.last4
+			},${value.card.expires[0].toString().padStart(2, "0") + "/" + (2000 + value.card.expires[1]).toString()},${
+				value.descriptor ?? ""
+			},${value.recurring ?? ""},${isoly.Currency.round(
 				value.history.reduce((r, h) => r + h.amount, 0),
 				value.currency
-			)}","${captured(value)}","${refunded(value)}","${value.void ?? "not voided"}","${Object.keys(value.status).join(
-				" "
-			)}"\r\n`
-			result += Change.toCsv(value.history)
-			result += Capture.toCsv(value.capture)
-			result += Refund.toCsv(value.refund)
-		}
+			)},${captured(value)},${refunded(value)},${value.void ?? ""},${Object.keys(value.status).join(" ")}\r\n`
 		return result
 	}
 	export type Creatable = ACreatable
@@ -165,7 +159,6 @@ export namespace Authorization {
 	export namespace Change {
 		export const is = AChange.is
 		export const flaw = AChange.flaw
-		export const toCsv = AChange.toCsv
 		export type Creatable = AChange.Creatable
 		export namespace Creatable {
 			export const is = AChange.Creatable.is
