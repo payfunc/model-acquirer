@@ -51,7 +51,6 @@ export namespace Refund {
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
-
 	export type Creatable = RCreatable
 	export namespace Creatable {
 		export const is = RCreatable.is

@@ -134,6 +134,22 @@ export namespace Authorization {
 			status[authorization.void ? "cancelled" : "authorized"] = 0
 		return { ...authorization, status }
 	}
+	export function toCsv(authorizations: Authorization[]): string {
+		let result =
+			"id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n"
+		for (const value of authorizations)
+			result += `${value.id},${value.merchant},${value.number ?? ""},${value.reference},${value.created},${
+				value.amount
+			},${value.currency},${value.card.type ?? "unknown"},${value.card.scheme},${
+				value.card.iin + "**********" + value.card.last4
+			},${value.card.expires[0].toString().padStart(2, "0") + "/" + (2000 + value.card.expires[1]).toString()},${
+				value.descriptor ?? ""
+			},${value.recurring ?? ""},${isoly.Currency.round(
+				value.history.reduce((r, h) => r + h.amount, 0),
+				value.currency
+			)},${captured(value)},${refunded(value)},${value.void ?? ""},${Object.keys(value.status).join(" ")}\r\n`
+		return result
+	}
 	export type Creatable = ACreatable
 	export namespace Creatable {
 		export const is = ACreatable.is
