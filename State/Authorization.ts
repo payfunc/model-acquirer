@@ -1,6 +1,10 @@
 import * as isoly from "isoly"
 import * as authly from "authly"
-import * as acquirer from "../index"
+import { Authorization as AcquirerAuthorization } from "../Authorization"
+import { Capture } from "../Capture"
+import { Merchant as AcquirerMerchant } from "../Merchant"
+import { Refund } from "../Refund"
+import { Statistics } from "../Statistics"
 import { Card } from "./Card"
 import { Merchant } from "./Merchant"
 
@@ -16,11 +20,11 @@ export interface Authorization {
 		card: Card
 		descriptor?: string
 		recurring?: "initial" | "subsequent"
-		history: acquirer.Authorization.Change[]
-		capture: acquirer.Capture[]
-		refund: acquirer.Refund[]
+		history: AcquirerAuthorization.Change[]
+		capture: Capture[]
+		refund: Refund[]
 		voided?: isoly.DateTime
-		status: Partial<Record<acquirer.Authorization.Status, number>>
+		status: Partial<Record<AcquirerAuthorization.Status, number>>
 	}
 	created: isoly.DateTime
 }
@@ -42,27 +46,26 @@ export namespace Authorization {
 			(value.authorization.recurring == undefined ||
 				["initial", "subsequent"].includes(value.authorization.recurring)) &&
 			Array.isArray(value.authorization.history) &&
-			value.authorization.history.every(acquirer.Authorization.Change.is) &&
+			value.authorization.history.every(AcquirerAuthorization.Change.is) &&
 			Array.isArray(value.authorization.capture) &&
-			value.authorization.capture.every(acquirer.Capture.is) &&
+			value.authorization.capture.every(Capture.is) &&
 			Array.isArray(value.authorization.refund) &&
-			value.authorization.refund.every(acquirer.Refund.is) &&
+			value.authorization.refund.every(Refund.is) &&
 			(value.authorization.voided == undefined || isoly.DateTime.is(value.authorization.voided)) &&
 			typeof value.authorization.status == "object" &&
 			Object.entries(value.authorization.status).every(
-				entry => acquirer.Authorization.Status.is(entry[0]) && typeof entry[1] == "string"
+				entry => AcquirerAuthorization.Status.is(entry[0]) && typeof entry[1] == "number"
 			) &&
 			isoly.DateTime.is(value.created)
 		)
 	}
 	export function from(
-		authorization: acquirer.Authorization,
-		merchant: acquirer.Merchant | { id: string },
-		statistics?: acquirer.Statistics
+		authorization: AcquirerAuthorization,
+		merchant: AcquirerMerchant | { id: string },
+		statistics?: Statistics
 	): Authorization {
 		return {
-			merchant:
-				statistics && acquirer.Merchant.is(merchant) ? Merchant.from(merchant, statistics) : { id: merchant.id },
+			merchant: statistics && AcquirerMerchant.is(merchant) ? Merchant.from(merchant, statistics) : { id: merchant.id },
 			authorization: {
 				id: authorization.id,
 				amount: authorization.amount,
