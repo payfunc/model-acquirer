@@ -1,15 +1,16 @@
 import * as isoly from "isoly"
 import * as authly from "authly"
 import { Log } from "@payfunc/model-log"
-import * as acquirer from "../index"
+import { Authorization } from "../Authorization"
 import { Card } from "./Card"
 import { Merchant } from "./Merchant"
 import { PreAuthorization } from "./PreAuthorization"
 
 export interface FailedAuthorization {
-	merchant?: Merchant | authly.Identifier
+	merchant: Merchant | { id: authly.Identifier }
 	authorization: {
 		amount?: number
+		id?: string
 		currency?: isoly.Currency
 		card?: Partial<Card> & { csc?: "present" }
 		capture?: "auto"
@@ -27,9 +28,10 @@ export namespace FailedAuthorization {
 	export function is(value: any | FailedAuthorization): value is FailedAuthorization {
 		return (
 			typeof value == "object" &&
-			(value.merchant == undefined || Merchant.is(value.merchant) || authly.Identifier.is(value.merchant)) &&
+			(Merchant.is(value.merchant) || (typeof value.merchant == "object" && authly.Identifier.is(value.merchant.id))) &&
 			typeof value.authorization == "object" &&
 			(value.authorization.amount == undefined || typeof value.authorization.amount == "number") &&
+			(value.authorization.id == undefined || typeof value.authorization.amount == "string") &&
 			(value.authorization.currency == undefined || isoly.Currency.is(value.authorization.currency)) &&
 			(value.authorization.card == undefined ||
 				(Card.isPartial(value.authorization.card) &&
@@ -50,7 +52,7 @@ export namespace FailedAuthorization {
 	}
 	export function from(logs: Log[]): FailedAuthorization {
 		const result: FailedAuthorization = {
-			merchant: "",
+			merchant: { id: "" },
 			authorization: {},
 			created: "",
 			log: logs,
@@ -60,9 +62,9 @@ export namespace FailedAuthorization {
 			const update = log.created > result.created
 			if (update) {
 				const state = log.entries.find(e => e.point == "PreAuthorization State")?.data.state
-				result.authorization = PreAuthorization.is(state) ? state.authorization : { number: log.reference?.number }
+				result.authorization = state?.authorization?.number ? state.authorization : { number: log.reference?.number }
 				result.created = log.created
-				result.merchant = log.merchant
+				result.merchant = { id: log.merchant }
 				const response = log.entries.find(e => e.point == "response")?.data.body
 				result.reason =
 					(response.details && response.details.message) ??
@@ -76,7 +78,7 @@ export namespace FailedAuthorization {
 		}
 		return result
 	}
-	export function load(authorizations: acquirer.Authorization[], logs: Log[]): FailedAuthorization[] {
+	export function load(authorizations: Authorization[], logs: Log[]): FailedAuthorization[] {
 		const registry: Record<string, Log[]> = {}
 		logs.forEach(log => {
 			if (
