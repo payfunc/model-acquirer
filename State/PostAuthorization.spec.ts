@@ -72,6 +72,7 @@ describe("State.PostAuthorization tests", () => {
 			},
 			descriptor: "test transaction",
 			merchant: {
+				id: "testtest",
 				captured: 0,
 				country: "SE",
 				currency: "SEK",

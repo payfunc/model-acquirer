@@ -38,7 +38,7 @@ describe("State.FailedAuthorization tests", () => {
 		}
 		const earlyFailure: acquirer.State.FailedAuthorization = {
 			authorization: {},
-			merchant: "testtest",
+			merchant: { id: "testtest" },
 			log: [],
 			created: isoly.DateTime.now(),
 			reason: "bad input",
@@ -315,7 +315,7 @@ describe("State.FailedAuthorization tests", () => {
 						},
 					},
 				],
-				merchant: "testtest",
+				merchant: { id: "testtest" },
 				reason: "Internal error",
 			},
 		])

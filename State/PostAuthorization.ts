@@ -38,11 +38,11 @@ export namespace PostAuthorization {
 			(value.authorization.number == undefined || typeof value.authorization.number == "string") &&
 			(value.authorization.captured == undefined ||
 				(typeof value.authorization.captured == "object" &&
-					typeof value.authorization.captured.amount == "string" &&
+					typeof value.authorization.captured.amount == "number" &&
 					isoly.DateTime.is(value.authorization.captured.latest))) &&
 			(value.authorization.refunded == undefined ||
 				(typeof value.authorization.refunded == "object" &&
-					typeof value.authorization.refunded.amount == "string" &&
+					typeof value.authorization.refunded.amount == "number" &&
 					isoly.DateTime.is(value.authorization.refunded.latest))) &&
 			(value.authorization.voided == undefined || isoly.DateTime.is(value.authorization.voided)) &&
 			(value.authorization.recurring == undefined ||
