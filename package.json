@@ -55,12 +55,12 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"@payfunc/model-card": "^0.2.10",
-		"@payfunc/model-log": "^0.0.4",
+		"@payfunc/model-card": "^0.2.12",
+		"@payfunc/model-log": "^0.1.3",
 		"authly": "^0.2.3",
 		"gracely": "0.1.1",
 		"isoly": "0.1.3",
-		"selectively": "0.0.34"
+		"selectively": "0.0.47"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.0",
