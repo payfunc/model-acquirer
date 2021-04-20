@@ -24,7 +24,7 @@ export namespace Refund {
 			(value.approved == undefined || isoly.DateTime.is(value.approved)) &&
 			typeof value.amount == "number" &&
 			(value.descriptor == undefined || typeof value.descriptor == "string") &&
-			["approved", "pending"].some(v => v == value.status)
+			["approved", "settled", "pending"].some(v => v == value.status)
 		)
 	}
 	export function flaw(value: Refund | any): gracely.Flaw {

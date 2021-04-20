@@ -26,7 +26,7 @@ export namespace Capture {
 			typeof value.amount == "number" &&
 			(value.auto == undefined || value.auto == true) &&
 			(value.descriptor == undefined || typeof value.descriptor == "string") &&
-			["approved", "pending"].some(v => v == value.status)
+			["approved", "settled", "pending"].some(v => v == value.status)
 		)
 	}
 	export function flaw(value: Capture | any): gracely.Flaw {
