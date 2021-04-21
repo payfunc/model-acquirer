@@ -59,7 +59,7 @@ export namespace FailedAuthorization {
 			reason: "",
 		}
 		for (const log of logs) {
-			const update = log.created > result.created
+			const update = log.created > result.created && log.reference?.type == "authorization"
 			if (update) {
 				const state = log.entries.find(e => e.point == "PreAuthorization State")?.data.state
 				result.authorization = state?.authorization?.number ? state.authorization : { number: log.reference?.number }
@@ -80,14 +80,15 @@ export namespace FailedAuthorization {
 	}
 	export function load(authorizations: Authorization[], logs: Log[]): FailedAuthorization[] {
 		const registry: Record<string, Log[]> = {}
-		logs.forEach(log => {
+		for (const log of logs) {
 			if (
 				log.reference?.number &&
-				["authorization"].includes(log.reference.type) &&
+				["authorization", "verification"].includes(log.reference.type) &&
 				authorizations.every(a => log.reference?.id != a.id && log.reference?.number != a.number)
 			)
 				registry[log.reference.number] = [...(registry[log.reference.number] ?? []), log]
-		})
+		}
+
 		return Object.values(registry).map(from)
 	}
 }
