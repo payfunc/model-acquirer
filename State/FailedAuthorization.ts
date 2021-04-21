@@ -80,15 +80,13 @@ export namespace FailedAuthorization {
 	}
 	export function load(authorizations: Authorization[], logs: Log[]): FailedAuthorization[] {
 		const registry: Record<string, Log[]> = {}
-		for (const log of logs) {
+		for (const log of logs)
 			if (
 				log.reference?.number &&
 				["authorization", "verification"].includes(log.reference.type) &&
 				authorizations.every(a => log.reference?.id != a.id && log.reference?.number != a.number)
 			)
 				registry[log.reference.number] = [...(registry[log.reference.number] ?? []), log]
-		}
-
 		return Object.values(registry).map(from)
 	}
 }
