@@ -45,6 +45,7 @@ export namespace Settlement {
 	export namespace Transaction {
 		export const is = SettlementTransaction.is
 		export const toCsv = SettlementTransaction.toCsv
+		export const toCustomer = SettlementTransaction.toCustomer
 	}
 	export function toCsv(settlements: Settlement[]): string {
 		let result =
