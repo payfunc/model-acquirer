@@ -136,37 +136,35 @@ describe("Settlement", () => {
 		)
 	})
 	it("toCustomer", () => {
-		const result = Settlement.toCustomer(settlement)
-		expect(result).toEqual([
-			{
-				reference: "example",
-				merchant: "SQJzzNur",
-				period: {
-					start: "2020-02-01",
-					end: "2020-02-07",
-				},
-				payout: "2020-03-02",
-				created: "2020-01-16",
-				gross: 2,
-				fee: 3,
-				net: 4,
-				currency: "EUR",
-				transactions: [
-					{
-						authorization: "12345",
-						reference: "234242",
-						type: "authorization",
-						card: "debit",
-						scheme: "mastercard",
-						area: "SE",
-						created: "2020-02-16",
-						gross: 2,
-						fee: 3,
-						net: 12,
-					},
-				],
+		const result = Settlement.toCustomer(settlement[0])
+		expect(result).toEqual({
+			reference: "example",
+			merchant: "SQJzzNur",
+			period: {
+				start: "2020-02-01",
+				end: "2020-02-07",
 			},
-		])
+			payout: "2020-03-02",
+			created: "2020-01-16",
+			gross: 2,
+			fee: 3,
+			net: 4,
+			currency: "EUR",
+			transactions: [
+				{
+					authorization: "12345",
+					reference: "234242",
+					type: "authorization",
+					card: "debit",
+					scheme: "mastercard",
+					area: "SE",
+					created: "2020-02-16",
+					gross: 2,
+					fee: 3,
+					net: 12,
+				},
+			],
+		})
 	})
 	it("toCustomer with multiple settlements", () => {
 		const result = Settlement.toCustomer(multiple)
