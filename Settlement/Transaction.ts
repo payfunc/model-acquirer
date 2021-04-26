@@ -48,9 +48,8 @@ export namespace Transaction {
 	}
 
 	export function toCustomer(transactions: Transaction[]): Transaction[] {
-		return transactions.reduce<Transaction[]>(
-			(r, t) => (r = [...r, { ...t, fee: typeof t.fee == "object" ? t.fee.total : t.fee }]),
-			[]
-		)
+		return transactions.map(t => {
+			return { ...t, fee: typeof t.fee == "object" ? t.fee.total : t.fee }
+		})
 	}
 }
