@@ -33,8 +33,8 @@ export namespace Settlement {
 			typeof value.reserve.amount == "number" &&
 			(value.reserve.payout == undefined || isoly.Date.is(value.reserve.payout)) &&
 			isoly.Date.is(value.created) &&
-			typeof value.gross == "number" &&
-			(typeof value.fee == "number" || (typeof value.fee.scheme == "number" && typeof value.fee.total)) &&
+			(typeof value.fee == "number" ||
+				(typeof value.fee == "object" && typeof value.fee.scheme == "number" && typeof value.fee.total == "number")) &&
 			typeof value.net == "number" &&
 			isoly.Currency.is(value.currency) &&
 			Array.isArray(value.transactions) &&
@@ -59,9 +59,15 @@ export namespace Settlement {
 		}
 		return result
 	}
-	export function toCustomer(settlements: Settlement[]): Settlement[] {
-		return settlements.map(s => {
-			return { ...s, fee: typeof s.fee == "object" ? s.fee.total : s.fee }
-		})
+	export function toCustomer(value: Settlement): Settlement
+	export function toCustomer(value: Settlement[]): Settlement[]
+	export function toCustomer(value: Settlement | Settlement[]): Settlement | Settlement[] {
+		return Array.isArray(value)
+			? value.map(s => toCustomer(s))
+			: {
+					...value,
+					transactions: SettlementTransaction.toCustomer(value.transactions),
+					fee: typeof value.fee == "object" ? value.fee.total : value.fee,
+			  }
 	}
 }

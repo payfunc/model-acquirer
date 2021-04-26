@@ -29,7 +29,8 @@ export namespace Transaction {
 			isoly.CountryCode.Alpha2.is(value.area) &&
 			isoly.Date.is(value.created) &&
 			typeof value.gross == "number" &&
-			(typeof value.fee == "number" || (typeof value.fee.scheme == "number" && typeof value.fee.total == "number")) &&
+			(typeof value.fee == "number" ||
+				(typeof value.fee == "object" && typeof value.fee.scheme == "number" && typeof value.fee.total == "number")) &&
 			typeof value.net == "number" &&
 			typeof value.reserve == "object" &&
 			typeof value.reserve.amount == "number" &&
@@ -46,10 +47,11 @@ export namespace Transaction {
 			}","${value.reserve?.amount}","${value.reserve?.amount}"\r\n`
 		return result
 	}
-
-	export function toCustomer(transactions: Transaction[]): Transaction[] {
-		return transactions.map(t => {
-			return { ...t, fee: typeof t.fee == "object" ? t.fee.total : t.fee }
-		})
+	export function toCustomer(value: Transaction): Transaction
+	export function toCustomer(value: Transaction[]): Transaction[]
+	export function toCustomer(value: Transaction | Transaction[]): Transaction | Transaction[] {
+		return Array.isArray(value)
+			? value.map(t => toCustomer(t))
+			: { ...value, fee: typeof value.fee == "object" ? value.fee.total : value.fee }
 	}
 }
