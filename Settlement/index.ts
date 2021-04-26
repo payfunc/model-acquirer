@@ -59,9 +59,8 @@ export namespace Settlement {
 		return result
 	}
 	export function toCustomer(settlements: Settlement[]): Settlement[] {
-		return settlements.reduce<Settlement[]>(
-			(r, s) => (r = [...r, { ...s, fee: typeof s.fee == "object" ? s.fee.total : s.fee }]),
-			[]
-		)
+		return settlements.map(s => {
+			return { ...s, fee: typeof s.fee == "object" ? s.fee.total : s.fee }
+		})
 	}
 }
