@@ -13,7 +13,7 @@ export interface Settlement {
 	reserve?: { amount: number; payout?: isoly.Date }
 	created: isoly.Date
 	gross: number
-	fee: number
+	fee: number | { scheme: number; total: number }
 	net: number
 	currency: isoly.Currency
 	transactions: SettlementTransaction[]
@@ -33,8 +33,8 @@ export namespace Settlement {
 			typeof value.reserve.amount == "number" &&
 			(value.reserve.payout == undefined || isoly.Date.is(value.reserve.payout)) &&
 			isoly.Date.is(value.created) &&
-			typeof value.gross == "number" &&
-			typeof value.fee == "number" &&
+			(typeof value.fee == "number" ||
+				(typeof value.fee == "object" && typeof value.fee.scheme == "number" && typeof value.fee.total == "number")) &&
 			typeof value.net == "number" &&
 			isoly.Currency.is(value.currency) &&
 			Array.isArray(value.transactions) &&
@@ -45,14 +45,30 @@ export namespace Settlement {
 	export namespace Transaction {
 		export const is = SettlementTransaction.is
 		export const toCsv = SettlementTransaction.toCsv
+		export const toCustomer = SettlementTransaction.toCustomer
 	}
 	export function toCsv(settlements: Settlement[]): string {
 		let result =
 			"reference,merchant,start date,end date,payout date,reserve amount,reserve payout,created,gross,fee,net,currency\r\n"
 		for (const value of settlements) {
-			result += `"${value.reference}","${value.merchant}","${value.period.start}","${value.period.end}","${value.payout}","${value.reserve?.amount}","${value.reserve?.payout}","${value.created}","${value.gross}","${value.fee}","${value.net}","${value.currency}"\r\n`
+			result += `"${value.reference}","${value.merchant}","${value.period.start}","${value.period.end}","${
+				value.payout
+			}","${value.reserve?.amount}","${value.reserve?.payout}","${value.created}","${value.gross}","${
+				typeof value.fee == "number" ? value.fee : value.fee.total
+			}","${value.net}","${value.currency}"\r\n`
 			result += value.transactions.length > 0 ? SettlementTransaction.toCsv(value.transactions) : ""
 		}
 		return result
+	}
+	export function toCustomer(value: Settlement): Settlement
+	export function toCustomer(value: Settlement[]): Settlement[]
+	export function toCustomer(value: Settlement | Settlement[]): Settlement | Settlement[] {
+		return Array.isArray(value)
+			? value.map(s => toCustomer(s))
+			: {
+					...value,
+					transactions: SettlementTransaction.toCustomer(value.transactions),
+					fee: typeof value.fee == "object" ? value.fee.total : value.fee,
+			  }
 	}
 }
