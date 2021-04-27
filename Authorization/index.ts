@@ -169,6 +169,10 @@ export namespace Authorization {
 	export type Operation = AuthorizationOperation
 	export namespace Operation {
 		export const is = AuthorizationOperation.is
+		export type Creatable = AuthorizationOperation.Creatable
+		export namespace Creatable {
+			export const is = AuthorizationOperation.Creatable.is
+		}
 	}
 	export type Status = AuthorizationStatus
 	export namespace Status {

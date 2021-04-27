@@ -19,7 +19,10 @@ export class Authorization {
 	}
 	async update(
 		updates: Operation[]
-	): Promise<Record<string, Capture | Refund | isoly.DateTime | gracely.Error> | gracely.Error> {
+	): Promise<
+		| Record<string, { type: "capture" | "refund" | "void"; result: Capture | Refund | isoly.DateTime | gracely.Error }>
+		| gracely.Error
+	> {
 		return this.client.connection.patch("authorization/", updates)
 	}
 	load(authorization: ModelAuthorization): ModelAuthorization & Operations
