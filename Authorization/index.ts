@@ -6,6 +6,7 @@ import { Capture } from "../Capture"
 import { Refund } from "../Refund"
 import { Change as AChange } from "./Change"
 import { Creatable as ACreatable } from "./Creatable"
+import { Operation as AuthorizationOperation } from "./Operation"
 import { Status as AuthorizationStatus } from "./Status"
 
 export interface Authorization {
@@ -163,6 +164,14 @@ export namespace Authorization {
 		export namespace Creatable {
 			export const is = AChange.Creatable.is
 			export const flaw = AChange.Creatable.flaw
+		}
+	}
+	export type Operation = AuthorizationOperation
+	export namespace Operation {
+		export const is = AuthorizationOperation.is
+		export type Creatable = AuthorizationOperation.Creatable
+		export namespace Creatable {
+			export const is = AuthorizationOperation.Creatable.is
 		}
 	}
 	export type Status = AuthorizationStatus
