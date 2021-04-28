@@ -9,6 +9,7 @@ export interface Transaction {
 	schedule: isoly.Date | "hold"
 	reference: string
 	merchant: string
+	mid?: string
 }
 
 export namespace Transaction {
@@ -20,13 +21,16 @@ export namespace Transaction {
 			typeof value.amount == "number" &&
 			isoly.Currency.is(value.currency) &&
 			(isoly.Date.is(value.schedule) || value.schedule == "hold") &&
-			typeof value.reference == "string"
+			typeof value.reference == "string" &&
+			(value.mid == undefined || typeof value.mid == "string")
 		)
 	}
 	export function toCsv(transactions: Transaction[]): string {
 		let result = "from,to,amount,currency,schedule,settlement,merchant\r\n"
 		for (const value of transactions)
-			result += `"${value.from}","${value.to}","${value.amount}","${value.currency}","${value.schedule}","${value.reference}","${value.merchant}"\r\n`
+			result += `"${value.from}","${value.to}","${value.amount}","${value.currency}","${value.schedule}","${
+				value.reference
+			}","${value.merchant}","${value.mid ?? ""}"\r\n`
 		return result
 	}
 }
