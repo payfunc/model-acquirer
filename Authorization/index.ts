@@ -173,6 +173,38 @@ export namespace Authorization {
 		export namespace Creatable {
 			export const is = AuthorizationOperation.Creatable.is
 		}
+		export type Capture = AuthorizationOperation.Capture
+		export namespace Capture {
+			export const is = AuthorizationOperation.Capture.is
+			export type Creatable = AuthorizationOperation.Capture.Creatable
+			export namespace Creatable {
+				export const is = AuthorizationOperation.Capture.Creatable.is
+			}
+		}
+		export type Change = AuthorizationOperation.Change
+		export namespace Change {
+			export const is = AuthorizationOperation.Change.is
+			export type Creatable = AuthorizationOperation.Change.Creatable
+			export namespace Creatable {
+				export const is = AuthorizationOperation.Change.Creatable.is
+			}
+		}
+		export type Refund = AuthorizationOperation.Refund
+		export namespace Refund {
+			export const is = AuthorizationOperation.Refund.is
+			export type Creatable = AuthorizationOperation.Refund.Creatable
+			export namespace Creatable {
+				export const is = AuthorizationOperation.Refund.Creatable.is
+			}
+		}
+		export type Void = AuthorizationOperation.Void
+		export namespace Void {
+			export const is = AuthorizationOperation.Void.is
+			export type Creatable = AuthorizationOperation.Void.Creatable
+			export namespace Creatable {
+				export const is = AuthorizationOperation.Void.Creatable.is
+			}
+		}
 	}
 	export type Status = AuthorizationStatus
 	export namespace Status {
