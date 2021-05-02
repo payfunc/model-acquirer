@@ -1,5 +1,6 @@
 import * as gracely from "gracely"
 import { Authorization as ModelAuthorization } from "../Authorization"
+import { Operation } from "../Authorization/Operation"
 import { Capture } from "../Capture"
 import { Refund } from "../Refund"
 import { Connection } from "./Connection"
@@ -14,6 +15,9 @@ export class Authorization {
 	async create(request: ModelAuthorization.Creatable): Promise<(ModelAuthorization & Operations) | gracely.Error> {
 		const result = await this.client.connection.post<ModelAuthorization>("authorization", request)
 		return gracely.Error.is(result) ? result : this.load(result)
+	}
+	async update(updates: Operation.Creatable[]): Promise<Operation[] | gracely.Error> {
+		return this.client.connection.patch<Operation[] | gracely.Error>("authorization/", updates)
 	}
 	load(authorization: ModelAuthorization): ModelAuthorization & Operations
 	load(authorization: string): { id: string } & Operations

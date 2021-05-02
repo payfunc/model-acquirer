@@ -19,11 +19,17 @@ export class Connection {
 			? response.json()
 			: response.text()
 	}
+	async get<Response>(path: string): Promise<Response | gracely.Error> {
+		return await this.fetch<Response>(path, "GET")
+	}
+	async patch<Response>(path: string, request: any): Promise<Response | gracely.Error> {
+		return await this.fetch<Response>(path, "PATCH", request)
+	}
 	async post<Response>(path: string, request: any): Promise<Response | gracely.Error> {
 		return await this.fetch<Response>(path, "POST", request)
 	}
-	async get<Response>(path: string): Promise<Response | gracely.Error> {
-		return await this.fetch<Response>(path, "GET")
+	async put<Response>(path: string, request: any): Promise<Response | gracely.Error> {
+		return await this.fetch<Response>(path, "PUT", request)
 	}
 	async remove<Response>(path: string): Promise<Response | gracely.Error> {
 		return await this.fetch<Response>(path, "DELETE")
