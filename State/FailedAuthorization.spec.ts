@@ -37,21 +37,26 @@ describe("State.FailedAuthorization tests", () => {
 			card,
 		}
 		const earlyFailure: acquirer.State.FailedAuthorization = {
-			authorization: {},
+			authorization: { status: ["failed"], created: isoly.DateTime.now(), reason: "bad input" },
 			merchant: { id: "testtest" },
 			log: [],
-			created: isoly.DateTime.now(),
-			reason: "bad input",
 		}
 		expect(acquirer.State.FailedAuthorization.is(earlyFailure)).toBeTruthy()
-		const lateFailure: acquirer.State.FailedAuthorization = {
+		const preAuthorization = {
 			...acquirer.State.PreAuthorization.from(authorization, merchant, statistics, "verified", {
 				EUR: 9.5,
 				SEK: 1,
 			}),
+		}
+		const lateFailure: acquirer.State.FailedAuthorization = {
+			...preAuthorization,
+			authorization: {
+				...preAuthorization.authorization,
+				status: ["failed"],
+				reason: "rejected",
+				created: isoly.DateTime.now(),
+			},
 			log: [],
-			created: isoly.DateTime.now(),
-			reason: "rejected",
 		}
 		expect(acquirer.State.FailedAuthorization.is(lateFailure)).toBeTruthy()
 	})
@@ -194,11 +199,12 @@ describe("State.FailedAuthorization tests", () => {
 						last4: "1002",
 						scheme: "mastercard",
 					},
+					created: "2021-02-02T23:59:59.000Z",
 					currency: "EUR",
 					descriptor: "string",
 					number: "1234123412341234",
+					reason: "Internal error",
 				},
-				created: "2021-02-02T23:59:59.000Z",
 				log: [
 					{
 						agent: "PayFunc",
@@ -243,9 +249,11 @@ describe("State.FailedAuthorization tests", () => {
 												last4: "1002",
 												scheme: "mastercard",
 											},
+											created: "2021-02-02T23:59:59.000Z",
 											currency: "EUR",
 											descriptor: "string",
 											number: "1234123412341234",
+											reason: "Internal error",
 										},
 										merchant: {
 											captured: 10,
@@ -316,7 +324,6 @@ describe("State.FailedAuthorization tests", () => {
 					},
 				],
 				merchant: { id: "testtest" },
-				reason: "Internal error",
 			},
 		])
 	})
