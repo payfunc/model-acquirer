@@ -22,7 +22,7 @@ describe("Authorization tests", () => {
 			},
 		}
 	}
-	it("Authorization status tests", () => {
+	it("Authorization status tests #1", () => {
 		const authorization = createExample()
 		authorization.history.push({ amount: 10.33, created: "2021-04-01T10:00:00.000Z" })
 		authorization.capture.push({
@@ -43,7 +43,7 @@ describe("Authorization tests", () => {
 			refunded: 9.33,
 		})
 	})
-	it("Authorization status tests", () => {
+	it("Authorization status tests #2", () => {
 		const authorization: Omit<Authorization, "status"> = createExample()
 		expect(Authorization.calculateStatus(authorization).status).toEqual({
 			authorized: 101.1,
@@ -112,7 +112,7 @@ describe("Authorization tests", () => {
 		voided = Authorization.calculateStatus(voided)
 		const header = `id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n`
 		const data = [
-			`1234123412341234,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,20.66,22.66,18.66,,authorized captured refunded settled\r\n`,
+			`1234123412341234,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,20.66,11.33,9.33,,authorized refunded settled\r\n`,
 			`1234567890123456,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,0,0,0,,authorized\r\n`,
 			`1234000012340000,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,0,101.1,0,,captured\r\n`,
 			`1234000012340001,testtest,,12341234,2021-04-01T09:00:00.000Z,40.4,EUR,debit,visa,123456**********1111,02/2028,,,0,0,0,2021-04-06T12:00:00.000Z,cancelled\r\n`,
@@ -123,5 +123,161 @@ describe("Authorization tests", () => {
 		expect(Authorization.toCsv([authorization, authorized, captured, voided])).toEqual(
 			header + data[0] + data[1] + data[2] + data[3]
 		)
+	})
+	it("Settled status calculation tests", () => {
+		const authorizations: Omit<Authorization, "status">[] = [
+			{
+				id: "example",
+				merchant: "testtest",
+				number: "example",
+				reference: "example",
+				created: "2021-04-30T15:29:11.281Z",
+				amount: 123,
+				currency: "SEK",
+				card: {
+					scheme: "visa",
+					iin: "111111",
+					last4: "1111",
+					expires: [7, 22],
+					csc: "present",
+				},
+				descriptor: "Test Merchant",
+				history: [],
+				capture: [
+					{
+						amount: 123,
+						created: "2021-04-30T15:32:37.746Z",
+						status: "settled",
+						settlement: {
+							authorization: "example",
+							reference: "example",
+							type: "capture",
+							card: "credit",
+							scheme: "visa",
+							area: "NO",
+							created: "2021-04-30",
+							gross: 123,
+							fee: {
+								scheme: 0.369,
+								total: 1.5375,
+							},
+							net: 121.4625,
+							reserve: {
+								amount: 24.29,
+								payout: "2021-06-19",
+							},
+						},
+					},
+				],
+				refund: [
+					{
+						created: "2021-05-03T14:59:01.451Z",
+						reference: "example",
+						amount: 123,
+						approved: "2021-05-03T14:59:01.451Z",
+						status: "settled",
+						settlement: {
+							authorization: "example",
+							reference: "example",
+							type: "refund",
+							card: "credit",
+							scheme: "visa",
+							area: "NO",
+							created: "2021-05-03",
+							gross: -123,
+							fee: {
+								scheme: 0.369,
+								total: 1.5375,
+							},
+							net: -124.5375,
+							reserve: {
+								amount: -24.91,
+								payout: "2021-06-22",
+							},
+						},
+					},
+				],
+			},
+			{
+				id: "example",
+				merchant: "testtest",
+				number: "example",
+				reference: "example",
+				created: "2021-04-30T15:32:18.286Z",
+				amount: 125,
+				currency: "SEK",
+				card: {
+					scheme: "visa",
+					iin: "111111",
+					last4: "1111",
+					expires: [7, 22],
+					csc: "present",
+				},
+				descriptor: "Test Merchant",
+				history: [],
+				capture: [
+					{
+						amount: 125,
+						created: "2021-04-30T15:32:37.746Z",
+						status: "settled",
+						settlement: {
+							authorization: "example",
+							reference: "example",
+							type: "capture",
+							card: "credit",
+							scheme: "visa",
+							area: "NO",
+							created: "2021-04-30",
+							gross: 125,
+							fee: {
+								scheme: 0.375,
+								total: 1.5625,
+							},
+							net: 123.4375,
+							reserve: {
+								amount: 24.69,
+								payout: "2021-06-19",
+							},
+						},
+					},
+				],
+				refund: [
+					{
+						created: "2021-05-03T14:58:10.244Z",
+						reference: "example",
+						amount: 50,
+						approved: "2021-05-03T14:58:10.244Z",
+						status: "settled",
+						settlement: {
+							authorization: "example",
+							reference: "example",
+							type: "refund",
+							card: "credit",
+							scheme: "visa",
+							area: "NO",
+							created: "2021-05-03",
+							gross: -50,
+							fee: {
+								scheme: 0.15,
+								total: 0.625,
+							},
+							net: -50.625,
+							reserve: {
+								amount: -10.12,
+								payout: "2021-06-22",
+							},
+						},
+					},
+				],
+			},
+		]
+		expect(authorizations.map(a => Authorization.calculateStatus(a).status)).toEqual([
+			{
+				settled: 123,
+			},
+			{
+				settled: 125,
+			},
+		])
 	})
 })
