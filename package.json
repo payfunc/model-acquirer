@@ -59,9 +59,9 @@
 		"@payfunc/model-log": "^0.0.6",
 		"authly": "^0.1.7",
 		"gracely": "0.0.40",
-		"isoly": "0.0.29",
+		"isoly": "0.0.33",
 		"isomorphic-fetch": "^3.0.0",
-		"selectively": "0.0.34"
+		"selectively": "0.0.54"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.0",
