@@ -99,13 +99,19 @@ export namespace Authorization {
 	}
 	export function captured(authorization: Omit<Authorization, "status">): number {
 		return isoly.Currency.round(
-			authorization.capture.reduce<number>((total, capture) => total + capture.amount, 0),
+			authorization.capture.reduce<number>(
+				(total, capture) => total + (capture.status != "pending" ? capture.amount : 0),
+				0
+			),
 			authorization.currency
 		)
 	}
 	export function refunded(authorization: Omit<Authorization, "status">): number {
 		return isoly.Currency.round(
-			authorization.refund.reduce<number>((total, refund) => total + refund.amount, 0),
+			authorization.refund.reduce<number>(
+				(total, refund) => total + (refund.status != "pending" ? refund.amount : 0),
+				0
+			),
 			authorization.currency
 		)
 	}
@@ -114,16 +120,20 @@ export namespace Authorization {
 	): Authorization {
 		const capture = captured(authorization)
 		const refund = refunded(authorization)
+		const captureSettled = authorization.capture
+			.filter(p => p.settlement)
+			.reduce<number>((r, p) => r + Math.abs(p.settlement?.gross ?? 0), 0)
+		const refundSettled = authorization.refund
+			.filter(p => p.settlement)
+			.reduce<number>((r, p) => r + Math.abs(p.settlement?.gross ?? 0), 0)
+		const captureStatusSum = Math.max(capture - refund, 0) - Math.max(captureSettled - refundSettled, 0)
 		const authorize = isoly.Currency.round(authorized(authorization) - capture, authorization.currency)
 		const status: Record<AuthorizationStatus, number> = {
 			authorized: !authorization.void ? authorize : 0,
-			captured: isoly.Currency.round(capture - refund, authorization.currency),
-			refunded: isoly.Currency.round(refund, authorization.currency),
+			captured: isoly.Currency.round(Math.max(captureStatusSum, 0), authorization.currency),
+			refunded: isoly.Currency.round(refund - refundSettled, authorization.currency),
 			settled: isoly.Currency.round(
-				authorization.capture
-					.concat(authorization.refund)
-					.filter(p => p.settlement)
-					.reduce<number>((r, p) => r + (p.settlement?.gross ?? 0), 0),
+				Math.max(captureSettled, refundSettled) + Math.min(captureStatusSum, 0),
 				authorization.currency
 			),
 			cancelled: authorization.void ? authorize : 0,
