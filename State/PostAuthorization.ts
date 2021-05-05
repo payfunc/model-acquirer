@@ -1,6 +1,7 @@
 import * as isoly from "isoly"
 import { Authorization } from "../Authorization"
 import { Capture } from "../Capture"
+import { clear } from "../index"
 import { Merchant as AcquirerMerchant } from "../Merchant"
 import { Refund } from "../Refund"
 import { Statistics } from "../Statistics"
@@ -60,7 +61,7 @@ export namespace PostAuthorization {
 	): PostAuthorization {
 		const factor =
 			rate && merchant.reconciliation.currency != authorization.currency ? rate[authorization.currency] ?? 1 : 1
-		return clear({
+		return clear<PostAuthorization>({
 			merchant: Merchant.from(merchant, statistics),
 			amount: isoly.Currency.round(creatable.amount * factor, merchant.reconciliation.currency),
 			authorization: {
@@ -93,15 +94,5 @@ export namespace PostAuthorization {
 					},
 					{ amount: 0, latest: "" }
 			  )
-	}
-	function clear(value: PostAuthorization): PostAuthorization
-	function clear(value: Record<string, any>): Record<string, any> {
-		for (const entry of Object.entries(value)) {
-			if (entry[1] == undefined)
-				delete value[entry[0]]
-			else if (typeof entry[1] == "object")
-				value[entry[0]] = clear(entry[1])
-		}
-		return value
 	}
 }

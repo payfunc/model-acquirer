@@ -9,20 +9,20 @@ import { PreAuthorization } from "./PreAuthorization"
 export interface FailedAuthorization {
 	merchant: Merchant | { id: authly.Identifier }
 	authorization: {
-		amount?: number
 		id?: string
+		number?: string
+		amount?: number
 		currency?: isoly.Currency
-		card?: Partial<Card> & { csc?: "present" }
+		card?: Card
 		capture?: "auto"
 		descriptor?: string
-		number?: string
-		verification?: "verified" | "unavailable" | "rejected"
 		recurring?: "initial" | "subsequent"
+		verification?: "verified" | "unavailable" | "rejected"
+		status: "failed"[]
+		reason: string
+		created: isoly.DateTime
 	}
 	log: Log[]
-	reason: string
-	created: isoly.DateTime
-	now?: isoly.Date
 }
 export namespace FailedAuthorization {
 	export function is(value: any | FailedAuthorization): value is FailedAuthorization {
@@ -30,43 +30,39 @@ export namespace FailedAuthorization {
 			typeof value == "object" &&
 			(Merchant.is(value.merchant) || (typeof value.merchant == "object" && authly.Identifier.is(value.merchant.id))) &&
 			typeof value.authorization == "object" &&
+			(value.authorization.id == undefined || typeof value.authorization.id == "string") &&
+			(value.authorization.number == undefined || typeof value.authorization.number == "string") &&
 			(value.authorization.amount == undefined || typeof value.authorization.amount == "number") &&
-			(value.authorization.id == undefined || typeof value.authorization.amount == "string") &&
 			(value.authorization.currency == undefined || isoly.Currency.is(value.authorization.currency)) &&
-			(value.authorization.card == undefined ||
-				(Card.isPartial(value.authorization.card) &&
-					(value.authorization.card.csc == undefined || value.authorization.card.csc == "present"))) &&
+			(value.authorization.card == undefined || Card.is(value.authorization.card)) &&
 			(value.authorization.capture == undefined || value.authorization.capture == "auto") &&
 			(value.authorization.descriptor == undefined || typeof value.authorization.descriptor == "string") &&
-			(value.authorization.number == undefined || typeof value.authorization.number == "string") &&
-			(value.authorization.verification == undefined ||
-				["verified", "unavailable", "rejected"].includes(value.authorization.verification)) &&
 			(value.authorization.recurring == undefined ||
 				["initial", "subsequent"].includes(value.authorization.recurring)) &&
+			(value.authorization.verification == undefined ||
+				["verified", "unavailable", "rejected"].includes(value.authorization.verification)) &&
+			value.authorization.status.every((s: any) => s == "failed") &&
+			typeof value.authorization.reason == "string" &&
+			(value.authorization.created == undefined || isoly.DateTime.is(value.authorization.created)) &&
 			Array.isArray(value.log) &&
-			value.log.every(Log.is) &&
-			typeof value.reason == "string" &&
-			(value.created == undefined || isoly.DateTime.is(value.created)) &&
-			(value.now == undefined || typeof value.now == "string")
+			value.log.every(Log.is)
 		)
 	}
 	export function from(logs: Log[]): FailedAuthorization {
 		const result: FailedAuthorization = {
 			merchant: { id: "" },
-			authorization: {},
-			created: "",
+			authorization: { status: ["failed"], created: "", reason: "" },
 			log: logs,
-			reason: "",
 		}
 		for (const log of logs) {
-			const update = log.created > result.created && log.reference?.type == "authorization"
+			const update = log.created > result.authorization.created && log.reference?.type == "authorization"
 			if (update) {
 				const state = log.entries.find(e => e.point == "PreAuthorization State")?.data.state
 				result.authorization = state?.authorization?.number ? state.authorization : { number: log.reference?.number }
-				result.created = log.created
+				result.authorization.created = log.created
 				result.merchant = { id: log.merchant }
 				const response = log.entries.find(e => e.point == "response")?.data.body
-				result.reason =
+				result.authorization.reason =
 					(response.details && response.details.message) ??
 					(response.content &&
 						(response.content.description && response.content.description.length <= 30
