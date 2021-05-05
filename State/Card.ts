@@ -1,4 +1,5 @@
 import * as isoly from "isoly"
+import * as selectively from "selectively"
 import * as model from "@payfunc/model-card"
 
 export type Card = Omit<model.Card, "expires"> & { expires: isoly.Date }
@@ -65,4 +66,29 @@ export namespace Card {
 		}
 		return result
 	}
+	export const template = new selectively.Type.Object({
+		scheme: new selectively.Type.Union([
+			new selectively.Type.String("unknown"),
+			new selectively.Type.String("amex"),
+			new selectively.Type.String("dankort"),
+			new selectively.Type.String("diners"),
+			new selectively.Type.String("discover"),
+			new selectively.Type.String("electron"),
+			new selectively.Type.String("interpayment"),
+			new selectively.Type.String("jcb"),
+			new selectively.Type.String("maestro"),
+			new selectively.Type.String("mastercard"),
+			new selectively.Type.String("unionpay"),
+			new selectively.Type.String("visa"),
+		]),
+		iin: new selectively.Type.String(),
+		last4: new selectively.Type.String(),
+		expires: new selectively.Type.String(),
+		type: new selectively.Type.Union([new selectively.Type.String("debit"), new selectively.Type.String("credit")]),
+		csc: new selectively.Type.Union([
+			new selectively.Type.String("matched"),
+			new selectively.Type.String("mismatched"),
+			new selectively.Type.String("present"),
+		]),
+	})
 }
