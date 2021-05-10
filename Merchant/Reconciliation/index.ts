@@ -5,9 +5,8 @@ import { Fee } from "../Fee"
 import { Transaction as ReconciliationTransaction } from "./Transaction"
 
 export interface Reconciliation {
-	account: Account
+	account: Account | { [currency in isoly.Currency | "default"]?: Account }
 	costPlus?: true
-	currency: isoly.Currency
 	fees: Fee
 	reserves?: {
 		percentage: number

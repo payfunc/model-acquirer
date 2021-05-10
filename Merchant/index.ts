@@ -14,7 +14,8 @@ export interface Merchant {
 	reference: string
 	descriptor?: string
 	name: string
-	reconciliation: MerchantReconciliation[] | MerchantReconciliation
+	currency: isoly.Currency
+	reconciliation: MerchantReconciliation
 	country: isoly.CountryCode.Alpha2
 	categoryCode: string //mcc
 	rules: MerchantRules
