@@ -12,6 +12,7 @@ export interface Transaction {
 	area: isoly.CountryCode.Alpha2
 	created: isoly.Date
 	gross: number
+	currency: isoly.Currency
 	fee: number | { scheme: number; total: number }
 	net: number
 	reserve?: { amount: number; payout?: isoly.Date }

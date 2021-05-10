@@ -6,6 +6,7 @@ import { Transaction as ReconciliationTransaction } from "./Transaction"
 
 export interface Reconciliation {
 	account: Account
+	costPlus?: true
 	currency: isoly.Currency
 	fees: Fee
 	reserves?: {
