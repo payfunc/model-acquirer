@@ -1,13 +1,13 @@
-import { Authorization } from "./Authorization"
-import { Capture } from "./Capture"
-import { Client } from "./Client"
-import { Merchant } from "./Merchant"
-import { Refund } from "./Refund"
-import { Settlement } from "./Settlement"
-import * as State from "./State"
-import { Statistics } from "./Statistics"
-
-export { Authorization, Capture, Client, Merchant, Refund, Settlement, State, Statistics }
+export { Authorization } from "./Authorization"
+export { Capture } from "./Capture"
+export { Client } from "./Client"
+export { Merchant } from "./Merchant"
+export { Refund } from "./Refund"
+export { Settlement } from "./Settlement"
+export * as State from "./State"
+export { Statistics } from "./Statistics"
+export { Verification } from "./Verification"
+export * as base from "@payfunc/model-base"
 
 export function clear<T>(value: T): T
 export function clear(value: Record<string, any>): Record<string, any> {

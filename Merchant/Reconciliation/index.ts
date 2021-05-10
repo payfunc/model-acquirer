@@ -5,8 +5,8 @@ import { Fee } from "../Fee"
 import { Transaction as ReconciliationTransaction } from "./Transaction"
 
 export interface Reconciliation {
-	account: Account
-	currency: isoly.Currency
+	account: Account | { [currency in isoly.Currency | "default"]?: Account }
+	costPlus?: true
 	fees: Fee
 	reserves?: {
 		percentage: number
@@ -18,8 +18,11 @@ export namespace Reconciliation {
 	export function is(value: any | Reconciliation): value is Reconciliation {
 		return (
 			typeof value == "object" &&
-			Account.is(value.account) &&
-			isoly.Currency.is(value.currency) &&
+			(Account.is(value.account) ||
+				(typeof value.account == "object" && Account.is(value.account)) ||
+				Object.entries(value.account).every(
+					([currency, account]) => (isoly.Currency.is(currency) || currency == "default") && Account.is(account)
+				)) &&
 			Fee.is(value.fees) &&
 			(value.reserves == undefined ||
 				(typeof value.reserves == "object" &&
