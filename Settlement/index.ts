@@ -12,10 +12,10 @@ export interface Settlement {
 	payout?: isoly.Date
 	reserve?: { amount: number; payout?: isoly.Date }
 	created: isoly.Date
+	currency: isoly.Currency
 	gross: number
 	fee: number | { scheme: number; total: number }
 	net: number
-	currency: isoly.Currency
 	transactions: SettlementTransaction[]
 }
 
@@ -33,10 +33,11 @@ export namespace Settlement {
 			typeof value.reserve.amount == "number" &&
 			(value.reserve.payout == undefined || isoly.Date.is(value.reserve.payout)) &&
 			isoly.Date.is(value.created) &&
+			isoly.Currency.is(value.currency) &&
+			typeof value.gross == "number" &&
 			(typeof value.fee == "number" ||
 				(typeof value.fee == "object" && typeof value.fee.scheme == "number" && typeof value.fee.total == "number")) &&
 			typeof value.net == "number" &&
-			isoly.Currency.is(value.currency) &&
 			Array.isArray(value.transactions) &&
 			value.transactions.every(SettlementTransaction.is)
 		)

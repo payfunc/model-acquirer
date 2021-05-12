@@ -11,6 +11,7 @@ export interface Transaction {
 	scheme: model.Card.Scheme
 	area: isoly.CountryCode.Alpha2
 	created: isoly.Date
+	currency: isoly.Currency
 	gross: number
 	fee: number | { scheme: number; total: number }
 	net: number
@@ -28,23 +29,26 @@ export namespace Transaction {
 			model.Card.Scheme.is(value.scheme) &&
 			isoly.CountryCode.Alpha2.is(value.area) &&
 			isoly.Date.is(value.created) &&
+			isoly.Currency.is(value.currency) &&
 			typeof value.gross == "number" &&
 			(typeof value.fee == "number" ||
 				(typeof value.fee == "object" && typeof value.fee.scheme == "number" && typeof value.fee.total == "number")) &&
 			typeof value.net == "number" &&
-			typeof value.reserve == "object" &&
-			typeof value.reserve.amount == "number" &&
-			(value.reserve.payout == undefined || isoly.Date.is(value.reserve.payout))
+			(value.reserve == undefined ||
+				(typeof value.reserve == "object" &&
+					typeof value.reserve.amount == "number" &&
+					(value.reserve.payout == undefined || isoly.Date.is(value.reserve.payout))))
 		)
 	}
 	export function toCsv(transactions: Transaction[]): string {
-		let result = "authorization,reference,type,card,scheme,area,created,gross,fee,net,reserve amount,reserve payout\r\n"
+		let result =
+			"authorization,reference,type,card,scheme,area,created,currency,gross,fee,net,reserve amount,reserve payout\r\n"
 		for (const value of transactions)
 			result += `"${value.authorization}","${value.reference}","${value.type}","${value.card}","${value.scheme}","${
 				value.area
-			}","${value.created}","${value.gross}","${typeof value.fee == "number" ? value.fee : value.fee.total}","${
-				value.net
-			}","${value.reserve?.amount}","${value.reserve?.amount}"\r\n`
+			}","${value.created}","${value.currency}","${value.gross}","${
+				typeof value.fee == "number" ? value.fee : value.fee.total
+			}","${value.net}","${value.reserve?.amount}","${value.reserve?.amount}"\r\n`
 		return result
 	}
 	export function toCustomer(value: Transaction): Transaction
