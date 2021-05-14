@@ -12,6 +12,7 @@ export interface Creatable {
 	card: authly.Token | model.Card.Creatable
 	recurring?: "initial" | "subsequent"
 	customer?: base.Customer
+	target: string
 }
 export namespace Creatable {
 	export function is(value: any | Creatable): value is Creatable {
@@ -29,7 +30,8 @@ export namespace Creatable {
 			isoly.Currency.is(value.currency) &&
 			(authly.Token.is(value.card) || model.Card.Creatable.is(value.card)) &&
 			(value.recurring == undefined || ["initial", "subsequent"].includes(value.recurring)) &&
-			(value.customer == undefined || base.Customer.is(value.customer))
+			(value.customer == undefined || base.Customer.is(value.customer)) &&
+			typeof value.target == "string"
 		)
 	}
 }
