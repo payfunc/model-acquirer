@@ -36,6 +36,7 @@ export namespace Verification {
 	export type Creatable = VCreatable
 	export namespace Creatable {
 		export const is = VCreatable.is
+		export const flaw = VCreatable.flaw
 	}
 	export type Pares = VPares
 	export namespace Pares {
