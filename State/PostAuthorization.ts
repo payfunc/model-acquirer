@@ -59,13 +59,12 @@ export namespace PostAuthorization {
 		statistics: Statistics,
 		rate?: Record<string, number>
 	): PostAuthorization {
-		const factor =
-			rate && merchant.reconciliation.currency != authorization.currency ? rate[authorization.currency] ?? 1 : 1
+		const factor = rate && merchant.currency != authorization.currency ? rate[authorization.currency] ?? 1 : 1
 		return clear<PostAuthorization>({
 			merchant: Merchant.from(merchant, statistics),
-			amount: isoly.Currency.round(creatable.amount * factor, merchant.reconciliation.currency),
+			amount: isoly.Currency.round(creatable.amount * factor, merchant.currency),
 			authorization: {
-				amount: isoly.Currency.round(authorization.amount * factor, merchant.reconciliation.currency),
+				amount: isoly.Currency.round(authorization.amount * factor, merchant.currency),
 				currency: authorization.currency,
 				card: Card.from(authorization.card),
 				created: authorization.created,

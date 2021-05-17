@@ -12,7 +12,8 @@ describe("State.Authorization", () => {
 			categoryCode: "1234",
 			country: "SE",
 			name: "Test Merchant",
-			reconciliation: { account: "exampleAccount", currency: "SEK", fees: { other: {} } },
+			currency: "SEK",
+			reconciliation: { account: "exampleAccount", fees: { other: {} } },
 			reference: "123456",
 			rules: { master: [] },
 		}
