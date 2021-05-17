@@ -19,10 +19,11 @@ export namespace Reconciliation {
 		return (
 			typeof value == "object" &&
 			(Account.is(value.account) ||
-				(typeof value.account == "object" && Account.is(value.account)) ||
-				Object.entries(value.account).every(
-					([currency, account]) => (isoly.Currency.is(currency) || currency == "default") && Account.is(account)
-				)) &&
+				(typeof value.account == "object" &&
+					Object.entries(value.account).every(
+						([currency, account]) => (isoly.Currency.is(currency) || currency == "default") && Account.is(account)
+					))) &&
+			(value.costPlus == undefined || value.costPlus == true) &&
 			Fee.is(value.fees) &&
 			(value.reserves == undefined ||
 				(typeof value.reserves == "object" &&
@@ -37,8 +38,17 @@ export namespace Reconciliation {
 				typeof value != "object"
 					? undefined
 					: ([
-							Account.is(value.account) || { property: "accoun", type: "Merchant.Account" },
-							isoly.Currency.is(value.currency) || { property: "currency", type: "isoly.Currency" },
+							Account.is(value.account) ||
+								(typeof value.account == "object" &&
+									Object.entries(value.account).every(
+										([currency, account]) =>
+											(isoly.Currency.is(currency) || currency == "default") && Account.is(account)
+									)) || {
+									property: "account",
+									type: 'Merchant.Account | { [currency in isoly.Currency | "default"]?: Merchant.Account }',
+								},
+							value.costPlus == undefined ||
+								value.costPlus == true || { property: "costPlus", type: "undefined | true" },
 							Fee.is(value.fees) || { property: "fees", type: "Merchant.Fee" },
 							typeof value.reserves == "object" || { property: "reserves", type: "object" },
 							typeof value.reserves.percentage == "number" || { property: "reserves.percentage", type: "number" },

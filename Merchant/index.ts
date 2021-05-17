@@ -32,6 +32,7 @@ export namespace Merchant {
 			typeof value.reference == "string" &&
 			(value.descriptor == undefined || typeof value.descriptor == "string") &&
 			typeof value.name == "string" &&
+			isoly.Currency.is(value.currency) &&
 			MerchantReconciliation.is(value.reconciliation) &&
 			isoly.CountryCode.Alpha2.is(value.country) &&
 			typeof value.categoryCode == "string" &&
@@ -54,6 +55,7 @@ export namespace Merchant {
 							value.descriptor == undefined ||
 								typeof value.descriptor == "string" || { property: "descriptor", type: "string | undefined" },
 							typeof value.name == "string" || { property: "name", type: "string" },
+							isoly.Currency.is(value.currency) || { property: "currency", type: "isoly.Currency" },
 							MerchantReconciliation.is(value.reconciliation) || MerchantReconciliation.flaw(value.reconciliation),
 							isoly.CountryCode.Alpha2.is(value.country) || { property: "country", type: "isoly.CountryCode.Alpha2" },
 							typeof value.categoryCode == "string" || { property: "categoryCode", type: "string" },

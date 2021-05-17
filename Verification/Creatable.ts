@@ -54,10 +54,10 @@ export namespace Creatable {
 									["method", "challenge", "pares"].includes(value.response.type) &&
 									typeof value.response.data == "string") || {
 									property: "response",
-									type: '{type:"pares" | "method" | "challenge";data:string}',
+									type: '{ type: "pares" | "method" | "challenge"; data: string }',
 								},
 							value.browser == undefined ||
-								base.Browser.is(value.browser) || { property: "browser", type: "base.Browser" },
+								base.Browser.is(value.browser) || { property: "browser", type: "base.Browser | undefined" },
 							isoly.Currency.is(value.currency) || { property: "currency", type: "isoly.Currency" },
 							authly.Token.is(value.card) ||
 								model.Card.Creatable.is(value.card) || { property: "card", type: "Card.Creatable | authly.Token" },
