@@ -1,6 +1,20 @@
 import { Settlement } from "./index"
+import { Transaction } from "./Transaction"
 
 describe("Settlement", () => {
+	const transaction: Transaction = {
+		authorization: "12345",
+		reference: "234242",
+		type: "authorization",
+		card: "debit",
+		scheme: "mastercard",
+		area: "SE",
+		created: "2020-02-16",
+		currency: "SEK",
+		gross: 2,
+		fee: 3,
+		net: 12,
+	}
 	const settlement: Settlement[] = [
 		{
 			reference: "example",
@@ -11,24 +25,11 @@ describe("Settlement", () => {
 			},
 			payout: "2020-03-02",
 			created: "2020-01-16",
+			currency: "EUR",
 			gross: 2,
 			fee: { scheme: 2, total: 3 },
 			net: 4,
-			currency: "EUR",
-			transactions: [
-				{
-					authorization: "12345",
-					reference: "234242",
-					type: "authorization",
-					card: "debit",
-					scheme: "mastercard",
-					area: "SE",
-					created: "2020-02-16",
-					gross: 2,
-					fee: 3,
-					net: 12,
-				},
-			],
+			transactions: [transaction],
 		},
 	]
 	const withoutTransactions: Settlement[] = [
@@ -109,13 +110,16 @@ describe("Settlement", () => {
 			transactions: [],
 		},
 	]
+	it("Transaction.is", () => {
+		expect(Transaction.is(transaction)).toEqual(true)
+	})
 	it("toCsv", () => {
 		const csv = Settlement.toCsv(settlement)
 		expect(csv).toEqual(
 			"reference,merchant,start date,end date,payout date,reserve amount,reserve payout,created,gross,fee,net,currency\r\n" +
 				'"example","SQJzzNur","2020-02-01","2020-02-07","2020-03-02","undefined","undefined","2020-01-16","2","3","4","EUR"\r\n' +
-				"authorization,reference,type,card,scheme,area,created,gross,fee,net,reserve amount,reserve payout\r\n" +
-				'"12345","234242","authorization","debit","mastercard","SE","2020-02-16","2","3","12","undefined","undefined"\r\n'
+				"authorization,reference,type,card,scheme,area,created,currency,gross,fee,net,reserve amount,reserve payout\r\n" +
+				'"12345","234242","authorization","debit","mastercard","SE","2020-02-16","SEK","2","3","12","undefined","undefined"\r\n'
 		)
 	})
 	it("toCsv without transactions", () => {
@@ -159,6 +163,7 @@ describe("Settlement", () => {
 					scheme: "mastercard",
 					area: "SE",
 					created: "2020-02-16",
+					currency: "SEK",
 					gross: 2,
 					fee: 3,
 					net: 12,
