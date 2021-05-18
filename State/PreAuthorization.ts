@@ -48,12 +48,11 @@ export namespace PreAuthorization {
 		verification?: "verified" | "unavailable" | "rejected",
 		rate?: Record<string, number>
 	): PreAuthorization {
-		const factor =
-			rate && merchant.reconciliation.currency != authorization.currency ? rate[authorization.currency] ?? 1 : 1
+		const factor = rate && merchant.currency != authorization.currency ? rate[authorization.currency] ?? 1 : 1
 		return clear<PreAuthorization>({
 			merchant: Merchant.from(merchant, statistics),
 			authorization: {
-				amount: isoly.Currency.round(authorization.amount * factor, merchant.reconciliation.currency),
+				amount: isoly.Currency.round(authorization.amount * factor, merchant.currency),
 				currency: authorization.currency,
 				card: Card.from(authorization.card),
 				capture: authorization.capture,
