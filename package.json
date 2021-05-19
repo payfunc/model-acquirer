@@ -62,7 +62,7 @@
 		"gracely": "0.0.41",
 		"isoly": "0.0.33",
 		"isomorphic-fetch": "^3.0.0",
-		"selectively": "0.0.54"
+		"selectively": "0.0.60"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.11.0",
