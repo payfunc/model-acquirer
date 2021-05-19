@@ -10,8 +10,9 @@ describe("State.PreAuthorization tests", () => {
 			agent: "master",
 			categoryCode: "1234",
 			country: "SE",
+			currency: "SEK",
 			name: "Test Merchant",
-			reconciliation: { account: "exampleAccount", currency: "SEK", fees: { other: {} } },
+			reconciliation: { account: "exampleAccount", fees: { other: {} } },
 			reference: "123456",
 			rules: { master: [] },
 		}
@@ -85,10 +86,10 @@ describe("State.PreAuthorization tests", () => {
 		expect(acquirer.State.PreAuthorization.is(preAuthorization)).toBeTruthy()
 		preAuthorization = acquirer.State.PreAuthorization.from(
 			authorization,
-			{ ...merchant, reconciliation: { ...merchant.reconciliation, currency: "EUR" } },
+			{ ...merchant, currency: "EUR", reconciliation: { ...merchant.reconciliation } },
 			{ ...statistics, currency: "EUR" },
 			"verified",
-			{ EUR: 1, SEK: 0.1 }
+			{ EUR: 10, SEK: 0.1 }
 		)
 		expect(preAuthorization).toEqual({
 			...expectedOutput,

@@ -28,7 +28,7 @@
 			"^.+\\.(j|t)sx?$": "ts-jest"
 		},
 		"transformIgnorePatterns": [
-			"<rootDir>/node_modules/(?!(cryptly|authly|isoly|gracely|@payfunc)/.*)"
+			"<rootDir>/node_modules/(?!(cloud-http|cryptly|authly|isoly|gracely|@payfunc)/.*)"
 		],
 		"testEnvironment": "node",
 		"testRegex": "((\\.|/)(test|spec))(\\.|\\/.+)(jsx?|tsx?)$",
@@ -55,10 +55,11 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
+		"@payfunc/model-base": "^0.0.3",
 		"@payfunc/model-card": "^0.1.17",
 		"@payfunc/model-log": "^0.0.6",
 		"authly": "^0.1.7",
-		"gracely": "0.0.40",
+		"gracely": "0.0.41",
 		"isoly": "0.0.33",
 		"isomorphic-fetch": "^3.0.0",
 		"selectively": "0.0.54"
@@ -72,6 +73,7 @@
 		"@typescript-eslint/parser": "4.1.1",
 		"babel-core": "^6.26.3",
 		"babel-jest": "^26.0.1",
+		"dotenv": "^8.2.0",
 		"eslint": "7.9.0",
 		"eslint-plugin-prettierx": "github:nilssonemma/eslint-plugin-prettierx#master",
 		"eslint-plugin-simple-import-sort": "^7.0.0",

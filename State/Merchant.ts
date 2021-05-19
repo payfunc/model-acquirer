@@ -41,7 +41,7 @@ export namespace Merchant {
 			descriptor: merchant.descriptor ?? merchant.name,
 			country: merchant.country,
 			name: merchant.name,
-			currency: merchant.reconciliation.currency,
+			currency: merchant.currency,
 			scheme: Object.keys(merchant.reconciliation.fees).filter(model.Card.Scheme.is),
 			refundable: Statistics.refundable(statistics),
 			captured: calculate(statistics.captured, limit),
