@@ -11,7 +11,8 @@ describe("State.PostAuthorization tests", () => {
 			categoryCode: "1234",
 			country: "SE",
 			name: "Test Merchant",
-			reconciliation: { account: "exampleAccount", currency: "SEK", fees: { other: {} } },
+			currency: "SEK",
+			reconciliation: { account: "exampleAccount", fees: { other: {} } },
 			reference: "123456",
 			rules: { master: [] },
 		}
@@ -90,14 +91,14 @@ describe("State.PostAuthorization tests", () => {
 		postAuthorization = acquirer.State.PostAuthorization.from(
 			{ ...authorization, currency: "GBP" },
 			{ amount: 105 },
-			{ ...merchant, reconciliation: { ...merchant.reconciliation, currency: "USD" } },
+			{ ...merchant, reconciliation: { ...merchant.reconciliation } },
 			{ ...statistics, currency: "USD" },
 			{ EUR: 5, SEK: 0.2 }
 		)
 		expect(postAuthorization).toEqual({
 			...expectedOutput,
 			amount: 105,
-			merchant: { ...expectedOutput.merchant, currency: "USD" },
+			merchant: { ...expectedOutput.merchant },
 			authorization: { ...expectedOutput.authorization, currency: "GBP", amount: 100 },
 		})
 		expect(acquirer.State.PostAuthorization.is(postAuthorization)).toBeTruthy()

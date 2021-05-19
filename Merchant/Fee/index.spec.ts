@@ -6,6 +6,7 @@ describe("Fee testing", () => {
 		authorization: "id",
 		card: "credit",
 		created: "2021-01-01T12:00:001Z",
+		currency: "SEK",
 		net: 1234.1,
 		fee: 0,
 		gross: 1234.1,
