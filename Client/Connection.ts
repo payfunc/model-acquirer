@@ -1,5 +1,4 @@
 import * as gracely from "gracely"
-import { default as fetch } from "isomorphic-fetch"
 
 export class Connection {
 	private constructor(readonly url: string, readonly token: string) {}

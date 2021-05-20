@@ -48,7 +48,7 @@ describe("Statistics", () => {
 			currency: "SEK",
 			captured: differentiate(decimalNumbers, 0.1),
 			refunded: differentiate(decimalNumbers, 1.5),
-			reserves: differentiate(decimalNumbers, 10),
+			reserves: { in: differentiate(decimalNumbers, 10), out: differentiate(decimalNumbers, 10) },
 			settled: differentiate(decimalNumbers, 100),
 			fees: differentiate(decimalNumbers, 0.005),
 		}
@@ -57,7 +57,7 @@ describe("Statistics", () => {
 			currency: "SEK",
 			captured: 0.12,
 			refunded: 1.78,
-			reserves: 11.89,
+			reserves: 23.78,
 			settled: 118.89,
 			fees: 0.01,
 		})
@@ -66,7 +66,7 @@ describe("Statistics", () => {
 			currency: "SEK",
 			captured: 0.09,
 			refunded: 1.33,
-			reserves: 8.89,
+			reserves: 17.78,
 			settled: 88.89,
 			fees: 0,
 		})
