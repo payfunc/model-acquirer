@@ -7,7 +7,9 @@
 		"outDir": "dist",
 		"baseUrl": ".",
 		"paths": { "*": ["types/*"] },
-		"allowSyntheticDefaultImports":true
+		"allowSyntheticDefaultImports":true,
+		"types": ["@cloudflare/workers-types","node"]
+
 	},
 	"files": [
 		"index.ts",

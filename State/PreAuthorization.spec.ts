@@ -23,7 +23,7 @@ describe("State.PreAuthorization tests", () => {
 			refunded: {},
 			settled: {},
 			fees: {},
-			reserves: {},
+			reserves: { in: {}, out: {} },
 		}
 		const card: model.Card.Creatable = {
 			pan: "4111111111111111",
