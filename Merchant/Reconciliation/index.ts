@@ -1,11 +1,11 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
-import { Account } from "../Account"
+import { Account as ReconciliationAccount } from "../Account"
 import { Fee } from "../Fee"
 import { Transaction as ReconciliationTransaction } from "./Transaction"
 
 export interface Reconciliation {
-	account: Account | { [currency in isoly.Currency | "default"]?: Account }
+	account: ReconciliationAccount | { [currency in isoly.Currency | "default"]?: ReconciliationAccount }
 	costPlus?: true
 	fees: Fee
 	reserves?: {
@@ -18,10 +18,11 @@ export namespace Reconciliation {
 	export function is(value: any | Reconciliation): value is Reconciliation {
 		return (
 			typeof value == "object" &&
-			(Account.is(value.account) ||
+			(ReconciliationAccount.is(value.account) ||
 				(typeof value.account == "object" &&
 					Object.entries(value.account).every(
-						([currency, account]) => (isoly.Currency.is(currency) || currency == "default") && Account.is(account)
+						([currency, account]) =>
+							(isoly.Currency.is(currency) || currency == "default") && ReconciliationAccount.is(account)
 					))) &&
 			(value.costPlus == undefined || value.costPlus == true) &&
 			Fee.is(value.fees) &&
@@ -38,11 +39,11 @@ export namespace Reconciliation {
 				typeof value != "object"
 					? undefined
 					: ([
-							Account.is(value.account) ||
+							ReconciliationAccount.is(value.account) ||
 								(typeof value.account == "object" &&
 									Object.entries(value.account).every(
 										([currency, account]) =>
-											(isoly.Currency.is(currency) || currency == "default") && Account.is(account)
+											(isoly.Currency.is(currency) || currency == "default") && ReconciliationAccount.is(account)
 									)) || {
 									property: "account",
 									type: 'Merchant.Account | { [currency in isoly.Currency | "default"]?: Merchant.Account }',
@@ -61,5 +62,10 @@ export namespace Reconciliation {
 	export namespace Transaction {
 		export const is = ReconciliationTransaction.is
 		export const toCsv = ReconciliationTransaction.toCsv
+	}
+
+	export type Account = ReconciliationAccount
+	export namespace Account {
+		export const is = ReconciliationAccount.is
 	}
 }
