@@ -25,9 +25,9 @@ export class Client {
 			merchant,
 			capture: async (amount, currency) => await capture(amount, currency, stub),
 			get: async (currency, rate) => await get(currency, rate, stub),
-			settle: async (settlement, date) => await settle(settlement, date, stub),
+			settle: async (settlement, date) => await settle(date, settlement, stub),
 			refund: async (amount, currency) => await refund(amount, currency, stub),
-			rebuild: async (authorizations, settlements, rate) => await rebuild(authorizations, settlements, rate, stub),
+			rebuild: async (authorizations, settlements, rate) => await rebuild(authorizations, rate, settlements, stub),
 		}
 	}
 	static open(connection: DurableObjectNamespace): Client {
@@ -35,54 +35,50 @@ export class Client {
 	}
 }
 
+async function stubFetch<T>(
+	stub: DurableObjectStub,
+	resource: string,
+	body: Record<string, any>
+): Promise<T | gracely.Error> {
+	return await stub.fetch(resource, { method: "POST", body: JSON.stringify(body) }).then(
+		r => r.json(),
+		e => gracely.server.unknown(e.message)
+	)
+}
+
 async function capture(
 	amount: number,
 	currency: isoly.Currency,
 	stub: DurableObjectStub
 ): Promise<Statistics | gracely.Error> {
-	return await stub.fetch("capture", { body: JSON.stringify({ amount, currency }) }).then(
-		r => r.json(),
-		e => gracely.server.unknown(e.message)
-	)
+	return await stubFetch<Statistics>(stub, "capture", { amount, currency })
 }
 async function get(
 	currency: isoly.Currency,
 	rate: Record<string, number>,
 	stub: DurableObjectStub
 ): Promise<Statistics | gracely.Error> {
-	return await stub.fetch("get", { body: JSON.stringify({ currency, rate }) }).then(
-		r => r.json(),
-		e => gracely.server.unknown(e.message)
-	)
+	return await stubFetch<Statistics>(stub, "get", { currency, rate })
 }
 async function settle(
-	settlement: Settlement,
 	date: isoly.Date,
+	settlement: Settlement,
 	stub: DurableObjectStub
 ): Promise<Statistics | gracely.Error> {
-	return await stub.fetch("settle", { body: JSON.stringify({ settlement, date }) }).then(
-		r => r.json(),
-		e => gracely.server.unknown(e.message)
-	)
+	return await stubFetch<Statistics>(stub, "settle", { date, settlement })
 }
 async function refund(
 	amount: number,
 	currency: isoly.Currency,
 	stub: DurableObjectStub
 ): Promise<Statistics | gracely.Error> {
-	return await stub.fetch("refund", { body: JSON.stringify({ amount, currency }) }).then(
-		r => r.json(),
-		e => gracely.server.unknown(e.message)
-	)
+	return await stubFetch<Statistics>(stub, "refund", { amount, currency })
 }
 async function rebuild(
 	authorizations: Authorization[],
-	settlements: Settlement[],
 	rate: Record<string, number>,
+	settlements: Settlement[],
 	stub: DurableObjectStub
 ): Promise<Statistics[] | gracely.Error> {
-	return await stub.fetch("rebuild", { body: JSON.stringify({ authorizations, settlements, rate }) }).then(
-		r => r.json(),
-		e => gracely.server.unknown(e.message)
-	)
+	return await stubFetch<Statistics[]>(stub, "refund", { authorizations, rate, settlements })
 }
