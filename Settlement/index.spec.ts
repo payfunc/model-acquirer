@@ -116,27 +116,8 @@ describe("Settlement", () => {
 	it("toCsv", () => {
 		const csv = Settlement.toCsv(settlement)
 		expect(csv).toEqual(
-			"reference,merchant,start date,end date,payout date,reserve amount,reserve payout,created,gross,fee,net,currency\r\n" +
-				'"example","SQJzzNur","2020-02-01","2020-02-07","2020-03-02","undefined","undefined","2020-01-16","2","3","4","EUR"\r\n' +
-				"authorization,reference,type,card,scheme,area,created,currency,gross,fee,net,reserve amount,reserve payout\r\n" +
-				'"12345","234242","authorization","debit","mastercard","SE","2020-02-16","SEK","2","3","12","undefined","undefined"\r\n'
-		)
-	})
-	it("toCsv without transactions", () => {
-		const csv = Settlement.toCsv(withoutTransactions)
-		expect(csv).toEqual(
-			"reference,merchant,start date,end date,payout date,reserve amount,reserve payout,created,gross,fee,net,currency\r\n" +
-				'"example","SQJzzNur","2020-02-01","2020-02-07","2020-03-02","undefined","undefined","2020-01-16","2","3","4","EUR"\r\n'
-		)
-	})
-	it("toCsv with multiple settlements", () => {
-		const csv = Settlement.toCsv(multiple)
-		expect(csv).toEqual(
-			"reference,merchant,start date,end date,payout date,reserve amount,reserve payout,created,gross,fee,net,currency\r\n" +
-				'"example1","SQJzzNur","2020-02-01","2020-02-07","2020-03-02","undefined","undefined","2020-01-16","2","3","4","EUR"\r\n' +
-				'"example2","SQJzzNur","2020-02-01","2020-02-07","2020-03-02","undefined","undefined","2020-01-16","2","6","4","EUR"\r\n' +
-				'"example3","SQJzzNur","2020-02-01","2020-02-07","2020-03-02","undefined","undefined","2020-01-16","2","3","4","EUR"\r\n' +
-				'"noPayout","SQJzzNur","2020-02-01","2020-02-07","undefined","undefined","undefined","2020-01-16","2","3","4","EUR"\r\n'
+			"reference,merchant,start,end,payout date,payout amount,reserve release,reserve amount,created,gross,fee,interchange,net,currency,transactions\r\n" +
+				'"example","SQJzzNur","2020-02-01","2020-02-07","2020-03-02","4","","0","2020-01-16","2","3","2","4","EUR","1"\r\n'
 		)
 	})
 	it("toCustomer", () => {
