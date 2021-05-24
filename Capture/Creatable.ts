@@ -1,5 +1,5 @@
 import * as gracely from "gracely"
-export class Creatable {
+export interface Creatable {
 	number?: string
 	amount?: number
 	auto?: true

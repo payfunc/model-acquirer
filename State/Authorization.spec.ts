@@ -24,7 +24,7 @@ describe("State.Authorization", () => {
 			refunded: {},
 			settled: {},
 			fees: {},
-			reserves: {},
+			reserves: { in: {}, out: {} },
 		}
 		const card: model.Card = {
 			iin: "411111",

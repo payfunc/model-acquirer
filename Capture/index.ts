@@ -3,7 +3,7 @@ import * as isoly from "isoly"
 import { Settlement } from "../Settlement"
 import { Creatable as CCreatable } from "./Creatable"
 
-export class Capture {
+export interface Capture {
 	number?: string
 	created: isoly.DateTime
 	reference?: string
