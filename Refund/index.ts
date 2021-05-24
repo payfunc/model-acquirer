@@ -3,7 +3,7 @@ import * as isoly from "isoly"
 import { Settlement } from "../Settlement"
 import { Creatable as RCreatable } from "./Creatable"
 
-export class Refund {
+export interface Refund {
 	number?: string
 	created: isoly.DateTime
 	reference?: string
