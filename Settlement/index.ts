@@ -50,17 +50,17 @@ export namespace Settlement {
 	export function toCsv(settlements: Settlement[]): string {
 		let result =
 			"reference,merchant,start,end,payout date,payout amount,reserve release,reserve amount,created,gross,fee,interchange,net,currency,transactions\r\n"
-
 		for (const settlement of settlements)
 			result += `"${settlement.reference}","${settlement.merchant}","${settlement.period.start}","${
 				settlement.period.end
-			}","${settlement.payout}","${settlement.net - (settlement.reserve?.amount ?? 0)}","${
-				settlement.reserve?.payout ?? ""
-			}","${settlement.reserve?.amount ?? 0}","${settlement.created}","${settlement.gross}","${
-				typeof settlement.fee == "number" ? settlement.fee : settlement.fee.total
-			}","${typeof settlement.fee == "number" ? 0 : settlement.fee.scheme}","${settlement.net}","${
+			}","${settlement.payout}","${isoly.Currency.round(
+				settlement.net - (settlement.reserve?.amount ?? 0),
 				settlement.currency
-			}","${settlement.transactions.length}"\r\n`
+			)}","${settlement.reserve?.payout ?? ""}","${settlement.reserve?.amount ?? 0}","${settlement.created}","${
+				settlement.gross
+			}","${typeof settlement.fee == "number" ? settlement.fee : settlement.fee.total}","${
+				typeof settlement.fee == "number" ? 0 : settlement.fee.scheme
+			}","${settlement.net}","${settlement.currency}","${settlement.transactions.length}"\r\n`
 		return result
 	}
 	export function toCustomer(value: Settlement): Settlement
