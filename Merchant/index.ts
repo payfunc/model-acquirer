@@ -100,9 +100,13 @@ export namespace Merchant {
 		export const is = MerchantReconciliation.is
 		export const flaw = MerchantReconciliation.flaw
 		export type Transaction = MerchantReconciliation.Transaction
+		export type Account = MerchantReconciliation.Account
 		export namespace Transaction {
 			export const is = MerchantReconciliation.Transaction.is
 			export const toCsv = MerchantReconciliation.Transaction.toCsv
+		}
+		export namespace Account {
+			export const is = MerchantReconciliation.Account.is
 		}
 	}
 }
