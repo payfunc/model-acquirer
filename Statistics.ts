@@ -1,6 +1,6 @@
 import * as isoly from "isoly"
 import * as authly from "authly"
-import { Settlement } from "../Settlement"
+import { Settlement } from "./Settlement"
 export interface Statistics {
 	merchant: authly.Identifier
 	currency: isoly.Currency
