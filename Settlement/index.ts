@@ -29,9 +29,10 @@ export namespace Settlement {
 			isoly.Date.is(value.period.start) &&
 			isoly.Date.is(value.period.end) &&
 			(value.payout == undefined || isoly.Date.is(value.payout)) &&
-			typeof value.reserve == "object" &&
-			typeof value.reserve.amount == "number" &&
-			(value.reserve.payout == undefined || isoly.Date.is(value.reserve.payout)) &&
+			(value.reserve == undefined ||
+				(typeof value.reserve == "object" &&
+					typeof value.reserve.amount == "number" &&
+					(value.reserve.payout == undefined || isoly.Date.is(value.reserve.payout)))) &&
 			isoly.Date.is(value.created) &&
 			isoly.Currency.is(value.currency) &&
 			typeof value.gross == "number" &&
