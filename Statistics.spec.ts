@@ -1,5 +1,5 @@
 import * as isoly from "isoly"
-import { Statistics } from "./index"
+import { Statistics } from "./Statistics"
 
 describe("Statistics", () => {
 	const records = {
