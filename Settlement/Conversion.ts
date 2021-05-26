@@ -62,7 +62,7 @@ export namespace Conversion {
 				result += `"${transaction.area}",`
 
 				result += `"${transaction.currency}",`
-				result += `"${settlement.payout}",`
+				result += `"${settlement?.payout ?? ""}",`
 				result += `"${isoly.Currency.round(
 					transaction.net - (transaction.reserve?.amount ?? 0),
 					transaction.currency
