@@ -2,7 +2,12 @@ import * as selectively from "selectively"
 
 export type Recurring = "initial" | InitialRecurring | SubsequentRecurring | ScheduledRecurring
 type InitialRecurring = { type: "initial"; initiator: "cardholder" }
-type SubsequentRecurring = { type: "subsequent"; reference: string; initiator: "cardholder" | "merchant" }
+type SubsequentRecurring = {
+	type: "subsequent"
+	reference: string
+	scheduled?: false
+	initiator: "cardholder" | "merchant"
+}
 type ScheduledRecurring = { type: "subsequent"; reference: string; scheduled: true; initiator: "merchant" }
 
 export namespace Recurring {
