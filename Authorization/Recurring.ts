@@ -12,7 +12,7 @@ type ScheduledRecurring = { type: "subsequent"; reference: string; scheduled: tr
 
 export namespace Recurring {
 	export function is(value: any | Recurring): value is Recurring {
-		return isInitial(value) || isSubsequent(value) || isScheduled(value)
+		return value == "initial" || isInitial(value) || isSubsequent(value) || isScheduled(value)
 	}
 	function isInitial(value: any | InitialRecurring): value is InitialRecurring {
 		return typeof value == "object" && value.type == "initial" && value.initiator == "cardholder"
