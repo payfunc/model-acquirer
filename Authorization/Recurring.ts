@@ -35,24 +35,19 @@ export namespace Recurring {
 			value.type == "subsequent"
 		)
 	}
-	export namespace Template {
-		export const initial = new selectively.Type.Object({
-			type: new selectively.Type.String("initial"),
-			initiator: new selectively.Type.String("cardholder"),
-		})
-		export const subsequent = new selectively.Type.Object({
-			type: new selectively.Type.String("initial"),
+	export const template = new selectively.Type.Union([
+		new selectively.Type.String("initial"),
+		new selectively.Type.Object({
+			type: new selectively.Type.Union([
+				new selectively.Type.String("initial"),
+				new selectively.Type.String("subsequent"),
+			]),
 			initiator: new selectively.Type.Union([
 				new selectively.Type.String("cardholder"),
 				new selectively.Type.String("merchant"),
 			]),
-			reference: new selectively.Type.String(),
-		})
-		export const scheduled = new selectively.Type.Object({
-			type: new selectively.Type.String("initial"),
-			initiator: new selectively.Type.String("merchant"),
-			reference: new selectively.Type.String(),
 			scheduled: new selectively.Type.Boolean(),
-		})
-	}
+			reference: new selectively.Type.String(),
+		}),
+	])
 }

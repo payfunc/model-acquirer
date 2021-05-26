@@ -233,12 +233,7 @@ export namespace Authorization {
 			currency: new selectively.Type.Union(isoly.Currency.types.map(c => new selectively.Type.String(c))),
 			card: Card.template,
 			descriptor: new selectively.Type.String(),
-			recurring: new selectively.Type.Union([
-				new selectively.Type.String("initial"),
-				AcquirerAuthorization.Recurring.Template.initial,
-				AcquirerAuthorization.Recurring.Template.subsequent,
-				AcquirerAuthorization.Recurring.Template.scheduled,
-			]),
+			recurring: AcquirerAuthorization.Recurring.template,
 			verification: new selectively.Type.Union([
 				new selectively.Type.String("verified"),
 				new selectively.Type.String("unavailable"),

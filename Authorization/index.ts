@@ -193,10 +193,6 @@ export namespace Authorization {
 	export type Recurring = AuthorizationRecurring
 	export namespace Recurring {
 		export const is = AuthorizationRecurring.is
-		export namespace Template {
-			export const initial = AuthorizationRecurring.Template.initial
-			export const subsequent = AuthorizationRecurring.Template.subsequent
-			export const scheduled = AuthorizationRecurring.Template.scheduled
-		}
+		export const template = AuthorizationRecurring.template
 	}
 }
