@@ -1,3 +1,4 @@
+import { Authorization } from "../Authorization"
 import { Settlement } from "./index"
 import { Transaction } from "./Transaction"
 
@@ -110,8 +111,36 @@ describe("Settlement", () => {
 			transactions: [],
 		},
 	]
+	const authorization: Authorization[] = [
+		{
+			id: "12343213215",
+			merchant: "testtest",
+			amount: 101.1,
+			currency: "SEK",
+			history: [],
+			capture: [],
+			refund: [],
+			created: "2021-04-01T09:00:00.000Z",
+			reference: "12341234",
+			card: {
+				csc: "matched",
+				expires: [2, 28],
+				iin: "123456",
+				last4: "1111",
+				scheme: "visa",
+				type: "debit",
+			},
+			status: { captured: 1 },
+		},
+	]
 	it("Transaction.is", () => {
 		expect(Transaction.is(transaction)).toEqual(true)
+	})
+
+	it("toDetailedCsv", () => {
+		expect(Settlement.toDetailedCsv(settlement, authorization)).toEqual(
+			`merchant,settlement reference,operation,posting date,authorization id,authorization number,card IIN,card type,card scheme,scheme reference,issuer country,currency,payout date,payout amount,reserve release,reserve amount,gross,fee,interchange,net\r\n"SQJzzNur","example","debit","2020-02-16","12345","","","debit","mastercard","234242","SE","SEK","2020-03-02","12","","0","2","3","0","12"\r\n`
+		)
 	})
 	it("toCsv", () => {
 		const csv = Settlement.toCsv(settlement)
