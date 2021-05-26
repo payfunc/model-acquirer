@@ -46,9 +46,9 @@ export namespace Creatable {
 							value.capture == undefined ||
 								["auto"].some(v => v == value.capture) || { property: "capture", type: '"auto" | undefined' },
 							value.recurring == undefined ||
-								["initial", "subsequent"].includes(value.recurring) || {
+								Recurring.is(value.recurring) || {
 									property: "recurring",
-									type: `"initial" | "subsequent" | undefined`,
+									type: `Authorization.Recurring | undefined`,
 								},
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
