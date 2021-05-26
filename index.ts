@@ -1,13 +1,14 @@
+export * as base from "@payfunc/model-base"
 export { Authorization } from "./Authorization"
 export { Capture } from "./Capture"
 export { Client } from "./Client"
+export { Error } from "./Error"
 export { Merchant } from "./Merchant"
 export { Refund } from "./Refund"
 export { Settlement } from "./Settlement"
 export * as State from "./State"
 export { Statistics } from "./Statistics"
 export { Verification } from "./Verification"
-export * as base from "@payfunc/model-base"
 
 export function clear<T>(value: T): T
 export function clear(value: Record<string, any>): Record<string, any> {
