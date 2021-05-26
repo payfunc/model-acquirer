@@ -1,78 +1,16 @@
-import * as isoly from "isoly"
-import * as authly from "authly"
+import { Conversion } from "./Conversion"
+import { Settlement as modelSettlement } from "./Settlement"
 import { Transaction as SettlementTransaction } from "./Transaction"
 
-export interface Settlement {
-	reference: string
-	merchant: authly.Identifier
-	period: {
-		start: isoly.Date
-		end: isoly.Date
-	}
-	payout?: isoly.Date
-	reserve?: { amount: number; payout?: isoly.Date }
-	created: isoly.Date
-	currency: isoly.Currency
-	gross: number
-	fee: number | { scheme: number; total: number }
-	net: number
-	transactions: SettlementTransaction[]
-}
-
+export type Settlement = modelSettlement
 export namespace Settlement {
-	export function is(value: any | Settlement): value is Settlement {
-		return (
-			typeof value == "object" &&
-			typeof value.reference == "string" &&
-			authly.Identifier.is(value.merchant) &&
-			typeof value.period == "object" &&
-			isoly.Date.is(value.period.start) &&
-			isoly.Date.is(value.period.end) &&
-			(value.payout == undefined || isoly.Date.is(value.payout)) &&
-			(value.reserve == undefined ||
-				(typeof value.reserve == "object" &&
-					typeof value.reserve.amount == "number" &&
-					(value.reserve.payout == undefined || isoly.Date.is(value.reserve.payout)))) &&
-			isoly.Date.is(value.created) &&
-			isoly.Currency.is(value.currency) &&
-			typeof value.gross == "number" &&
-			(typeof value.fee == "number" ||
-				(typeof value.fee == "object" && typeof value.fee.scheme == "number" && typeof value.fee.total == "number")) &&
-			typeof value.net == "number" &&
-			Array.isArray(value.transactions) &&
-			value.transactions.every(SettlementTransaction.is)
-		)
-	}
+	export const toCsv = Conversion.toCsv
+	export const toDetailedCsv = Conversion.toDetailedCsv
+	export const is = modelSettlement.is
+	export const toCustomer = modelSettlement.toCustomer
 	export type Transaction = SettlementTransaction
 	export namespace Transaction {
 		export const is = SettlementTransaction.is
 		export const toCustomer = SettlementTransaction.toCustomer
-	}
-	export function toCsv(settlements: Settlement[]): string {
-		let result =
-			"reference,merchant,start,end,payout date,payout amount,reserve release,reserve amount,created,gross,fee,interchange,net,currency,transactions\r\n"
-		for (const settlement of settlements)
-			result += `"${settlement.reference}","${settlement.merchant}","${settlement.period.start}","${
-				settlement.period.end
-			}","${settlement.payout}","${isoly.Currency.round(
-				settlement.net - (settlement.reserve?.amount ?? 0),
-				settlement.currency
-			)}","${settlement.reserve?.payout ?? ""}","${settlement.reserve?.amount ?? 0}","${settlement.created}","${
-				settlement.gross
-			}","${typeof settlement.fee == "number" ? settlement.fee : settlement.fee.total}","${
-				typeof settlement.fee == "number" ? 0 : settlement.fee.scheme
-			}","${settlement.net}","${settlement.currency}","${settlement.transactions.length}"\r\n`
-		return result
-	}
-	export function toCustomer(value: Settlement): Settlement
-	export function toCustomer(value: Settlement[]): Settlement[]
-	export function toCustomer(value: Settlement | Settlement[]): Settlement | Settlement[] {
-		return Array.isArray(value)
-			? value.map(s => toCustomer(s))
-			: {
-					...value,
-					transactions: SettlementTransaction.toCustomer(value.transactions),
-					fee: typeof value.fee == "object" ? value.fee.total : value.fee,
-			  }
 	}
 }
