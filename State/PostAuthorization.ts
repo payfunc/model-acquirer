@@ -72,7 +72,7 @@ export namespace PostAuthorization {
 				captured: fromHistory(authorization.capture),
 				refunded: fromHistory(authorization.refund),
 				voided: authorization.void,
-				recurring: authorization.recurring,
+				recurring: authorization.recurring == "initial" ? "initial" : authorization.recurring?.type,
 			},
 			descriptor: authorization.descriptor,
 			now: isoly.Date.now(),

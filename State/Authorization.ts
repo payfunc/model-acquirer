@@ -23,7 +23,7 @@ export interface Authorization {
 		currency: isoly.Currency
 		card: Card
 		descriptor?: string
-		recurring?: "initial" | "subsequent"
+		recurring?: AcquirerAuthorization.Recurring
 		verification?: "verified" | "unavailable" | "rejected"
 		history: AcquirerAuthorization.Change[]
 		captured: { history: Capture[]; amount: number; latest?: isoly.DateTime; auto?: true }
@@ -49,7 +49,7 @@ export namespace Authorization {
 			Card.is(value.authorization.card) &&
 			(value.authorization.descriptor == undefined || typeof value.authorization.descriptor == "string") &&
 			(value.authorization.recurring == undefined ||
-				["initial", "subsequent"].includes(value.authorization.recurring)) &&
+				AcquirerAuthorization.Recurring.is(value.authorization.recurring)) &&
 			Array.isArray(value.authorization.history) &&
 			value.authorization.history.every(AcquirerAuthorization.Change.is) &&
 			typeof value.authorization.captured == "object" &&
@@ -235,7 +235,9 @@ export namespace Authorization {
 			descriptor: new selectively.Type.String(),
 			recurring: new selectively.Type.Union([
 				new selectively.Type.String("initial"),
-				new selectively.Type.String("subsequent"),
+				AcquirerAuthorization.Recurring.Template.initial,
+				AcquirerAuthorization.Recurring.Template.subsequent,
+				AcquirerAuthorization.Recurring.Template.scheduled,
 			]),
 			verification: new selectively.Type.Union([
 				new selectively.Type.String("verified"),

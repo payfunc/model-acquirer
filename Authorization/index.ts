@@ -7,8 +7,8 @@ import { Refund } from "../Refund"
 import { Change as AChange } from "./Change"
 import { Creatable as ACreatable } from "./Creatable"
 import { Operation as AuthorizationOperation } from "./Operation"
+import { Recurring as AuthorizationRecurring } from "./Recurring"
 import { Status as AuthorizationStatus } from "./Status"
-
 export interface Authorization {
 	id: authly.Identifier
 	merchant: authly.Identifier
@@ -19,7 +19,7 @@ export interface Authorization {
 	currency: isoly.Currency
 	card: model.Card
 	descriptor?: string
-	recurring?: "initial" | "subsequent"
+	recurring?: AuthorizationRecurring
 	history: AChange[]
 	capture: Capture[]
 	refund: Refund[]
@@ -40,7 +40,7 @@ export namespace Authorization {
 			isoly.Currency.is(value.currency) &&
 			model.Card.is(value.card) &&
 			(value.descriptor == undefined || typeof value.descriptor == "string") &&
-			(value.recurring == undefined || ["initial", "subsequent"].includes(value.recurring)) &&
+			(value.recurring == undefined || AuthorizationRecurring.is(value.recurring)) &&
 			Array.isArray(value.history) &&
 			value.history.every(AChange.is) &&
 			Array.isArray(value.capture) &&
@@ -188,5 +188,15 @@ export namespace Authorization {
 	export namespace Status {
 		export const types = AuthorizationStatus.types
 		export const is = AuthorizationStatus.is
+	}
+
+	export type Recurring = AuthorizationRecurring
+	export namespace Recurring {
+		export const is = AuthorizationRecurring.is
+		export namespace Template {
+			export const initial = AuthorizationRecurring.Template.initial
+			export const subsequent = AuthorizationRecurring.Template.subsequent
+			export const scheduled = AuthorizationRecurring.Template.scheduled
+		}
 	}
 }
