@@ -48,7 +48,7 @@ export namespace Transaction {
 				value.area
 			}","${value.created}","${value.currency}","${value.gross}","${
 				typeof value.fee == "number" ? value.fee : value.fee.total
-			}","${value.net}","${value.reserve?.amount}","${value.reserve?.amount}"\r\n`
+			}","${value.net}","${value.reserve?.amount}","${value.reserve?.payout}"\r\n`
 		return result
 	}
 	export function toCustomer(value: Transaction): Transaction
