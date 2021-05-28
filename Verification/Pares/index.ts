@@ -2,6 +2,7 @@ import * as gracely from "gracely"
 import * as isoly from "isoly"
 import * as authly from "authly"
 import * as http from "cloud-http"
+import { Error } from "../../Error"
 
 export interface Pares {
 	cavv: string
@@ -49,7 +50,7 @@ export namespace Pares {
 		pares: string | Record<string, any> | undefined
 	): Promise<Pares | gracely.Error> {
 		const response = !configuration
-			? gracely.client.unauthorized()
+			? Error.unauthorized()
 			: typeof pares != "string"
 			? { body: { pares } }
 			: pares.startsWith("eyJhbW91bnQ") // All internally simulated pares starts with these sequence
@@ -65,12 +66,12 @@ export namespace Pares {
 						body: { pares },
 					})
 					.catch(_ => undefined)
-		const result = !response ? gracely.server.unavailable() : await response.body
+		const result = !response ? Error.unavailable() : await response.body
 		if (typeof result == "object")
 			result.status = result.status ?? fromEci(result.eci)
 		return gracely.Error.is(result) || is(result)
 			? result
-			: gracely.client.malformedContent("verification", "Pares", "Cannot unpack pares.")
+			: Error.malformedContent("3ds problem", "verification", "Pares", "Cannot unpack pares.")
 	}
 	function unpackSimulated(pares: string): Pares | undefined {
 		let result: Pares | undefined

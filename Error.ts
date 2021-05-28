@@ -29,7 +29,6 @@ export namespace Error {
 	}
 	export function malformedContent(
 		error:
-			| "3ds authentication failure"
 			| "invalid card number"
 			| "unsupported card"
 			| "invalid expire date"
@@ -65,5 +64,8 @@ export namespace Error {
 	}
 	export function unknown(details?: any): gracely.Error {
 		return gracely.server.unknown(details, "unknown error")
+	}
+	export function unavailable(): gracely.Error {
+		return gracely.server.unavailable("backend problem")
 	}
 }
