@@ -1,4 +1,5 @@
 import * as gracely from "gracely"
+import { Error } from "../Error"
 
 export class Connection {
 	private constructor(readonly url: string, readonly token: string) {}
@@ -19,7 +20,7 @@ export class Connection {
 			body: JSON.stringify(request),
 		}).catch(_ => undefined)
 		return !response
-			? gracely.server.unavailable()
+			? Error.unavailable()
 			: response.headers.get("Content-Type")?.startsWith("application/json")
 			? response.json()
 			: response.text()
