@@ -59,7 +59,7 @@
 		"@payfunc/model-card": "^0.1.17",
 		"@payfunc/model-log": "^0.0.6",
 		"authly": "^0.1.7",
-		"gracely": "0.0.41",
+		"gracely": "^0.0.43",
 		"isoly": "0.0.33",
 		"isomorphic-fetch": "^3.0.0",
 		"selectively": "0.0.60"
