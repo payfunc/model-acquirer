@@ -7,7 +7,10 @@ import * as base from "@payfunc/model-base"
 export interface Creatable {
 	number: string
 	items: number | base.Item | base.Item[]
-	response?: { type: "method" | "challenge" | "pares"; data: string }
+	response?:
+		| { type: "method" | "challenge" | "pares"; data: string }
+		| { type: "method"; ThreeDSServerTransID: string; timeout: true }
+	version?: "2.1.0" | "2.2.0"
 	browser?: base.Browser
 	currency: isoly.Currency
 	card: authly.Token | model.Card.Creatable
@@ -26,7 +29,10 @@ export namespace Creatable {
 			(value.response == undefined ||
 				(typeof value.response == "object" &&
 					["method", "challenge", "pares"].includes(value.response.type) &&
-					typeof value.response.data == "string")) &&
+					typeof value.response.data == "string") ||
+				(value.response.type == "method" &&
+					value.response.timeout == true &&
+					typeof value.response.ThreeDSServerTransID == "string")) &&
 			(value.browser == undefined || base.Browser.is(value.browser)) &&
 			isoly.Currency.is(value.currency) &&
 			(authly.Token.is(value.card) || model.Card.Creatable.is(value.card)) &&
@@ -52,9 +58,13 @@ export namespace Creatable {
 							value.response == undefined ||
 								(typeof value.response == "object" &&
 									["method", "challenge", "pares"].includes(value.response.type) &&
-									typeof value.response.data == "string") || {
+									typeof value.response.data == "string") ||
+								(value.response.type == "method" &&
+									value.response.timeout == true &&
+									typeof value.response.ThreeDSServerTransID == "string") || {
 									property: "response",
-									type: '{ type: "pares" | "method" | "challenge"; data: string }',
+									type:
+										'{ type: "pares" | "method" | "challenge"; data: string } | { type: "method"; ThreeDSServerTransID: string; timeout: true }',
 								},
 							value.browser == undefined ||
 								base.Browser.is(value.browser) || { property: "browser", type: "base.Browser | undefined" },
