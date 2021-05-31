@@ -59,7 +59,7 @@ export namespace PreAuthorization {
 				descriptor: authorization.descriptor,
 				number: authorization.number,
 				verification,
-				recurring: authorization.recurring,
+				recurring: authorization.recurring == "initial" ? "initial" : authorization.recurring?.type,
 			},
 			now: isoly.Date.now(),
 		})
