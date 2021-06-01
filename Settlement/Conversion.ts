@@ -25,7 +25,7 @@ export namespace Conversion {
 			result += `"${settlement.merchant}",`
 			result += `"${settlement.period.start}",`
 			result += `"${settlement.period.end}",`
-			result += `"${settlement.payout}",`
+			result += `"${settlement.payout ?? ""}",`
 			result += `"${isoly.Currency.round(settlement.net - (settlement.reserve?.amount ?? 0), settlement.currency)}",`
 			result += `"${settlement.reserve?.payout ?? ""}",`
 			result += `"${settlement.reserve?.amount ?? 0}",`
