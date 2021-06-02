@@ -60,6 +60,7 @@ export namespace FailedAuthorization {
 				const state = log.entries.find(e => e.point == "PreAuthorization State")?.data.state
 				result.authorization = state?.authorization?.number ? state.authorization : { number: log.reference?.number }
 				result.authorization.created = log.created
+				result.authorization.status = ["failed"]
 				result.merchant = { id: log.merchant }
 				const response = log.entries.find(e => e.point == "response")?.data.body
 				result.authorization.reason =
