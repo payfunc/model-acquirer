@@ -146,19 +146,50 @@ export namespace Authorization {
 		return { ...authorization, status }
 	}
 	export function toCsv(authorizations: Authorization[]): string {
-		let result =
-			"id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n"
-		for (const value of authorizations)
-			result += `${value.id},${value.merchant},${value.number ?? ""},${value.reference},${value.created},${
-				value.amount
-			},${value.currency},${value.card.type ?? "unknown"},${value.card.scheme},${
-				value.card.iin + "**********" + value.card.last4
-			},${value.card.expires[0].toString().padStart(2, "0") + "/" + (2000 + value.card.expires[1]).toString()},${
-				value.descriptor ?? ""
-			},${value.recurring ?? ""},${isoly.Currency.round(
+		let result = ""
+		result += "id,"
+		result += "merchant,"
+		result += "number,"
+		result += "reference,"
+		result += "created,"
+		result += "amount,"
+		result += "currency,"
+		result += "card type,"
+		result += "card scheme,"
+		result += "card,"
+		result += "card expires,"
+		result += "descriptor,"
+		result += "recurring,"
+		result += "history,"
+		result += "capture,"
+		result += "refund,"
+		result += "void,"
+		result += "status"
+		result += "\r\n"
+		for (const value of authorizations) {
+			result += `"${value.id}",`
+			result += `"${value.merchant}",`
+			result += `"${value.number ?? ""}",`
+			result += `"${value.reference}",`
+			result += `"${value.created}",`
+			result += `"${value.amount}",`
+			result += `"${value.currency}",`
+			result += `"${value.card.type ?? "unknown"}",`
+			result += `"${value.card.scheme}",`
+			result += `"${value.card.iin + "**********" + value.card.last4}",`
+			result += `"${value.card.expires[0].toString().padStart(2, "0")}/${(2000 + value.card.expires[1]).toString()}",`
+			result += `"${value.descriptor ?? ""}",`
+			result += `"${value.recurring ?? ""}",`
+			result += `"${isoly.Currency.round(
 				value.history.reduce((r, h) => r + h.amount, 0),
 				value.currency
-			)},${captured(value)},${refunded(value)},${value.void ?? ""},${Object.keys(value.status).join(" ")}\r\n`
+			)}",`
+			result += `"${captured(value)}",`
+			result += `"${refunded(value)}",`
+			result += `"${value.void ?? ""}",`
+			result += `"${Object.keys(value.status).join(" ")}"`
+			result += "\r\n"
+		}
 		return result
 	}
 	export type Creatable = ACreatable
