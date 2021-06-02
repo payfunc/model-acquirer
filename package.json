@@ -1,6 +1,6 @@
 {
 	"name": "@payfunc/model-acquirer",
-	"version": "0.1.49",
+	"version": "0.1.50",
 	"description": "Model for Acquirer.",
 	"author": "PayFunc",
 	"license": "MIT",
