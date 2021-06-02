@@ -72,6 +72,7 @@ export namespace Merchant {
 		result += "mcc,"
 		result += "country,"
 		result += "reference,"
+		result += "currency,"
 		result += "\r\n"
 		for (const merchant of merchants) {
 			result += `"${merchant.id}",`
@@ -80,6 +81,7 @@ export namespace Merchant {
 			result += `"${merchant.categoryCode}",`
 			result += `"${merchant.country}",`
 			result += `"${merchant.reference}",`
+			result += `"${merchant.currency}",`
 			result += `\r\n`
 		}
 		return result
