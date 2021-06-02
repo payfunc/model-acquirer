@@ -6,6 +6,7 @@ import { Operation as MerchantOperation } from "./Operation"
 import { Reconciliation as MerchantReconciliation } from "./Reconciliation"
 import { Rule as MerchantRule } from "./Rule"
 import { Rules as MerchantRules } from "./Rules"
+
 export interface Merchant {
 	id: authly.Identifier
 	number?: string
@@ -62,6 +63,28 @@ export namespace Merchant {
 							MerchantRules.is(value.rules) || MerchantRules.flaw(value.rules),
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
+	}
+	export function toCsv(merchants: Merchant[]): string {
+		let result = ""
+		result += "id,"
+		result += "name,"
+		result += "mid,"
+		result += "mcc,"
+		result += "country,"
+		result += "reference,"
+		result += "currency,"
+		result += "\r\n"
+		for (const merchant of merchants) {
+			result += `"${merchant.id}",`
+			result += `"${merchant.name}",`
+			result += `"${"8103" + merchant.reference}",`
+			result += `"${merchant.categoryCode}",`
+			result += `"${merchant.country}",`
+			result += `"${merchant.reference}",`
+			result += `"${merchant.currency}",`
+			result += `\r\n`
+		}
+		return result
 	}
 	export type Operation = MerchantOperation
 	export namespace Operation {
