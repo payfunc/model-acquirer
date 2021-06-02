@@ -245,4 +245,27 @@ describe("Settlement", () => {
 			},
 		])
 	})
+	it("Settlement flaw", () => {
+		const settle = { ...settlement[0], period: { start: "2021-01-01" }, fee: undefined }
+		expect(Settlement.flaw(settle)).toEqual({
+			type: "Settlement",
+			flaws: [
+				{
+					property: "period",
+					type: "{start: isoly.Date, end: isoly.Date}",
+				},
+				{
+					property: "fee",
+					type: "number | { scheme: number; total: number }",
+				},
+			],
+		})
+	})
+	it("Transaction flaw", () => {
+		expect(Transaction.flaw(transaction)).toEqual({ type: "Transaction", flaws: [] })
+		expect(Transaction.flaw({ ...transaction, fee: undefined })).toEqual({
+			type: "Transaction",
+			flaws: [{ property: "fee", type: "number | { scheme: number; total: number }" }],
+		})
+	})
 })
