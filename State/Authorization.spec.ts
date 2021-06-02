@@ -62,8 +62,8 @@ describe("State.Authorization", () => {
 		])
 		expect(csv).toEqual(
 			"id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n" +
-				"1234567890123456,testtest,12345678,123412341234,2021-01-01T12:30:30.000Z,100,EUR,unknown,visa,411111**********1111,02/2028,test transaction,,0,0,0,,authorized\r\n" +
-				"1234567890123456,testtest,12345678,123412341234,2021-01-01T12:30:30.000Z,100,EUR,unknown,visa,411111**********1111,02/2028,test transaction,,0,100,0,,captured\r\n"
+				'"1234567890123456","testtest","12345678","123412341234","2021-01-01T12:30:30.000Z","100","EUR","unknown","visa","411111**********1111","02/2028","test transaction","","0","0","0","","authorized"\r\n' +
+				'"1234567890123456","testtest","12345678","123412341234","2021-01-01T12:30:30.000Z","100","EUR","unknown","visa","411111**********1111","02/2028","test transaction","","0","100","0","","captured"\r\n'
 		)
 	})
 })
