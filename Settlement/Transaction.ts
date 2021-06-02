@@ -1,3 +1,4 @@
+import * as gracely from "gracely"
 import * as isoly from "isoly"
 import * as authly from "authly"
 import * as model from "@payfunc/model-card"
@@ -40,6 +41,42 @@ export namespace Transaction {
 					(value.reserve.payout == undefined || isoly.Date.is(value.reserve.payout))))
 		)
 	}
+
+	export function flaw(value: Transaction | any): gracely.Flaw {
+		return {
+			type: "Transaction",
+			flaws:
+				typeof value != "object"
+					? undefined
+					: ([
+							authly.Identifier.is(value.authorization) || { property: "authorization", type: "authly.Identifier" },
+							typeof value.reference == "string" || { property: "reference", type: "string" },
+							Merchant.Operation.is(value.type) || { property: "type", type: "Merchant.Operation" },
+							["debit", "credit"].includes(value.card) || { property: "card", type: '"debit" | "credit"' },
+							model.Card.Scheme.is(value.scheme) || { property: "scheme", type: "model.Card.Scheme" },
+							isoly.CountryCode.Alpha2.is(value.area) || { property: "area", type: "isoly.CountryCode.Alpha2" },
+							isoly.Date.is(value.created) || { property: "created", type: "isoly.Date" },
+							isoly.Currency.is(value.currency) || { property: "currency", type: "isoly.Currency" },
+							typeof value.gross == "number" || { property: "gross", type: "number" },
+							typeof value.fee == "number" ||
+								(typeof value.fee == "object" &&
+									typeof value.fee.scheme == "number" &&
+									typeof value.fee.total == "number") || {
+									property: "fee",
+									type: "number | { scheme: number; total: number }",
+								},
+							typeof value.net == "number" || { property: "net", type: "number" },
+							value.reserve == undefined ||
+								(typeof value.reserve == "object" &&
+									typeof value.reserve.amount == "number" &&
+									(value.reserve.payout == undefined || isoly.Date.is(value.reserve.payout))) || {
+									property: "reserve",
+									type: "{amount: number, payout?: isoly.Date}",
+								},
+					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
+		}
+	}
+
 	export function toCsv(transactions: Transaction[]): string {
 		let result =
 			"authorization,reference,type,card,scheme,area,created,currency,gross,fee,net,reserve amount,reserve payout\r\n"
