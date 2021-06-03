@@ -205,6 +205,7 @@ describe("State.FailedAuthorization tests", () => {
 					descriptor: "string",
 					number: "1234123412341234",
 					reason: "Internal error",
+					status: ["failed"],
 				},
 				log: [
 					{
@@ -255,6 +256,7 @@ describe("State.FailedAuthorization tests", () => {
 											descriptor: "string",
 											number: "1234123412341234",
 											reason: "Internal error",
+											status: ["failed"],
 										},
 										merchant: {
 											captured: 10,
