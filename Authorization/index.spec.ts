@@ -113,10 +113,10 @@ describe("Authorization tests", () => {
 		voided = Authorization.calculateStatus(voided)
 		const header = `id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n`
 		const data = [
-			`1234123412341234,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,20.66,11.33,9.33,,authorized refunded settled\r\n`,
-			`1234567890123456,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,0,0,0,,authorized\r\n`,
-			`1234000012340000,testtest,,12341234,2021-04-01T09:00:00.000Z,101.1,SEK,debit,visa,123456**********1111,02/2028,,,0,101.1,0,,captured\r\n`,
-			`1234000012340001,testtest,,12341234,2021-04-01T09:00:00.000Z,40.4,EUR,debit,visa,123456**********1111,02/2028,,,0,0,0,2021-04-06T12:00:00.000Z,cancelled\r\n`,
+			`"1234123412341234","testtest","","12341234","2021-04-01T09:00:00.000Z","101.1","SEK","debit","visa","123456**********1111","02/2028","","","20.66","11.33","9.33","","authorized refunded settled"\r\n`,
+			`"1234567890123456","testtest","","12341234","2021-04-01T09:00:00.000Z","101.1","SEK","debit","visa","123456**********1111","02/2028","","","0","0","0","","authorized"\r\n`,
+			`"1234000012340000","testtest","","12341234","2021-04-01T09:00:00.000Z","101.1","SEK","debit","visa","123456**********1111","02/2028","","","0","101.1","0","","captured"\r\n`,
+			`"1234000012340001","testtest","","12341234","2021-04-01T09:00:00.000Z","40.4","EUR","debit","visa","123456**********1111","02/2028","","","0","0","0","2021-04-06T12:00:00.000Z","cancelled"\r\n`,
 		]
 		expect(Authorization.toCsv([authorization])).toEqual(header + data[0])
 		expect(Authorization.toCsv([authorization, authorized])).toEqual(header + data[0] + data[1])
