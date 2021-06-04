@@ -47,17 +47,15 @@ describe("State.Authorization", () => {
 			history: [],
 			created: "2021-01-01T12:30:30.000Z",
 		})
-		const log: Log[] = []
-		let state = Authorization.from(authorization, merchant, log)
+		let state = Authorization.from(authorization, merchant)
 		expect(Authorization.is(state)).toBeTruthy()
-		state = Authorization.from(authorization, merchant, log, statistics)
+		state = Authorization.from(authorization, merchant, statistics)
 		expect(Authorization.is(state)).toBeTruthy()
 		const csv = Authorization.toCsv([
 			state,
 			Authorization.from(
 				{ ...authorization, capture: [{ amount: 100, created: "2021-01-02T12:30:30.000Z", status: "approved" }] },
-				merchant,
-				log
+				merchant
 			),
 		])
 		expect(csv).toEqual(

@@ -2,7 +2,6 @@ import * as isoly from "isoly"
 import * as selectively from "selectively"
 import * as authly from "authly"
 import * as model from "@payfunc/model-card"
-import { Log } from "@payfunc/model-log"
 import { Authorization as AcquirerAuthorization } from "../Authorization"
 import { Capture } from "../Capture"
 import { clear } from "../index"
@@ -25,7 +24,8 @@ export interface Authorization {
 		descriptor?: string
 		recurring?: AcquirerAuthorization.Recurring
 		verification?: "verified" | "unavailable" | "rejected"
-		history: AcquirerAuthorization.Change[]
+		history: AcquirerAuthorization.History[]
+		change: AcquirerAuthorization.Change[] | undefined
 		captured: { history: Capture[]; amount: number; latest?: isoly.DateTime; auto?: true }
 		refunded: { history: Refund[]; amount: number; latest?: isoly.DateTime }
 		settled: { history: SettlementTransaction[]; gross: number; fee: number; net: number; latest?: isoly.DateTime }
@@ -33,7 +33,6 @@ export interface Authorization {
 		status: AcquirerAuthorization.Status[]
 		created: isoly.DateTime
 	}
-	log: Log[]
 }
 export namespace Authorization {
 	export function is(value: any | Authorization): value is Authorization {
@@ -71,9 +70,7 @@ export namespace Authorization {
 			typeof value.authorization.status == "object" &&
 			Array.isArray(value.authorization.status) &&
 			value.authorization.status.every(AcquirerAuthorization.Status.is) &&
-			isoly.DateTime.is(value.authorization.created) &&
-			Array.isArray(value.log) &&
-			value.log.every(Log.is)
+			isoly.DateTime.is(value.authorization.created)
 		)
 	}
 	export function to(state: Authorization): AcquirerAuthorization {
@@ -96,6 +93,7 @@ export namespace Authorization {
 				descriptor: state.authorization.descriptor,
 				recurring: state.authorization.recurring,
 				history: state.authorization.history,
+				change: state.authorization.change,
 				capture: state.authorization.captured.history,
 				refund: state.authorization.refunded.history,
 				void: state.authorization.voided,
@@ -106,7 +104,6 @@ export namespace Authorization {
 	export function from(
 		authorization: AcquirerAuthorization,
 		merchant: AcquirerMerchant | { id: string },
-		log: Log[],
 		statistics?: Statistics
 	): Authorization {
 		const result: Authorization = {
@@ -121,6 +118,7 @@ export namespace Authorization {
 				number: authorization.number,
 				reference: authorization.reference,
 				history: authorization.history,
+				change: authorization.change,
 				captured: toCaptured(authorization.capture, authorization.currency),
 				refunded: toRefunded(authorization.refund, authorization.currency),
 				settled: toSettled(authorization),
@@ -130,7 +128,6 @@ export namespace Authorization {
 					.map(c => (c[1] ? c[0] : undefined))
 					.filter(AcquirerAuthorization.Status.is),
 			},
-			log,
 		}
 		if (result.authorization.status.length < 1)
 			result.authorization.status.push(authorization.void ? "cancelled" : "authorized")
