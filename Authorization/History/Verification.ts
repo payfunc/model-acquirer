@@ -2,11 +2,12 @@ import * as gracely from "gracely"
 import * as isoly from "isoly"
 import * as base from "@payfunc/model-base"
 import { Error } from "../../Error"
+import { Verification as AcquirerVerification } from "../../Verification"
 import { Recurring } from "../Recurring"
 
 export type Verification = Fail | Success | Pending
-type Response = "pares" | "method" | "challenge" | "authorization" | "postauthorization" | "preauthorization"
-const types = ["pares", "method", "challenge", "authorization", "postauthorization", "preauthorization"]
+type Response = "method" | "challenge" | "authorization" | "postauthorization" | "preauthorization"
+const types = ["method", "challenge", "authorization", "postauthorization", "preauthorization"]
 
 interface Base {
 	merchant: string
@@ -89,5 +90,32 @@ export namespace Verification {
 	}
 	export function is(value: any | Verification): value is Verification {
 		return isFail(value) || isSuccess(value) || isPending(value)
+	}
+
+	export function create(
+		merchant: string,
+		creatable: Omit<AcquirerVerification.Creatable, "card">,
+		step: "preauthorization" | "authorization" | "postauthorization",
+		response: Partial<Record<Response, any>>,
+		input: gracely.Error
+	): Verification {
+		return {
+			merchant,
+			number: creatable.number,
+			date: isoly.DateTime.now(),
+			type: "verification",
+			items: creatable.items,
+			currency: creatable.currency,
+			target: creatable.target,
+			browser: creatable.browser,
+			customer: creatable.customer,
+			recurring: creatable.recurring,
+			response,
+			...(!gracely.Error.is(input)
+				? { status: "success", step: step as "authorization" | "postauthorization" }
+				: input.error == "verification required"
+				? { status: "pending", step: step as "authorization" | "preauthorization" }
+				: { status: "fail", step, reason: Error.Code.is(input.error) ? input.error : "unknown error", error: input }),
+		}
 	}
 }

@@ -195,41 +195,15 @@ export namespace Authorization {
 		return result
 	}
 	export type Creatable = ACreatable
-	export namespace Creatable {
-		export const is = ACreatable.is
-		export const flaw = ACreatable.flaw
-	}
+	export const Creatable = ACreatable
 	export type History = AHistory
-	export namespace History {
-		export const is = AHistory.is
-	}
+	export const History = AHistory
 	export type Change = AChange
-	export namespace Change {
-		export const is = AChange.is
-		export const flaw = AChange.flaw
-		export type Creatable = AChange.Creatable
-		export namespace Creatable {
-			export const is = AChange.Creatable.is
-			export const flaw = AChange.Creatable.flaw
-		}
-	}
+	export const Change = AChange
 	export type Operation = AuthorizationOperation
-	export namespace Operation {
-		export const is = AuthorizationOperation.is
-		export type Creatable = AuthorizationOperation.Creatable
-		export namespace Creatable {
-			export const is = AuthorizationOperation.Creatable.is
-		}
-	}
+	export const Operation = AuthorizationOperation
 	export type Status = AuthorizationStatus
-	export namespace Status {
-		export const types = AuthorizationStatus.types
-		export const is = AuthorizationStatus.is
-	}
-
+	export const Status = AuthorizationStatus
 	export type Recurring = AuthorizationRecurring
-	export namespace Recurring {
-		export const is = AuthorizationRecurring.is
-		export const template = AuthorizationRecurring.template
-	}
+	export const Recurring = AuthorizationRecurring
 }
