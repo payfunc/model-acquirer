@@ -55,7 +55,7 @@ export namespace FailedAuthorization {
 			result.authorization.amount = "amount" in entry ? entry.amount : result.authorization.amount
 			result.authorization.currency = "currency" in entry ? entry.currency : result.authorization.currency
 			result.authorization.descriptor = "descriptor" in entry ? entry.descriptor : result.authorization.descriptor
-			result.authorization.card = "card" in entry && entry.card ? Card.from(entry.card) : result.authorization.card
+			result.authorization.card = "card" in entry && entry.card ? entry.card : result.authorization.card
 			result.authorization.recurring = "recurring" in entry ? entry.recurring : result.authorization.recurring
 			result.authorization.reason = "reason" in entry ? entry.reason : result.authorization.reason
 			result.authorization.created = entry.date

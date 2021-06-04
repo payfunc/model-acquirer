@@ -15,9 +15,9 @@ export interface PreAuthorization {
 		card: Card & { csc?: "present" }
 		capture?: "auto"
 		descriptor?: string
-		number?: string
+		number: string
 		verification?: "verified" | "unavailable" | "rejected"
-		recurring?: "initial" | "subsequent"
+		recurring?: Authorization.Recurring
 	}
 	now: isoly.Date
 }
@@ -36,8 +36,7 @@ export namespace PreAuthorization {
 			(value.authorization.number == undefined || typeof value.authorization.number == "string") &&
 			(value.authorization.verification == undefined ||
 				["verified", "unavailable", "rejected"].includes(value.authorization.verification)) &&
-			(value.authorization.recurring == undefined ||
-				["initial", "subsequent"].includes(value.authorization.recurring)) &&
+			(value.authorization.recurring == undefined || Authorization.Recurring.is(value.authorization.recurring)) &&
 			typeof value.now == "string"
 		)
 	}
@@ -59,7 +58,7 @@ export namespace PreAuthorization {
 				descriptor: authorization.descriptor,
 				number: authorization.number,
 				verification,
-				recurring: authorization.recurring == "initial" ? "initial" : authorization.recurring?.type,
+				recurring: authorization.recurring,
 			},
 			now: isoly.Date.now(),
 		})

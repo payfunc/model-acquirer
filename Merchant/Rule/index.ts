@@ -44,9 +44,9 @@ export namespace Rule {
 	export function apply(value: any, rule: Rule): boolean {
 		return rule.condition.is(value)
 	}
-	export function toFlaw(failed: Rule[]): gracely.Flaw {
+	export function toFlaw(failed: Rule[]): gracely.Flaw & { type: "verification required" | "rule violation" } {
 		return {
-			type: failed.every(f => f.verification) ? "verification required" : "Rule Violation",
+			type: failed.every(f => f.verification) ? "verification required" : "rule violation",
 			flaws: failed.map(rule => {
 				return { type: rule.action, condition: rule.condition.toString() }
 			}),

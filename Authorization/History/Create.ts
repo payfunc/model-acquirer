@@ -1,7 +1,7 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
-import { Card } from "@payfunc/model-card"
 import { Error } from "../../Error"
+import { Card, PreAuthorization } from "../../State"
 import { Recurring } from "../Recurring"
 
 export type Create = Fail | Success | Pending
@@ -94,5 +94,35 @@ export namespace Create {
 
 	export function is(value: any | Create): value is Create {
 		return isFail(value) || isSuccess(value) || isPending(value)
+	}
+	export function create(
+		state: PreAuthorization | { merchant: { id: string }; authorization: { number: string; verification?: undefined } },
+		input: gracely.Error | any
+	): Create {
+		return {
+			merchant: state.merchant.id,
+			number: state.authorization.number,
+			date: isoly.DateTime.now(),
+			type: "create",
+			...(!gracely.Error.is(input)
+				? { status: "success", verification: state.authorization.verification }
+				: input.error != "verification required"
+				? {
+						status: "fail",
+						...state.authorization,
+						reason: Error.Code.is(input.error) ? input.error : "unknown error",
+						error: input,
+						rule:
+							gracely.client.FlawedContent.is(input) && input.error == "rule violation"
+								? input.content.flaws?.map(e => e.condition ?? "")
+								: undefined,
+				  }
+				: {
+						status: "pending",
+						...state.authorization,
+						reason: input.error,
+						rule: gracely.client.FlawedContent.is(input) ? input.content.flaws?.map(e => e.condition ?? "") ?? [] : [],
+				  }),
+		}
 	}
 }

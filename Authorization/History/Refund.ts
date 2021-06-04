@@ -1,6 +1,7 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
 import { Error } from "../../Error"
+import { Refund as AuthorizationRefund } from "../../Refund"
 
 export type Refund = Fail | Success
 
@@ -50,5 +51,23 @@ export namespace Refund {
 	}
 	export function is(value: any | Refund): value is Refund {
 		return isFail(value) || isSuccess(value)
+	}
+	export function create(
+		merchant: string,
+		authorization: { number: string; currency: isoly.Currency },
+		amount: number,
+		input: gracely.Error | AuthorizationRefund
+	): Refund {
+		return {
+			merchant,
+			type: "refund",
+			date: isoly.DateTime.now(),
+			number: authorization.number,
+			currency: authorization.currency,
+			amount,
+			...(gracely.Error.is(input)
+				? { status: "fail", reason: Error.Code.is(input.error) ? input.error : "unknown error", error: input }
+				: { status: "success", reference: input.reference ?? "unknown reference" }),
+		}
 	}
 }

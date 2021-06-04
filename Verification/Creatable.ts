@@ -3,6 +3,7 @@ import * as isoly from "isoly"
 import * as authly from "authly"
 import * as model from "@payfunc/model-card"
 import * as base from "@payfunc/model-base"
+import { Authorization } from "../Authorization"
 
 export interface Creatable {
 	number: string
@@ -14,7 +15,7 @@ export interface Creatable {
 	browser?: base.Browser
 	currency: isoly.Currency
 	card: authly.Token | model.Card.Creatable
-	recurring?: "initial" | "subsequent"
+	recurring?: Authorization.Recurring
 	customer?: base.Customer
 	target: string
 }
@@ -37,7 +38,7 @@ export namespace Creatable {
 			(value.browser == undefined || base.Browser.is(value.browser)) &&
 			isoly.Currency.is(value.currency) &&
 			(authly.Token.is(value.card) || model.Card.Creatable.is(value.card)) &&
-			(value.recurring == undefined || ["initial", "subsequent"].includes(value.recurring)) &&
+			(value.recurring == undefined || Authorization.Recurring.is(value.recurring)) &&
 			(value.customer == undefined || base.Customer.is(value.customer)) &&
 			typeof value.target == "string"
 		)
