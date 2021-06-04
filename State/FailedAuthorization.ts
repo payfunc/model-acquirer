@@ -4,25 +4,23 @@ import { Log } from "@payfunc/model-log"
 import { Authorization } from "../Authorization"
 import { Card } from "./Card"
 import { Merchant } from "./Merchant"
-import { PreAuthorization } from "./PreAuthorization"
 
 export interface FailedAuthorization {
 	merchant: Merchant | { id: authly.Identifier }
 	authorization: {
 		id?: string
-		number?: string
+		number: string
 		amount?: number
 		currency?: isoly.Currency
 		card?: Card
 		capture?: "auto"
 		descriptor?: string
-		recurring?: "initial" | "subsequent"
+		recurring?: Authorization.Recurring
 		verification?: "verified" | "unavailable" | "rejected"
-		status: "failed"[]
+		status: ("failed" | "pending")[]
 		reason: string
 		created: isoly.DateTime
 	}
-	log: Log[]
 }
 export namespace FailedAuthorization {
 	export function is(value: any | FailedAuthorization): value is FailedAuthorization {
@@ -43,34 +41,34 @@ export namespace FailedAuthorization {
 				["verified", "unavailable", "rejected"].includes(value.authorization.verification)) &&
 			value.authorization.status.every((s: any) => s == "failed") &&
 			typeof value.authorization.reason == "string" &&
-			(value.authorization.created == undefined || isoly.DateTime.is(value.authorization.created)) &&
-			Array.isArray(value.log) &&
-			value.log.every(Log.is)
+			(value.authorization.created == undefined || isoly.DateTime.is(value.authorization.created))
 		)
 	}
-	export function from(logs: Log[]): FailedAuthorization {
+	export function from(history: Authorization.History[]): FailedAuthorization {
 		const result: FailedAuthorization = {
-			merchant: { id: "" },
-			authorization: { status: ["failed"], created: "", reason: "" },
-			log: logs,
+			merchant: { id: history[0].merchant },
+			authorization: { status: ["failed"], created: "", reason: "", number: history[0].number },
 		}
-		for (const log of logs) {
-			const update = log.created > result.authorization.created && log.reference?.type == "authorization"
+		for (const entry of history) {
+			const update = entry.date > result.authorization.created
 			if (update) {
-				const state = log.entries.find(e => e.point == "PreAuthorization State")?.data.state
-				result.authorization = state?.authorization?.number ? state.authorization : { number: log.reference?.number }
-				result.authorization.created = log.created
-				result.authorization.status = ["failed"]
-				result.merchant = { id: log.merchant }
-				const response = log.entries.find(e => e.point == "response")?.data.body
-				result.authorization.reason =
-					(response.details && response.details.message) ??
-					(response.content &&
-						(response.content.description && response.content.description.length <= 30
-							? response.content.description
-							: response.content.type)) ??
-					response.type ??
-					"unknown failure"
+				result.authorization.amount = "amount" in entry ? entry.amount : result.authorization.amount
+				result.authorization.currency = "currency" in entry ? entry.currency : result.authorization.currency
+				result.authorization.card = "card" in entry && entry.card ? Card.from(entry.card) : result.authorization.card
+				result.authorization.recurring = "recurring" in entry ? entry.recurring : result.authorization.recurring
+				result.authorization.reason = "reason" in entry ? entry.reason : result.authorization.reason
+				result.authorization.created = entry.date
+				result.authorization.status = entry.status == "fail" ? ["failed"] : ["pending"]
+				result.authorization.verification =
+					"verification" in entry ? entry.verification : result.authorization.verification
+				result.authorization.amount = "amount" in entry ? entry.amount : result.authorization.amount
+				result.authorization.amount = "amount" in entry ? entry.amount : result.authorization.amount
+				result.authorization.amount = "amount" in entry ? entry.amount : result.authorization.amount
+				result.authorization.amount = "amount" in entry ? entry.amount : result.authorization.amount
+				// id?: string
+				// capture?: "auto"
+				// descriptor?: string
+				// verification?: "verified" | "unavailable" | "rejected"
 			}
 		}
 		return result
