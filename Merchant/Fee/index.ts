@@ -3,11 +3,11 @@ import { Transaction as SettlementTransaction } from "../../Settlement/Transacti
 import { Operation } from "../Operation"
 import { Transaction as TransactionFee } from "./Transaction"
 
-export type Fee = { [status in Operation]?: number | undefined } &
+export type Fee = { [status in Operation]?: number } &
 	{
-		[country in isoly.CountryCode.Alpha2]?: TransactionFee | undefined
+		[country in isoly.CountryCode.Alpha2]?: TransactionFee
 	} & {
-		eea?: TransactionFee | undefined
+		eea?: TransactionFee
 		other: TransactionFee
 	}
 
@@ -22,9 +22,9 @@ export namespace Fee {
 			TransactionFee.is(value.other)
 		)
 	}
-	export function apply(transaction: SettlementTransaction, fee: Fee): number {
+	export function apply(transaction: SettlementTransaction, fee: Fee, rate?: number): number {
 		return (
-			(fee[transaction.type] ?? 0) +
+			(fee[transaction.type] ?? 0) * (rate ?? 1) +
 			TransactionFee.apply(
 				transaction.scheme,
 				transaction.card,
