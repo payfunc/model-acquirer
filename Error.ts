@@ -1,5 +1,4 @@
 import * as gracely from "gracely"
-
 export namespace Error {
 	export function databaseFailure(
 		error: "authorization not found" | "merchant not found" | "backend problem",
@@ -67,5 +66,68 @@ export namespace Error {
 	}
 	export function unavailable(): gracely.Error {
 		return gracely.server.unavailable("backend problem")
+	}
+	export type Code =
+		| "3ds problem"
+		| "3ds authentication failure"
+		| "acquirer error"
+		| "amount limit"
+		| "authentication required"
+		| "authorization not found"
+		| "backend problem"
+		| "blocked merchant"
+		| "card declined"
+		| "card lost or stolen"
+		| "card restricted"
+		| "card expired"
+		| "invalid card number"
+		| "invalid csc"
+		| "invalid currency"
+		| "invalid descriptor"
+		| "invalid expire date"
+		| "invalid input"
+		| "invalid transaction"
+		| "insufficient funds"
+		| "merchant not found"
+		| "rule violation"
+		| "suspected fraud"
+		| "unauthorized"
+		| "unknown error"
+		| "unsupported card"
+		| "verification required"
+
+	export namespace Code {
+		export function is(value: any | Code): value is Code {
+			return types.includes(value)
+		}
+		export const types: Code[] = [
+			"3ds problem",
+			"3ds authentication failure",
+			"acquirer error",
+			"amount limit",
+			"authentication required",
+			"authorization not found",
+			"backend problem",
+			"blocked merchant",
+			"card declined",
+			"card lost or stolen",
+			"card restricted",
+			"card expired",
+			"invalid card number",
+			"invalid csc",
+			"invalid currency",
+			"invalid descriptor",
+			"invalid expire date",
+			"invalid input",
+			"invalid transaction",
+			"insufficient funds",
+			"merchant not found",
+			"rule violation",
+			"suspected fraud",
+			"unauthorized",
+			"unknown error",
+			"unsupported card",
+			"verification required",
+		]
 	}
 }
