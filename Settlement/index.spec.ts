@@ -114,6 +114,7 @@ describe("Settlement", () => {
 	const authorization: Authorization[] = [
 		{
 			id: "12343213215",
+			number: "testNumber",
 			merchant: "testtest",
 			amount: 101.1,
 			currency: "SEK",

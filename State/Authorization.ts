@@ -35,7 +35,7 @@ export interface Authorization {
 	}
 }
 export namespace Authorization {
-	export function is(value: Authorization): value is Authorization {
+	export function is(value: Authorization | any): value is Authorization {
 		return (
 			typeof value == "object" &&
 			(Merchant.is(value.merchant) || (typeof value.merchant == "object" && authly.Identifier.is(value.merchant.id))) &&
@@ -55,6 +55,9 @@ export namespace Authorization {
 			typeof value.authorization.captured == "object" &&
 			Array.isArray(value.authorization.captured.history) &&
 			value.authorization.captured.history.every(Capture.is) &&
+			(value.authorization.change == undefined ||
+				(Array.isArray(value.authorization.change) &&
+					value.authorization.change.every(AcquirerAuthorization.Change.is))) &&
 			typeof value.authorization.captured.amount == "number" &&
 			(value.authorization.captured.latest == undefined || isoly.DateTime.is(value.authorization.captured.latest)) &&
 			(value.authorization.captured.auto == undefined || value.authorization.captured.auto == true) &&

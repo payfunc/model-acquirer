@@ -13,7 +13,7 @@ import { Status as AuthorizationStatus } from "./Status"
 export interface Authorization {
 	id: authly.Identifier
 	merchant: authly.Identifier
-	number?: string
+	number: string
 	reference: string
 	created: isoly.DateTime
 	amount: number
@@ -35,7 +35,7 @@ export namespace Authorization {
 			typeof value == "object" &&
 			authly.Identifier.is(value.id, 16) &&
 			authly.Identifier.is(value.merchant) &&
-			(value.number == undefined || typeof value.number == "string") &&
+			typeof value.number == "string" &&
 			typeof value.reference == "string" &&
 			isoly.DateTime.is(value.created) &&
 			typeof value.amount == "number" &&
@@ -45,8 +45,7 @@ export namespace Authorization {
 			(value.recurring == undefined || AuthorizationRecurring.is(value.recurring)) &&
 			Array.isArray(value.history) &&
 			value.history.every(AHistory.is) &&
-			Array.isArray(value.change) &&
-			value.change.every(AChange.is) &&
+			(value.change == undefined || (Array.isArray(value.change) && value.change.every(AChange.is))) &&
 			Array.isArray(value.capture) &&
 			value.capture.every(Capture.is) &&
 			Array.isArray(value.refund) &&
@@ -75,26 +74,23 @@ export namespace Authorization {
 									property: "recurring",
 									type: `"initial" | "subsequent" | undefined`,
 								},
-							value.history == undefined ||
-								(Array.isArray(value.history) && value.history.every(AHistory.is)) || {
-									property: "history",
-									type: "Authorization.History[]",
-								},
+							(Array.isArray(value.history) && value.history.every(AHistory.is)) || {
+								property: "history",
+								type: "Authorization.History[]",
+							},
 							value.change == undefined ||
 								(Array.isArray(value.change) && value.change.every(AChange.is)) || {
 									property: "change",
 									type: "Authorization.Change[]",
 								},
-							value.capture == undefined ||
-								(Array.isArray(value.capture) && value.capture.every(Capture.is)) || {
-									property: "capture",
-									type: "Capture[]",
-								},
-							value.refund == undefined ||
-								(Array.isArray(value.refund) && value.refund.every(Refund.is)) || {
-									property: "refund",
-									type: "Refund[]",
-								},
+							(Array.isArray(value.capture) && value.capture.every(Capture.is)) || {
+								property: "capture",
+								type: "Capture[]",
+							},
+							(Array.isArray(value.refund) && value.refund.every(Refund.is)) || {
+								property: "refund",
+								type: "Refund[]",
+							},
 							value.void == undefined ||
 								isoly.DateTime.is(value.void) || { property: "void", type: "isoly.DateTime | undefined" },
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
