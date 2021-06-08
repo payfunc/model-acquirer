@@ -1,333 +1,88 @@
-import * as isoly from "isoly"
-import * as model from "@payfunc/model-card"
+import { History } from "../Authorization/History"
 import * as acquirer from "../index"
 
 describe("State.FailedAuthorization tests", () => {
+	const failedCreate: History.Create = {
+		type: "create",
+		status: "fail",
+		number: "123",
+		merchant: "testtest",
+		date: "2021-01-05T00:00:01.000Z",
+		reason: "3ds problem",
+		error: acquirer.Error.unauthorized(),
+	}
+	const pendingCreate: History.Create = {
+		type: "create",
+		status: "pending",
+		number: "123",
+		amount: 1,
+		currency: "SEK",
+		card: { iin: "411111", last4: "1111", expires: [1, 22], scheme: "visa" },
+		merchant: "testtest",
+		rule: "Any 3d Rule",
+		reason: "verification required",
+		date: "2021-01-01T00:00:01.000Z",
+	}
+	const failedVerification: History.Verification = {
+		type: "verification",
+		status: "fail",
+		number: "123",
+		items: 1,
+		currency: "SEK",
+		target: "targetURL",
+		response: {},
+		step: "preauthorization",
+		error: acquirer.Error.unauthorized(),
+		reason: "unauthorized",
+		merchant: "testtest",
+		date: "2021-01-02T00:00:01.000Z",
+	}
+	const pendingVerification: History.Verification = {
+		type: "verification",
+		status: "pending",
+		number: "123",
+		items: 1,
+		currency: "SEK",
+		target: "targetURL",
+		response: {},
+		step: "authorization",
+		merchant: "testtest",
+		date: "2021-01-03T00:00:01.000Z",
+	}
+	const successVerification: History.Verification = {
+		type: "verification",
+		status: "success",
+		number: "123",
+		items: 1,
+		currency: "SEK",
+		target: "targetURL",
+		response: {},
+		step: "postauthorization",
+		merchant: "testtest",
+		date: "2021-01-04T00:00:01.000Z",
+	}
+	const history: History[] = [failedCreate, pendingCreate, failedVerification, pendingVerification, successVerification]
+	const expectedOutput: acquirer.State.FailedAuthorization = {
+		merchant: { id: "testtest" },
+		authorization: {
+			amount: 1,
+			currency: "SEK",
+			card: {
+				expires: "2022-01-31",
+				iin: "411111",
+				last4: "1111",
+				scheme: "visa",
+			},
+			number: "123",
+			status: ["failed"],
+			reason: "3ds problem",
+			created: "2021-01-05T00:00:01.000Z",
+			history,
+		},
+	}
 	it("State.FailedAuthorization test", () => {
-		const merchant: acquirer.Merchant = {
-			id: "testtest",
-			type: "test",
-			agent: "master",
-			categoryCode: "1234",
-			country: "SE",
-			name: "Test Merchant",
-			currency: "SEK",
-			reconciliation: { account: "exampleAccount", fees: { other: {} } },
-			reference: "123456",
-			rules: { master: [] },
-		}
-		const statistics: acquirer.Statistics = {
-			merchant: "testtest",
-			currency: "SEK",
-			captured: {},
-			refunded: {},
-			settled: {},
-			fees: {},
-			reserves: { in: {}, out: {} },
-		}
-		const card: model.Card.Creatable = {
-			pan: "4111111111111111",
-			expires: [2, 28],
-			csc: "987",
-		}
-		const authorization: acquirer.Authorization.Creatable & { card: model.Card.Creatable } = {
-			amount: 100,
-			currency: "SEK",
-			descriptor: "test transaction",
-			number: "12345678",
-			card,
-		}
-		const earlyFailure: acquirer.State.FailedAuthorization = {
-			authorization: { status: ["failed"], created: isoly.DateTime.now(), reason: "bad input" },
-			merchant: { id: "testtest" },
-			log: [],
-		}
-		expect(acquirer.State.FailedAuthorization.is(earlyFailure)).toBeTruthy()
-		const preAuthorization = {
-			...acquirer.State.PreAuthorization.from(authorization, merchant, statistics, "verified", {
-				EUR: 9.5,
-				SEK: 1,
-			}),
-		}
-		const lateFailure: acquirer.State.FailedAuthorization = {
-			...preAuthorization,
-			authorization: {
-				...preAuthorization.authorization,
-				status: ["failed"],
-				reason: "rejected",
-				created: isoly.DateTime.now(),
-			},
-			log: [],
-		}
-		expect(acquirer.State.FailedAuthorization.is(lateFailure)).toBeTruthy()
-	})
-	it("load", () => {
-		expect(
-			acquirer.State.FailedAuthorization.load(
-				[
-					acquirer.Authorization.calculateStatus({
-						id: "1234567890000000",
-						merchant: "testtest",
-						number: "1234567890123456",
-						created: "2021-02-01T23:59:59.000Z",
-						currency: "SEK",
-						history: [],
-						reference: "",
-						refund: [],
-						capture: [],
-						card: { iin: "123456", last4: "1234", expires: [3, 24], csc: "present", scheme: "visa", type: "debit" },
-						amount: 100,
-					}),
-				],
-				[
-					{
-						agent: "PayFunc",
-						reference: { id: "1234567890abcdef", number: "1234123412341234", type: "authorization" },
-						merchant: "testtest",
-						client: "",
-						resource: { method: "GET", location: "http://example.com" },
-						created: "2021-02-02T23:59:59.000Z",
-						entries: [
-							{
-								level: "trace",
-								point: "request",
-								data: {
-									headers: {
-										accept: ["*/*"],
-										acceptEncoding: ["gzip"],
-										authorization: "Bearer key.key.key",
-										connection: "Keep-Alive",
-										contentLength: "233",
-										contentType: "application/json",
-										host: "worker-authorization-development.authtest.workers.dev",
-										userAgent: "PostmanRuntime/7.26.8",
-										xForwardedProto: "https",
-									},
-									url: "https://worker-authorization-development.authtest.workers.dev/authorization",
-								},
-							},
-							{
-								level: "trace",
-								point: "Authorization Data before Typeguards",
-								data: {
-									amount: 15,
-									currency: "EUR",
-								},
-							},
-							{
-								level: "log",
-								point: "PreAuthorization State",
-								data: {
-									state: {
-										merchant: {
-											descriptor: "Test Merchant",
-											country: "SE",
-											name: "Test Merchant",
-											currency: "SEK",
-											scheme: [],
-											refundable: 9.66,
-											captured: 10,
-											settled: 0.24000000000000002,
-											fees: 0.1,
-										},
-										authorization: {
-											amount: 15,
-											currency: "EUR",
-											card: {
-												scheme: "mastercard",
-												iin: "520474",
-												last4: "1002",
-												expires: "2022-02-28",
-												csc: "present",
-											},
-											descriptor: "string",
-											number: "1234123412341234",
-										},
-										now: "2021-03-31",
-									},
-								},
-							},
-							{
-								level: "log",
-								point: "Ipg Response",
-								data: {
-									response: {
-										clientRequestId: "83332605",
-										apiTraceId: "rrt-01d417a497a71fc2d-a-de-16809-101275597-1",
-										responseType: "GatewayDeclined",
-										orderId: "uj0_7HzydkbNh09O",
-										transactionTime: 1617189739,
-										transactionStatus: "VALIDATION_FAILED",
-										error: {
-											code: "100",
-											message: "Internal error",
-										},
-									},
-								},
-							},
-							{
-								level: "warning",
-								point: "response",
-								data: {
-									status: 502,
-									header: {
-										contentType: "application/json; charset=utf-8",
-										accessControlAllowOrigin: "*",
-									},
-									body: {
-										status: 502,
-										type: "backend failure",
-										backend: "unknown",
-										details: {
-											code: "100",
-											message: "Internal error",
-										},
-									},
-								},
-							},
-						],
-					},
-				]
-			)
-		).toEqual([
-			{
-				authorization: {
-					amount: 15,
-					card: {
-						csc: "present",
-						expires: "2022-02-28",
-						iin: "520474",
-						last4: "1002",
-						scheme: "mastercard",
-					},
-					created: "2021-02-02T23:59:59.000Z",
-					currency: "EUR",
-					descriptor: "string",
-					number: "1234123412341234",
-					reason: "Internal error",
-					status: ["failed"],
-				},
-				log: [
-					{
-						agent: "PayFunc",
-						client: "",
-						created: "2021-02-02T23:59:59.000Z",
-						entries: [
-							{
-								data: {
-									headers: {
-										accept: ["*/*"],
-										acceptEncoding: ["gzip"],
-										authorization: "Bearer key.key.key",
-										connection: "Keep-Alive",
-										contentLength: "233",
-										contentType: "application/json",
-										host: "worker-authorization-development.authtest.workers.dev",
-										userAgent: "PostmanRuntime/7.26.8",
-										xForwardedProto: "https",
-									},
-									url: "https://worker-authorization-development.authtest.workers.dev/authorization",
-								},
-								level: "trace",
-								point: "request",
-							},
-							{
-								data: {
-									amount: 15,
-									currency: "EUR",
-								},
-								level: "trace",
-								point: "Authorization Data before Typeguards",
-							},
-							{
-								data: {
-									state: {
-										authorization: {
-											amount: 15,
-											card: {
-												csc: "present",
-												expires: "2022-02-28",
-												iin: "520474",
-												last4: "1002",
-												scheme: "mastercard",
-											},
-											created: "2021-02-02T23:59:59.000Z",
-											currency: "EUR",
-											descriptor: "string",
-											number: "1234123412341234",
-											reason: "Internal error",
-											status: ["failed"],
-										},
-										merchant: {
-											captured: 10,
-											country: "SE",
-											currency: "SEK",
-											descriptor: "Test Merchant",
-											fees: 0.1,
-											name: "Test Merchant",
-											refundable: 9.66,
-											scheme: [],
-											settled: 0.24000000000000002,
-										},
-										now: "2021-03-31",
-									},
-								},
-								level: "log",
-								point: "PreAuthorization State",
-							},
-							{
-								data: {
-									response: {
-										apiTraceId: "rrt-01d417a497a71fc2d-a-de-16809-101275597-1",
-										clientRequestId: "83332605",
-										error: {
-											code: "100",
-											message: "Internal error",
-										},
-										orderId: "uj0_7HzydkbNh09O",
-										responseType: "GatewayDeclined",
-										transactionStatus: "VALIDATION_FAILED",
-										transactionTime: 1617189739,
-									},
-								},
-								level: "log",
-								point: "Ipg Response",
-							},
-							{
-								data: {
-									body: {
-										backend: "unknown",
-										details: {
-											code: "100",
-											message: "Internal error",
-										},
-										status: 502,
-										type: "backend failure",
-									},
-									header: {
-										accessControlAllowOrigin: "*",
-										contentType: "application/json; charset=utf-8",
-									},
-									status: 502,
-								},
-								level: "warning",
-								point: "response",
-							},
-						],
-						merchant: "testtest",
-						reference: {
-							id: "1234567890abcdef",
-							number: "1234123412341234",
-							type: "authorization",
-						},
-						resource: {
-							location: "http://example.com",
-							method: "GET",
-						},
-					},
-				],
-				merchant: { id: "testtest" },
-			},
-		])
+		const authorization = acquirer.State.FailedAuthorization.from(history)
+		expect(acquirer.State.FailedAuthorization.is(authorization)).toBe(true)
+		expect(authorization).toEqual(expectedOutput)
 	})
 })
