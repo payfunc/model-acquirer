@@ -16,7 +16,7 @@ export interface Authorization {
 	merchant: Merchant | { id: authly.Identifier }
 	authorization: {
 		id: string
-		number?: string
+		number: string
 		reference: string
 		amount: number
 		currency: isoly.Currency
@@ -25,7 +25,7 @@ export interface Authorization {
 		recurring?: AcquirerAuthorization.Recurring
 		verification?: "verified" | "unavailable" | "rejected"
 		history: AcquirerAuthorization.History[]
-		change: AcquirerAuthorization.Change[] | undefined
+		change?: AcquirerAuthorization.Change[]
 		captured: { history: Capture[]; amount: number; latest?: isoly.DateTime; auto?: true }
 		refunded: { history: Refund[]; amount: number; latest?: isoly.DateTime }
 		settled: { history: SettlementTransaction[]; gross: number; fee: number; net: number; latest?: isoly.DateTime }
@@ -35,13 +35,13 @@ export interface Authorization {
 	}
 }
 export namespace Authorization {
-	export function is(value: any | Authorization): value is Authorization {
+	export function is(value: Authorization): value is Authorization {
 		return (
 			typeof value == "object" &&
 			(Merchant.is(value.merchant) || (typeof value.merchant == "object" && authly.Identifier.is(value.merchant.id))) &&
 			typeof value.authorization == "object" &&
 			typeof value.authorization.id == "string" &&
-			(value.authorization.number == undefined || typeof value.authorization.number == "string") &&
+			typeof value.authorization.number == "string" &&
 			typeof value.authorization.reference == "string" &&
 			typeof value.authorization.amount == "number" &&
 			isoly.Currency.is(value.authorization.currency) &&
@@ -49,25 +49,28 @@ export namespace Authorization {
 			(value.authorization.descriptor == undefined || typeof value.authorization.descriptor == "string") &&
 			(value.authorization.recurring == undefined ||
 				AcquirerAuthorization.Recurring.is(value.authorization.recurring)) &&
+			[undefined, "verified", "unavailable", "rejected"].includes(value.authorization.verification) &&
 			Array.isArray(value.authorization.history) &&
-			value.authorization.history.every(AcquirerAuthorization.Change.is) &&
+			value.authorization.history.every(AcquirerAuthorization.History.is) &&
 			typeof value.authorization.captured == "object" &&
+			Array.isArray(value.authorization.captured.history) &&
 			value.authorization.captured.history.every(Capture.is) &&
 			typeof value.authorization.captured.amount == "number" &&
 			(value.authorization.captured.latest == undefined || isoly.DateTime.is(value.authorization.captured.latest)) &&
 			(value.authorization.captured.auto == undefined || value.authorization.captured.auto == true) &&
 			typeof value.authorization.refunded == "object" &&
+			Array.isArray(value.authorization.refunded.history) &&
 			value.authorization.refunded.history.every(Refund.is) &&
 			typeof value.authorization.refunded.amount == "number" &&
 			(value.authorization.refunded.latest == undefined || isoly.DateTime.is(value.authorization.refunded.latest)) &&
 			typeof value.authorization.settled == "object" &&
+			Array.isArray(value.authorization.settled.history) &&
 			value.authorization.settled.history.every(SettlementTransaction.is) &&
 			typeof value.authorization.settled.gross == "number" &&
 			typeof value.authorization.settled.fee == "number" &&
 			typeof value.authorization.settled.net == "number" &&
 			(value.authorization.settled.latest == undefined || isoly.Date.is(value.authorization.settled.latest)) &&
 			(value.authorization.voided == undefined || isoly.DateTime.is(value.authorization.voided)) &&
-			typeof value.authorization.status == "object" &&
 			Array.isArray(value.authorization.status) &&
 			value.authorization.status.every(AcquirerAuthorization.Status.is) &&
 			isoly.DateTime.is(value.authorization.created)
