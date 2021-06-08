@@ -19,7 +19,7 @@ describe("State.FailedAuthorization tests", () => {
 		currency: "SEK",
 		card: { iin: "411111", last4: "1111", expires: [1, 22], scheme: "visa" },
 		merchant: "testtest",
-		rule: "Any 3d Rule",
+		rule: ["Any 3d Rule"],
 		reason: "verification required",
 		date: "2021-01-01T00:00:01.000Z",
 	}
