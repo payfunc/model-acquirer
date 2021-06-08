@@ -32,7 +32,7 @@ interface Success extends Base {
 }
 interface Pending extends Base {
 	status: "pending"
-	rule: string
+	rule: string[]
 	reason: "verification required"
 	amount?: number
 	currency?: isoly.Currency
@@ -80,7 +80,8 @@ export namespace Create {
 		return (
 			typeof value == "object" &&
 			value.status == "pending" &&
-			typeof value.rule == "string" &&
+			Array.isArray(value.rule) &&
+			value.rule.every((r: any) => typeof r == "string") &&
 			value.reason == "verification required" &&
 			(value.recurring == undefined || Recurring.is(value.recurring)) &&
 			(value.amount == undefined || typeof value.amount == "number") &&
