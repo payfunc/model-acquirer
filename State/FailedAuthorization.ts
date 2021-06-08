@@ -64,4 +64,10 @@ export namespace FailedAuthorization {
 		}
 		return clear<FailedAuthorization>(result)
 	}
+	export function load(histories: Authorization.History[]): FailedAuthorization[] {
+		const record: Record<string, Authorization.History[]> = {}
+		for (const history of histories)
+			record[history.number] = [...(record[history.number] ?? []), history]
+		return Object.values(record).map(from)
+	}
 }
