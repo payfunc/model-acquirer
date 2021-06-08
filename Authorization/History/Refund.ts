@@ -46,7 +46,7 @@ export namespace Refund {
 		)
 	}
 	export function isSuccess(value: any | Success): value is Success {
-		return typeof value == "object" && value.status == "success" && typeof value.status == "string" && isBase(value)
+		return typeof value == "object" && value.status == "success" && typeof value.reference == "string" && isBase(value)
 	}
 	export function is(value: any | Refund): value is Refund {
 		return isFail(value) || isSuccess(value)
