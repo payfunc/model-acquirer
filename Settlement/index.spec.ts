@@ -33,23 +33,7 @@ describe("Settlement", () => {
 			transactions: [transaction],
 		},
 	]
-	const withoutTransactions: Settlement[] = [
-		{
-			reference: "example",
-			merchant: "SQJzzNur",
-			period: {
-				start: "2020-02-01",
-				end: "2020-02-07",
-			},
-			payout: "2020-03-02",
-			created: "2020-01-16",
-			gross: 2,
-			fee: 3,
-			net: 4,
-			currency: "EUR",
-			transactions: [],
-		},
-	]
+
 	const multiple: Settlement[] = [
 		{
 			reference: "example1",
@@ -114,6 +98,7 @@ describe("Settlement", () => {
 	const authorization: Authorization[] = [
 		{
 			id: "12343213215",
+			number: "testNumber",
 			merchant: "testtest",
 			amount: 101.1,
 			currency: "SEK",

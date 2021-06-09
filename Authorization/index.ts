@@ -6,13 +6,14 @@ import { Capture } from "../Capture"
 import { Refund } from "../Refund"
 import { Change as AChange } from "./Change"
 import { Creatable as ACreatable } from "./Creatable"
+import { History as AHistory } from "./History"
 import { Operation as AuthorizationOperation } from "./Operation"
 import { Recurring as AuthorizationRecurring } from "./Recurring"
 import { Status as AuthorizationStatus } from "./Status"
 export interface Authorization {
 	id: authly.Identifier
 	merchant: authly.Identifier
-	number?: string
+	number: string
 	reference: string
 	created: isoly.DateTime
 	amount: number
@@ -20,7 +21,8 @@ export interface Authorization {
 	card: model.Card
 	descriptor?: string
 	recurring?: AuthorizationRecurring
-	history: AChange[]
+	history: AHistory[]
+	change?: AChange[]
 	capture: Capture[]
 	refund: Refund[]
 	void?: isoly.DateTime
@@ -33,7 +35,7 @@ export namespace Authorization {
 			typeof value == "object" &&
 			authly.Identifier.is(value.id, 16) &&
 			authly.Identifier.is(value.merchant) &&
-			(value.number == undefined || typeof value.number == "string") &&
+			typeof value.number == "string" &&
 			typeof value.reference == "string" &&
 			isoly.DateTime.is(value.created) &&
 			typeof value.amount == "number" &&
@@ -42,7 +44,8 @@ export namespace Authorization {
 			(value.descriptor == undefined || typeof value.descriptor == "string") &&
 			(value.recurring == undefined || AuthorizationRecurring.is(value.recurring)) &&
 			Array.isArray(value.history) &&
-			value.history.every(AChange.is) &&
+			value.history.every(AHistory.is) &&
+			(value.change == undefined || (Array.isArray(value.change) && value.change.every(AChange.is))) &&
 			Array.isArray(value.capture) &&
 			value.capture.every(Capture.is) &&
 			Array.isArray(value.refund) &&
@@ -71,21 +74,23 @@ export namespace Authorization {
 									property: "recurring",
 									type: `"initial" | "subsequent" | undefined`,
 								},
-							value.history == undefined ||
-								(Array.isArray(value.history) && value.history.every(AChange.is)) || {
-									property: "history",
+							(Array.isArray(value.history) && value.history.every(AHistory.is)) || {
+								property: "history",
+								type: "Authorization.History[]",
+							},
+							value.change == undefined ||
+								(Array.isArray(value.change) && value.change.every(AChange.is)) || {
+									property: "change",
 									type: "Authorization.Change[]",
 								},
-							value.capture == undefined ||
-								(Array.isArray(value.capture) && value.capture.every(Capture.is)) || {
-									property: "capture",
-									type: "Capture[]",
-								},
-							value.refund == undefined ||
-								(Array.isArray(value.refund) && value.history.every(Refund.is)) || {
-									property: "refund",
-									type: "Refund[]",
-								},
+							(Array.isArray(value.capture) && value.capture.every(Capture.is)) || {
+								property: "capture",
+								type: "Capture[]",
+							},
+							(Array.isArray(value.refund) && value.refund.every(Refund.is)) || {
+								property: "refund",
+								type: "Refund[]",
+							},
 							value.void == undefined ||
 								isoly.DateTime.is(value.void) || { property: "void", type: "isoly.DateTime | undefined" },
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
@@ -93,7 +98,7 @@ export namespace Authorization {
 	}
 	export function authorized(authorization: Omit<Authorization, "status">): number {
 		return isoly.Currency.round(
-			authorization.amount + authorization.history.reduce<number>((total, change) => total + change.amount, 0),
+			authorization.amount + (authorization.change?.reduce<number>((total, change) => total + change.amount, 0) ?? 0),
 			authorization.currency
 		)
 	}
@@ -160,7 +165,7 @@ export namespace Authorization {
 		result += "card expires,"
 		result += "descriptor,"
 		result += "recurring,"
-		result += "history,"
+		result += "change,"
 		result += "capture,"
 		result += "refund,"
 		result += "void,"
@@ -180,10 +185,7 @@ export namespace Authorization {
 			result += `"${value.card.expires[0].toString().padStart(2, "0")}/${(2000 + value.card.expires[1]).toString()}",`
 			result += `"${value.descriptor ?? ""}",`
 			result += `"${value.recurring ?? ""}",`
-			result += `"${isoly.Currency.round(
-				value.history.reduce((r, h) => r + h.amount, 0),
-				value.currency
-			)}",`
+			result += `"${isoly.Currency.round(value.change?.reduce((r, h) => r + h.amount, 0) ?? 0, value.currency)}",`
 			result += `"${captured(value)}",`
 			result += `"${refunded(value)}",`
 			result += `"${value.void ?? ""}",`
@@ -196,6 +198,10 @@ export namespace Authorization {
 	export namespace Creatable {
 		export const is = ACreatable.is
 		export const flaw = ACreatable.flaw
+	}
+	export type History = AHistory
+	export namespace History {
+		export const is = AHistory.is
 	}
 	export type Change = AChange
 	export namespace Change {
