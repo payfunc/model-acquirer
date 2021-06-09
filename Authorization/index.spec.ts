@@ -4,10 +4,12 @@ describe("Authorization tests", () => {
 	function createExample(): Omit<Authorization, "status"> {
 		return {
 			id: "1234567890123456",
+			number: "testNumber",
 			merchant: "testtest",
 			amount: 101.1,
 			currency: "SEK",
 			history: [],
+			change: [],
 			capture: [],
 			refund: [],
 			created: "2021-04-01T09:00:00.000Z",
@@ -24,7 +26,7 @@ describe("Authorization tests", () => {
 	}
 	it("Authorization status tests #1", () => {
 		const authorization = createExample()
-		authorization.history.push({ amount: 10.33, created: "2021-04-01T10:00:00.000Z" })
+		authorization.change?.push({ amount: 10.33, created: "2021-04-01T10:00:00.000Z" })
 		authorization.capture.push({
 			reference: "1234567891020",
 			amount: 11.33,
@@ -51,7 +53,7 @@ describe("Authorization tests", () => {
 	})
 	it("Authorization toCsv test", () => {
 		let authorization: Authorization = Authorization.calculateStatus(createExample())
-		authorization.history.push({ amount: 10.33, created: "2021-04-01T10:00:00.000Z" })
+		authorization.change?.push({ amount: 10.33, created: "2021-04-01T10:00:00.000Z" })
 		authorization.capture.push({
 			reference: "1234567891001",
 			amount: 11.33,
@@ -79,7 +81,7 @@ describe("Authorization tests", () => {
 			approved: "2021-04-03T10:00:00.000Z",
 			status: "approved",
 		})
-		authorization.history.push({ amount: 10.33, created: "2021-04-05T10:00:00.000Z" })
+		authorization.change?.push({ amount: 10.33, created: "2021-04-05T10:00:00.000Z" })
 		authorization.capture.push({
 			reference: "1234567891002",
 			amount: 11.33,
@@ -111,12 +113,12 @@ describe("Authorization tests", () => {
 		})
 		voided.void = "2021-04-06T12:00:00.000Z"
 		voided = Authorization.calculateStatus(voided)
-		const header = `id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n`
+		const header = `id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,change,capture,refund,void,status\r\n`
 		const data = [
-			`"1234123412341234","testtest","","12341234","2021-04-01T09:00:00.000Z","101.1","SEK","debit","visa","123456**********1111","02/2028","","","20.66","11.33","9.33","","authorized refunded settled"\r\n`,
-			`"1234567890123456","testtest","","12341234","2021-04-01T09:00:00.000Z","101.1","SEK","debit","visa","123456**********1111","02/2028","","","0","0","0","","authorized"\r\n`,
-			`"1234000012340000","testtest","","12341234","2021-04-01T09:00:00.000Z","101.1","SEK","debit","visa","123456**********1111","02/2028","","","0","101.1","0","","captured"\r\n`,
-			`"1234000012340001","testtest","","12341234","2021-04-01T09:00:00.000Z","40.4","EUR","debit","visa","123456**********1111","02/2028","","","0","0","0","2021-04-06T12:00:00.000Z","cancelled"\r\n`,
+			`"1234123412341234","testtest","testNumber","12341234","2021-04-01T09:00:00.000Z","101.1","SEK","debit","visa","123456**********1111","02/2028","","","20.66","11.33","9.33","","authorized refunded settled"\r\n`,
+			`"1234567890123456","testtest","testNumber","12341234","2021-04-01T09:00:00.000Z","101.1","SEK","debit","visa","123456**********1111","02/2028","","","0","0","0","","authorized"\r\n`,
+			`"1234000012340000","testtest","testNumber","12341234","2021-04-01T09:00:00.000Z","101.1","SEK","debit","visa","123456**********1111","02/2028","","","0","101.1","0","","captured"\r\n`,
+			`"1234000012340001","testtest","testNumber","12341234","2021-04-01T09:00:00.000Z","40.4","EUR","debit","visa","123456**********1111","02/2028","","","0","0","0","2021-04-06T12:00:00.000Z","cancelled"\r\n`,
 		]
 		expect(Authorization.toCsv([authorization])).toEqual(header + data[0])
 		expect(Authorization.toCsv([authorization, authorized])).toEqual(header + data[0] + data[1])
@@ -144,6 +146,7 @@ describe("Authorization tests", () => {
 				},
 				descriptor: "Test Merchant",
 				history: [],
+				change: [],
 				capture: [
 					{
 						amount: 123,
@@ -218,6 +221,7 @@ describe("Authorization tests", () => {
 				},
 				descriptor: "Test Merchant",
 				history: [],
+				change: [],
 				capture: [
 					{
 						amount: 125,

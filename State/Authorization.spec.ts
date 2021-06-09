@@ -1,5 +1,4 @@
 import * as model from "@payfunc/model-card"
-import { Log } from "@payfunc/model-log"
 import * as acquirer from "../index"
 import { Authorization } from "./Authorization"
 
@@ -47,21 +46,19 @@ describe("State.Authorization", () => {
 			history: [],
 			created: "2021-01-01T12:30:30.000Z",
 		})
-		const log: Log[] = []
-		let state = Authorization.from(authorization, merchant, log)
+		let state = Authorization.from(authorization, merchant)
 		expect(Authorization.is(state)).toBeTruthy()
-		state = Authorization.from(authorization, merchant, log, statistics)
+		state = Authorization.from(authorization, merchant, statistics)
 		expect(Authorization.is(state)).toBeTruthy()
 		const csv = Authorization.toCsv([
 			state,
 			Authorization.from(
 				{ ...authorization, capture: [{ amount: 100, created: "2021-01-02T12:30:30.000Z", status: "approved" }] },
-				merchant,
-				log
+				merchant
 			),
 		])
 		expect(csv).toEqual(
-			"id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,history,capture,refund,void,status\r\n" +
+			"id,merchant,number,reference,created,amount,currency,card type,card scheme,card,card expires,descriptor,recurring,change,capture,refund,void,status\r\n" +
 				'"1234567890123456","testtest","12345678","123412341234","2021-01-01T12:30:30.000Z","100","EUR","unknown","visa","411111**********1111","02/2028","test transaction","","0","0","0","","authorized"\r\n' +
 				'"1234567890123456","testtest","12345678","123412341234","2021-01-01T12:30:30.000Z","100","EUR","unknown","visa","411111**********1111","02/2028","test transaction","","0","100","0","","captured"\r\n'
 		)

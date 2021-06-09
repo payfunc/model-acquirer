@@ -2,7 +2,6 @@ import * as isoly from "isoly"
 import * as selectively from "selectively"
 import * as authly from "authly"
 import * as model from "@payfunc/model-card"
-import { Log } from "@payfunc/model-log"
 import { Authorization as AcquirerAuthorization } from "../Authorization"
 import { Capture } from "../Capture"
 import { clear } from "../index"
@@ -17,7 +16,7 @@ export interface Authorization {
 	merchant: Merchant | { id: authly.Identifier }
 	authorization: {
 		id: string
-		number?: string
+		number: string
 		reference: string
 		amount: number
 		currency: isoly.Currency
@@ -25,7 +24,8 @@ export interface Authorization {
 		descriptor?: string
 		recurring?: AcquirerAuthorization.Recurring
 		verification?: "verified" | "unavailable" | "rejected"
-		history: AcquirerAuthorization.Change[]
+		history: AcquirerAuthorization.History[]
+		change?: AcquirerAuthorization.Change[]
 		captured: { history: Capture[]; amount: number; latest?: isoly.DateTime; auto?: true }
 		refunded: { history: Refund[]; amount: number; latest?: isoly.DateTime }
 		settled: { history: SettlementTransaction[]; gross: number; fee: number; net: number; latest?: isoly.DateTime }
@@ -33,16 +33,15 @@ export interface Authorization {
 		status: AcquirerAuthorization.Status[]
 		created: isoly.DateTime
 	}
-	log: Log[]
 }
 export namespace Authorization {
-	export function is(value: any | Authorization): value is Authorization {
+	export function is(value: Authorization | any): value is Authorization {
 		return (
 			typeof value == "object" &&
 			(Merchant.is(value.merchant) || (typeof value.merchant == "object" && authly.Identifier.is(value.merchant.id))) &&
 			typeof value.authorization == "object" &&
 			typeof value.authorization.id == "string" &&
-			(value.authorization.number == undefined || typeof value.authorization.number == "string") &&
+			typeof value.authorization.number == "string" &&
 			typeof value.authorization.reference == "string" &&
 			typeof value.authorization.amount == "number" &&
 			isoly.Currency.is(value.authorization.currency) &&
@@ -50,30 +49,34 @@ export namespace Authorization {
 			(value.authorization.descriptor == undefined || typeof value.authorization.descriptor == "string") &&
 			(value.authorization.recurring == undefined ||
 				AcquirerAuthorization.Recurring.is(value.authorization.recurring)) &&
+			[undefined, "verified", "unavailable", "rejected"].includes(value.authorization.verification) &&
 			Array.isArray(value.authorization.history) &&
-			value.authorization.history.every(AcquirerAuthorization.Change.is) &&
+			value.authorization.history.every(AcquirerAuthorization.History.is) &&
 			typeof value.authorization.captured == "object" &&
+			Array.isArray(value.authorization.captured.history) &&
 			value.authorization.captured.history.every(Capture.is) &&
+			(value.authorization.change == undefined ||
+				(Array.isArray(value.authorization.change) &&
+					value.authorization.change.every(AcquirerAuthorization.Change.is))) &&
 			typeof value.authorization.captured.amount == "number" &&
 			(value.authorization.captured.latest == undefined || isoly.DateTime.is(value.authorization.captured.latest)) &&
 			(value.authorization.captured.auto == undefined || value.authorization.captured.auto == true) &&
 			typeof value.authorization.refunded == "object" &&
+			Array.isArray(value.authorization.refunded.history) &&
 			value.authorization.refunded.history.every(Refund.is) &&
 			typeof value.authorization.refunded.amount == "number" &&
 			(value.authorization.refunded.latest == undefined || isoly.DateTime.is(value.authorization.refunded.latest)) &&
 			typeof value.authorization.settled == "object" &&
+			Array.isArray(value.authorization.settled.history) &&
 			value.authorization.settled.history.every(SettlementTransaction.is) &&
 			typeof value.authorization.settled.gross == "number" &&
 			typeof value.authorization.settled.fee == "number" &&
 			typeof value.authorization.settled.net == "number" &&
 			(value.authorization.settled.latest == undefined || isoly.Date.is(value.authorization.settled.latest)) &&
 			(value.authorization.voided == undefined || isoly.DateTime.is(value.authorization.voided)) &&
-			typeof value.authorization.status == "object" &&
 			Array.isArray(value.authorization.status) &&
 			value.authorization.status.every(AcquirerAuthorization.Status.is) &&
-			isoly.DateTime.is(value.authorization.created) &&
-			Array.isArray(value.log) &&
-			value.log.every(Log.is)
+			isoly.DateTime.is(value.authorization.created)
 		)
 	}
 	export function to(state: Authorization): AcquirerAuthorization {
@@ -96,6 +99,7 @@ export namespace Authorization {
 				descriptor: state.authorization.descriptor,
 				recurring: state.authorization.recurring,
 				history: state.authorization.history,
+				change: state.authorization.change,
 				capture: state.authorization.captured.history,
 				refund: state.authorization.refunded.history,
 				void: state.authorization.voided,
@@ -106,7 +110,6 @@ export namespace Authorization {
 	export function from(
 		authorization: AcquirerAuthorization,
 		merchant: AcquirerMerchant | { id: string },
-		log: Log[],
 		statistics?: Statistics
 	): Authorization {
 		const result: Authorization = {
@@ -121,6 +124,7 @@ export namespace Authorization {
 				number: authorization.number,
 				reference: authorization.reference,
 				history: authorization.history,
+				change: authorization.change,
 				captured: toCaptured(authorization.capture, authorization.currency),
 				refunded: toRefunded(authorization.refund, authorization.currency),
 				settled: toSettled(authorization),
@@ -130,7 +134,6 @@ export namespace Authorization {
 					.map(c => (c[1] ? c[0] : undefined))
 					.filter(AcquirerAuthorization.Status.is),
 			},
-			log,
 		}
 		if (result.authorization.status.length < 1)
 			result.authorization.status.push(authorization.void ? "cancelled" : "authorized")
