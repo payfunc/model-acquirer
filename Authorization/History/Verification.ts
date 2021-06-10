@@ -97,7 +97,7 @@ export namespace Verification {
 		creatable: Omit<AcquirerVerification.Creatable, "card">,
 		step: "preauthorization" | "authorization" | "postauthorization",
 		response: Partial<Record<Response, any>>,
-		input: gracely.Error
+		input: gracely.Error | AcquirerVerification
 	): Verification {
 		return {
 			merchant,
