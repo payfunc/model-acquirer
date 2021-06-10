@@ -3,6 +3,7 @@ import * as selectively from "selectively"
 import * as authly from "authly"
 import * as model from "@payfunc/model-card"
 import { Authorization as AcquirerAuthorization } from "../Authorization"
+import { Recurring } from "../Authorization/Recurring"
 import { Capture } from "../Capture"
 import { clear } from "../index"
 import { Merchant as AcquirerMerchant } from "../Merchant"
@@ -22,7 +23,7 @@ export interface Authorization {
 		currency: isoly.Currency
 		card: Card
 		descriptor?: string
-		recurring?: AcquirerAuthorization.Recurring
+		recurring?: Recurring
 		verification?: "verified" | "unavailable" | "rejected"
 		history: AcquirerAuthorization.History[]
 		change?: AcquirerAuthorization.Change[]
@@ -236,7 +237,7 @@ export namespace Authorization {
 			currency: new selectively.Type.Union(isoly.Currency.types.map(c => new selectively.Type.String(c))),
 			card: Card.template,
 			descriptor: new selectively.Type.String(),
-			recurring: AcquirerAuthorization.Recurring.template,
+			recurring: Recurring.template,
 			verification: new selectively.Type.Union([
 				new selectively.Type.String("verified"),
 				new selectively.Type.String("unavailable"),

@@ -17,6 +17,7 @@ function generatePreAuthorization(): acquirer.State.PreAuthorization {
 		},
 		authorization: {
 			amount: 10,
+			number: "testNumber",
 			currency: "SEK",
 			card: {
 				iin: "411111",
@@ -71,7 +72,7 @@ describe("Standard Rules", () => {
 	it("3D rejection rule", () => {
 		const value = generatePreAuthorization()
 		const parseable =
-			"reject authorization authorization.amount>15 !authorization.verification:verified !authorization.recurring:subsequent"
+			"reject authorization authorization.amount>15 !authorization.verification:verified !authorization.recurring.type:subsequent"
 		const rule = acquirer.Merchant.Rule.parse(parseable)
 		expect(rule?.condition.is(value)).toEqual(false) // Passes, below the amount
 		value.authorization.amount = 300
@@ -79,7 +80,11 @@ describe("Standard Rules", () => {
 		expect(rule?.condition.is(value)).toEqual(false) // Passes, is verified
 		value.authorization.amount = 300
 		delete value.authorization.verification
-		value.authorization.recurring = "subsequent"
+		value.authorization.recurring = {
+			type: "subsequent",
+			reference: "someReference",
+			initiator: "merchant",
+		}
 		expect(rule?.condition.is(value)).toEqual(false) // Passes, is subsequent
 		delete value.authorization.recurring
 		expect(rule?.condition.is(value)).toEqual(true) //Rejected, too large amount
@@ -103,12 +108,16 @@ describe("Standard Rules", () => {
 	})
 	it("Force csc present", () => {
 		const value = generatePreAuthorization()
-		const parseable = "reject authorization !authorization.recurring:subsequent !authorization.card.csc:present"
+		const parseable = "reject authorization !authorization.recurring.type:subsequent !authorization.card.csc:present"
 		const rule = acquirer.Merchant.Rule.parse(parseable)
 		expect(rule?.condition.is(value)).toEqual(false)
 		delete value.authorization.card.csc
 		expect(rule?.condition.is(value)).toEqual(true)
-		value.authorization.recurring = "subsequent"
+		value.authorization.recurring = {
+			type: "subsequent",
+			reference: "someReference",
+			initiator: "merchant",
+		}
 		expect(rule?.condition.is(value)).toEqual(false)
 	})
 	/* Following are not implemented Rules yet */
