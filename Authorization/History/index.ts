@@ -34,7 +34,6 @@ export namespace History {
 		export const is = HRefund.is
 	}
 	export type Settlement = HSettlement
-	// export const settle = HSettlement.create
 	export namespace Settlement {
 		export const is = HSettlement.is
 	}
