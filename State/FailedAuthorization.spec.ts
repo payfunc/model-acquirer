@@ -17,7 +17,7 @@ describe("State.FailedAuthorization tests", () => {
 		number: "123",
 		amount: 1,
 		currency: "SEK",
-		card: { iin: "411111", last4: "1111", expires: [1, 22], scheme: "visa" },
+		card: { iin: "411111", last4: "1111", expires: "2022-01-31", scheme: "visa" },
 		merchant: "testtest",
 		rule: ["Any 3d Rule"],
 		reason: "verification required",

@@ -199,11 +199,23 @@ export namespace Authorization {
 	export type History = AHistory
 	export const History = AHistory
 	export type Change = AChange
-	export const Change = AChange
+	export namespace Change {
+		export const is = AChange.is
+		export const flaw = AChange.flaw
+		export type Creatable = AChange.Creatable
+		export const Creatable = AChange.Creatable
+	}
 	export type Operation = AuthorizationOperation
-	export const Operation = AuthorizationOperation
+	export namespace Operation {
+		export const is = AuthorizationOperation.is
+		export type Creatable = AuthorizationOperation.Creatable
+		export const Creatable = AuthorizationOperation.Creatable
+	}
 	export type Status = AuthorizationStatus
 	export const Status = AuthorizationStatus
 	export type Recurring = AuthorizationRecurring
-	export const Recurring = AuthorizationRecurring
+	export namespace Recurring {
+		export const is = AuthorizationRecurring.is
+		export const template = AuthorizationRecurring.template
+	}
 }
