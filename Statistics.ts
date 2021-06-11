@@ -26,7 +26,10 @@ export namespace Statistics {
 			typeof value.fees == "object" &&
 			Object.entries(value.fees).every(e => isoly.Date.is(e[0]) && typeof e[1] == "number") &&
 			typeof value.reserves == "object" &&
-			Object.entries(value.reserves).every(e => isoly.Date.is(e[0]) && typeof e[1] == "number")
+			typeof value.reserves.in == "object" &&
+			Object.entries(value.reserves.in).every(e => isoly.Date.is(e[0]) && typeof e[1] == "number") &&
+			typeof value.reserves.out == "object" &&
+			Object.entries(value.reserves.out).every(e => isoly.Date.is(e[0]) && typeof e[1] == "number")
 		)
 	}
 	export function initialize(id: string, currency: isoly.Currency): Statistics {
