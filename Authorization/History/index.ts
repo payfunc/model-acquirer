@@ -19,14 +19,17 @@ export namespace History {
 		)
 	}
 	export type Capture = HCapture
+	export const capture = HCapture.create
 	export namespace Capture {
 		export const is = HCapture.is
 	}
 	export type Create = HCreate
+	export const authorize = HCreate.create
 	export namespace Create {
 		export const is = HCreate.is
 	}
 	export type Refund = HRefund
+	export const refund = HRefund.create
 	export namespace Refund {
 		export const is = HRefund.is
 	}
@@ -35,10 +38,12 @@ export namespace History {
 		export const is = HSettlement.is
 	}
 	export type Verification = HVerification
+	export const verify = HVerification.create
 	export namespace Verification {
 		export const is = HVerification.is
 	}
 	export type Void = HVoid
+	export const cancel = HVoid.create
 	export namespace Void {
 		export const is = HVoid.is
 	}

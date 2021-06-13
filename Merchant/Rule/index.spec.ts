@@ -16,6 +16,6 @@ describe("Rule", () => {
 	})
 	it("toError", () => {
 		const flaw = Rule.toFlaw([rule])
-		expect(flaw.type).toEqual("Rule Violation")
+		expect(flaw.type).toEqual("rule violation")
 	})
 })

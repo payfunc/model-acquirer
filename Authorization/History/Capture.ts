@@ -1,5 +1,6 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
+import { Capture as AuthorizationCapture } from "../../Capture"
 import { Error } from "../../Error"
 
 export type Capture = Fail | Success
@@ -50,5 +51,23 @@ export namespace Capture {
 	}
 	export function is(value: any | Capture): value is Capture {
 		return isFail(value) || isSuccess(value)
+	}
+	export function create(
+		merchant: string,
+		authorization: { number: string; currency: isoly.Currency },
+		amount: number,
+		input: gracely.Error | AuthorizationCapture
+	): Capture {
+		return {
+			merchant,
+			type: "capture",
+			date: isoly.DateTime.now(),
+			number: authorization.number,
+			currency: authorization.currency,
+			amount,
+			...(gracely.Error.is(input)
+				? { status: "fail", reason: Error.Code.is(input.error) ? input.error : "unknown error", error: input }
+				: { status: "success", reference: input.reference ?? "unknown reference" }),
+		}
 	}
 }

@@ -47,4 +47,15 @@ export namespace Void {
 	export function is(value: any | Void): value is Void {
 		return isFail(value) || isSuccess(value)
 	}
+	export function create(merchant: string, number: string, input: gracely.Error | isoly.DateTime): Void {
+		return {
+			merchant,
+			number,
+			date: isoly.DateTime.now(),
+			type: "void",
+			...(gracely.Error.is(input)
+				? { status: "fail", reason: Error.Code.is(input.error) ? input.error : "unknown error", error: input }
+				: { status: "success" }),
+		}
+	}
 }
