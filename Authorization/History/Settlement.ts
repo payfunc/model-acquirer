@@ -1,20 +1,13 @@
 import * as isoly from "isoly"
-import * as base from "@payfunc/model-base"
-import { Recurring } from "../Recurring"
-
 export interface Settlement {
 	merchant: string
 	number: string
 	date: isoly.DateTime
 	type: "settlement"
-	status: "fail" | "success" | "pending"
-	step: "preauthorization" | "authorization" | "postauthorization"
-	items: number | base.Item | base.Item[]
-	currency: isoly.Currency
-	target: string
-	browser?: base.Browser
-	customer?: base.Customer
-	recurring?: Recurring
+	status: "success"
+	operation: string
+	reference: string
+	payout: isoly.Date
 }
 
 export namespace Settlement {
@@ -25,16 +18,10 @@ export namespace Settlement {
 			typeof value.number == "string" &&
 			isoly.DateTime.is(value.date) &&
 			value.type == "settlement" &&
-			["fail", "success", "pending"].includes(value.status) &&
-			["preauthorization", "authorization", "postauthorization"].includes(value.step) &&
-			(typeof value.items == "number" ||
-				base.Item.is(value.items) ||
-				(Array.isArray(value.items) && value.items.every(base.Item.is))) &&
-			isoly.Currency.is(value.currency) &&
-			typeof value.target == "string" &&
-			(value.browser == undefined || base.Browser.is(value.browser)) &&
-			(value.customer == undefined || base.Customer.is(value.customer)) &&
-			(value.recurring == undefined || Recurring.is(value.recurring))
+			value.status == "settlement" &&
+			typeof value.operation == "string" &&
+			typeof value.reference == "string" &&
+			isoly.Date.is(value.payout)
 		)
 	}
 }

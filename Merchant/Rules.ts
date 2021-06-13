@@ -40,8 +40,8 @@ export namespace Rules {
 		value: State.PreAuthorization | State.PostAuthorization,
 		rules: Rules | Rule[],
 		operation: Operation
-	): true | gracely.Flaw {
-		let result: true | gracely.Flaw
+	): true | (gracely.Flaw & { type: "verification required" | "rule violation" }) {
+		let result: true | (gracely.Flaw & { type: "verification required" | "rule violation" })
 		if (Rules.is(rules))
 			result = apply(value, parse(rules), operation)
 		else {
