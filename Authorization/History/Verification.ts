@@ -84,7 +84,7 @@ export namespace Verification {
 		return (
 			typeof value == "object" &&
 			value.status == "pending" &&
-			["postauthorization", "authorization"].includes(value.step) &&
+			["preauthorization", "authorization"].includes(value.step) &&
 			isBase(value)
 		)
 	}
