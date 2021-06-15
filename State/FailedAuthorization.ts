@@ -49,7 +49,7 @@ export namespace FailedAuthorization {
 	export function from(history: Authorization.History[]): FailedAuthorization {
 		const result: FailedAuthorization = {
 			merchant: { id: history[0].merchant },
-			authorization: { status: ["failed"], created: "", reason: "", number: history[0].number, history },
+			authorization: { status: ["failed"], created: "", reason: "unknown error", number: history[0].number, history },
 		}
 		for (const entry of history.sort((a, b) => (a.date > b.date ? 1 : -1))) {
 			result.authorization.amount = "amount" in entry ? entry.amount : result.authorization.amount
