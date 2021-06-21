@@ -33,6 +33,7 @@ export interface Authorization {
 		voided?: isoly.DateTime
 		status: AcquirerAuthorization.Status[]
 		created: isoly.DateTime
+		nonPurchase?: "topup"
 	}
 }
 export namespace Authorization {

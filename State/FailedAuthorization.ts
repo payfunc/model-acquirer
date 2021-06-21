@@ -21,6 +21,7 @@ export interface FailedAuthorization {
 		history: Authorization.History[]
 		reason: string
 		created: isoly.DateTime
+		nonPurchase?: "topup"
 	}
 }
 export namespace FailedAuthorization {

@@ -1,14 +1,16 @@
 import * as isoly from "isoly"
 import * as model from "@payfunc/model-card"
+import * as base from "@payfunc/model-base"
 import { Authorization } from "../Authorization"
 import { clear } from "../index"
 import { Merchant as AcquirerMerchant } from "../Merchant"
 import { Statistics } from "../Statistics"
 import { Card } from "./Card"
 import { Merchant } from "./Merchant"
-
 export interface PreAuthorization {
 	merchant: Merchant
+	customer?: base.Customer
+	browser?: base.Browser
 	authorization: {
 		amount: number
 		currency: isoly.Currency

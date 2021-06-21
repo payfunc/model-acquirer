@@ -11,6 +11,8 @@ import { Merchant } from "./Merchant"
 export interface PostAuthorization {
 	merchant: Merchant
 	amount: number
+	customer?: base.Customer
+	browser?: base.Browser
 	authorization: {
 		amount: number
 		currency: isoly.Currency

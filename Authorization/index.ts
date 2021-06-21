@@ -27,6 +27,7 @@ export interface Authorization {
 	refund: Refund[]
 	void?: isoly.DateTime
 	status: Partial<Record<AuthorizationStatus, number>>
+	nonPurchase?: "topup"
 }
 
 export namespace Authorization {

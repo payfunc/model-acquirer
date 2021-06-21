@@ -12,6 +12,7 @@ export interface Creatable {
 	descriptor?: string
 	capture?: "auto"
 	recurring?: Recurring
+	nonPurchase?: "topup"
 }
 export namespace Creatable {
 	export function is(value: Creatable | any): value is Creatable {
