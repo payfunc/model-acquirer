@@ -21,7 +21,7 @@ interface Base {
 	currency: isoly.Currency
 	target: string
 	browser?: base.Browser
-	customer?: base.Contact
+	customer?: base.Contact // @deprecated
 	contact?: base.Contact
 	recurring?: Recurring
 }
