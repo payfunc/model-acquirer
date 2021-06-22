@@ -8,11 +8,11 @@ export namespace Settlement {
 	export const toDetailedCsv = Conversion.toDetailedCsv
 	export const is = modelSettlement.is
 	export const flaw = modelSettlement.flaw
-	export const toContact = modelSettlement.toContact
+	export const toCustomer = modelSettlement.toCustomer
 	export type Transaction = SettlementTransaction
 	export namespace Transaction {
 		export const is = SettlementTransaction.is
 		export const flaw = SettlementTransaction.flaw
-		export const toContact = SettlementTransaction.toContact
+		export const toCustomer = SettlementTransaction.toCustomer
 	}
 }
