@@ -150,8 +150,8 @@ describe("Settlement", () => {
 				'"example","SQJzzNur","2020-02-01","2020-02-07","2020-03-02","4","","0","2020-01-16","2","3","2","4","EUR","1"\r\n'
 		)
 	})
-	it("toCustomer", () => {
-		const result = Settlement.toCustomer(settlement[0])
+	it("toContact", () => {
+		const result = Settlement.toContact(settlement[0])
 		expect(result).toEqual({
 			reference: "example",
 			merchant: "SQJzzNur",
@@ -182,8 +182,8 @@ describe("Settlement", () => {
 			],
 		})
 	})
-	it("toCustomer with multiple settlements", () => {
-		const result = Settlement.toCustomer(multiple)
+	it("toContact with multiple settlements", () => {
+		const result = Settlement.toContact(multiple)
 		expect(result).toEqual([
 			{
 				reference: "example1",

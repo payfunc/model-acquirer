@@ -21,7 +21,7 @@ interface Base {
 	currency: isoly.Currency
 	target: string
 	browser?: base.Browser
-	customer?: base.Customer
+	customer?: base.Contact
 	recurring?: Recurring
 }
 
@@ -59,7 +59,7 @@ export namespace Verification {
 			isoly.Currency.is(value.currency) &&
 			typeof value.target == "string" &&
 			(value.browser == undefined || base.Browser.is(value.browser)) &&
-			(value.customer == undefined || base.Customer.is(value.customer)) &&
+			(value.customer == undefined || base.Contact.is(value.customer)) &&
 			(value.recurring == undefined || Recurring.is(value.recurring))
 		)
 	}
