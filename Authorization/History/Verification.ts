@@ -22,6 +22,7 @@ interface Base {
 	target: string
 	browser?: base.Browser
 	customer?: base.Contact
+	contact?: base.Contact
 	recurring?: Recurring
 }
 
@@ -60,6 +61,7 @@ export namespace Verification {
 			typeof value.target == "string" &&
 			(value.browser == undefined || base.Browser.is(value.browser)) &&
 			(value.customer == undefined || base.Contact.is(value.customer)) &&
+			(value.contact == undefined || base.Contact.is(value.contact)) &&
 			(value.recurring == undefined || Recurring.is(value.recurring))
 		)
 	}
@@ -108,7 +110,7 @@ export namespace Verification {
 			currency: creatable.currency,
 			target: creatable.target,
 			browser: creatable.browser,
-			customer: creatable.customer,
+			contact: creatable.contact,
 			recurring: creatable.recurring,
 			response,
 			...(!gracely.Error.is(input)
