@@ -56,7 +56,7 @@
 	},
 	"dependencies": {
 		"@payfunc/model-base": "^0.1.8",
-		"@payfunc/model-card": "payfunc/model-card#rename-account",
+		"@payfunc/model-card": "0.2.15",
 		"authly": "^0.2.3",
 		"cloud-http": "0.0.24",
 		"dotenv": "^8.2.0",
