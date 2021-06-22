@@ -85,14 +85,14 @@ export namespace Settlement {
 		}
 	}
 
-	export function toCustomer(value: Settlement): Settlement
-	export function toCustomer(value: Settlement[]): Settlement[]
-	export function toCustomer(value: Settlement | Settlement[]): Settlement | Settlement[] {
+	export function toContact(value: Settlement): Settlement
+	export function toContact(value: Settlement[]): Settlement[]
+	export function toContact(value: Settlement | Settlement[]): Settlement | Settlement[] {
 		return Array.isArray(value)
-			? value.map(s => toCustomer(s))
+			? value.map(s => toContact(s))
 			: {
 					...value,
-					transactions: SettlementTransaction.toCustomer(value.transactions),
+					transactions: SettlementTransaction.toContact(value.transactions),
 					fee: typeof value.fee == "object" ? value.fee.total : value.fee,
 			  }
 	}

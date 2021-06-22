@@ -88,11 +88,11 @@ export namespace Transaction {
 			}","${value.net}","${value.reserve?.amount}","${value.reserve?.payout}"\r\n`
 		return result
 	}
-	export function toCustomer(value: Transaction): Transaction
-	export function toCustomer(value: Transaction[]): Transaction[]
-	export function toCustomer(value: Transaction | Transaction[]): Transaction | Transaction[] {
+	export function toContact(value: Transaction): Transaction
+	export function toContact(value: Transaction[]): Transaction[]
+	export function toContact(value: Transaction | Transaction[]): Transaction | Transaction[] {
 		return Array.isArray(value)
-			? value.map(t => toCustomer(t))
+			? value.map(t => toContact(t))
 			: { ...value, fee: typeof value.fee == "object" ? value.fee.total : value.fee }
 	}
 }

@@ -16,7 +16,7 @@ export interface Creatable {
 	currency: isoly.Currency
 	card: authly.Token | model.Card.Creatable
 	recurring?: Authorization.Recurring
-	customer?: base.Customer
+	customer?: base.Contact
 	target: string
 }
 export namespace Creatable {
@@ -39,7 +39,7 @@ export namespace Creatable {
 			isoly.Currency.is(value.currency) &&
 			(authly.Token.is(value.card) || model.Card.Creatable.is(value.card)) &&
 			(value.recurring == undefined || Authorization.Recurring.is(value.recurring)) &&
-			(value.customer == undefined || base.Customer.is(value.customer)) &&
+			(value.customer == undefined || base.Contact.is(value.customer)) &&
 			typeof value.target == "string"
 		)
 	}
@@ -80,7 +80,7 @@ export namespace Creatable {
 									property: "recurring",
 									type: '"initial" | "subsequent" | undefined',
 								},
-							value.customer == undefined || base.Customer.is(value.customer) || base.Customer.flaw(value.customer),
+							value.customer == undefined || base.Contact.is(value.customer) || base.Contact.flaw(value.customer),
 							typeof value.target == "string" || { property: "target", type: "string" },
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
