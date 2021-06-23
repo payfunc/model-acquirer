@@ -109,7 +109,7 @@ export namespace Authorization {
 				refund: state.authorization.refunded.history,
 				void: state.authorization.voided,
 				status: {},
-				category: state.authorization.category,
+				category: state.authorization.category ?? "purchase",
 			})
 		)
 	}
@@ -139,7 +139,7 @@ export namespace Authorization {
 				status: Object.entries(authorization.status)
 					.map(c => (c[1] ? c[0] : undefined))
 					.filter(AcquirerAuthorization.Status.is),
-				category: authorization.category,
+				category: authorization.category ?? "purchase",
 			},
 		}
 		if (result.authorization.status.length < 1)
