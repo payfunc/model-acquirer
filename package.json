@@ -55,9 +55,8 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"@payfunc/model-base": "^0.1.6",
-		"@payfunc/model-card": "^0.2.12",
-		"@payfunc/model-log": "^0.1.3",
+		"@payfunc/model-base": "^0.1.8",
+		"@payfunc/model-card": "0.2.15",
 		"authly": "^0.2.3",
 		"cloud-http": "0.0.24",
 		"dotenv": "^8.2.0",
