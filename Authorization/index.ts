@@ -27,6 +27,7 @@ export interface Authorization {
 	refund: Refund[]
 	void?: isoly.DateTime
 	status: Partial<Record<AuthorizationStatus, number>>
+	category?: "purchase" | "withdrawal"
 }
 
 export namespace Authorization {
@@ -50,7 +51,8 @@ export namespace Authorization {
 			value.capture.every(Capture.is) &&
 			Array.isArray(value.refund) &&
 			value.refund.every(Refund.is) &&
-			(value.void == undefined || isoly.DateTime.is(value.void))
+			(value.void == undefined || isoly.DateTime.is(value.void)) &&
+			(value.category == undefined || value.category == "purchase" || value.category == "withdrawal")
 		)
 	}
 	export function flaw(value: Authorization | any): gracely.Flaw {
@@ -93,6 +95,12 @@ export namespace Authorization {
 							},
 							value.void == undefined ||
 								isoly.DateTime.is(value.void) || { property: "void", type: "isoly.DateTime | undefined" },
+							value.category == undefined ||
+								value.category == "purchase" ||
+								value.category == "withdrawal" || {
+									property: "category",
+									type: `"purchase" | "withdrawal" | undefined`,
+								},
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}
@@ -157,6 +165,7 @@ export namespace Authorization {
 		result += "number,"
 		result += "reference,"
 		result += "created,"
+		result += "category,"
 		result += "amount,"
 		result += "currency,"
 		result += "card type,"
@@ -177,6 +186,7 @@ export namespace Authorization {
 			result += `"${value.number ?? ""}",`
 			result += `"${value.reference}",`
 			result += `"${value.created}",`
+			result += `"${value.category ?? "purchase"}",`
 			result += `"${value.amount}",`
 			result += `"${value.currency}",`
 			result += `"${value.card.type ?? "unknown"}",`
