@@ -21,6 +21,7 @@ export interface FailedAuthorization {
 		history: Authorization.History[]
 		reason: string
 		created: isoly.DateTime
+		category?: "purchase" | "withdrawal"
 	}
 }
 export namespace FailedAuthorization {
@@ -43,7 +44,10 @@ export namespace FailedAuthorization {
 			typeof value.authorization.reason == "string" &&
 			isoly.DateTime.is(value.authorization.created) &&
 			Array.isArray(value.authorization.history) &&
-			value.authorization.history.every(Authorization.History.is)
+			value.authorization.history.every(Authorization.History.is) &&
+			(value.authorization.category == undefined ||
+				value.authorization.category == "purchase" ||
+				value.authorization.category == "withdrawal")
 		)
 	}
 	export function from(history: Authorization.History[]): FailedAuthorization {
