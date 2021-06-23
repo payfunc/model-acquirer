@@ -186,7 +186,7 @@ export namespace Authorization {
 			result += `"${value.number ?? ""}",`
 			result += `"${value.reference}",`
 			result += `"${value.created}",`
-			result += `"${value.category ?? ""}",`
+			result += `"${value.category ?? "purchase"}",`
 			result += `"${value.amount}",`
 			result += `"${value.currency}",`
 			result += `"${value.card.type ?? "unknown"}",`
