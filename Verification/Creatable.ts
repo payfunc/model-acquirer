@@ -18,6 +18,7 @@ export interface Creatable {
 	recurring?: Authorization.Recurring
 	contact?: base.Contact
 	target: string
+	category?: "purchase" | "withdrawal"
 }
 export namespace Creatable {
 	export function is(value: any | Creatable): value is Creatable {
@@ -40,7 +41,8 @@ export namespace Creatable {
 			(authly.Token.is(value.card) || model.Card.Creatable.is(value.card)) &&
 			(value.recurring == undefined || Authorization.Recurring.is(value.recurring)) &&
 			(value.contact == undefined || base.Contact.is(value.contact)) &&
-			typeof value.target == "string"
+			typeof value.target == "string" &&
+			(value.category == undefined || value.category == "purchase" || value.category == "withdrawal")
 		)
 	}
 	export function flaw(value: Creatable | any): gracely.Flaw {
@@ -82,6 +84,12 @@ export namespace Creatable {
 								},
 							value.contact == undefined || base.Contact.is(value.contact) || base.Contact.flaw(value.contact),
 							typeof value.target == "string" || { property: "target", type: "string" },
+							value.category == undefined ||
+								value.category == "purchase" ||
+								value.category == "withdrawal" || {
+									property: "category",
+									type: `"purchase" | "withdrawal" | undefined`,
+								},
 					  ].filter(gracely.Flaw.is) as gracely.Flaw[]),
 		}
 	}

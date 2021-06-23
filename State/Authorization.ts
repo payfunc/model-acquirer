@@ -33,6 +33,7 @@ export interface Authorization {
 		voided?: isoly.DateTime
 		status: AcquirerAuthorization.Status[]
 		created: isoly.DateTime
+		category?: "purchase" | "withdrawal"
 	}
 }
 export namespace Authorization {
@@ -77,7 +78,10 @@ export namespace Authorization {
 			(value.authorization.voided == undefined || isoly.DateTime.is(value.authorization.voided)) &&
 			Array.isArray(value.authorization.status) &&
 			value.authorization.status.every(AcquirerAuthorization.Status.is) &&
-			isoly.DateTime.is(value.authorization.created)
+			isoly.DateTime.is(value.authorization.created) &&
+			(value.authorization.category == undefined ||
+				value.authorization.category == "purchase" ||
+				value.authorization.category == "withdrawal")
 		)
 	}
 	export function to(state: Authorization): AcquirerAuthorization {
@@ -105,6 +109,7 @@ export namespace Authorization {
 				refund: state.authorization.refunded.history,
 				void: state.authorization.voided,
 				status: {},
+				category: state.authorization.category ?? "purchase",
 			})
 		)
 	}
@@ -134,6 +139,7 @@ export namespace Authorization {
 				status: Object.entries(authorization.status)
 					.map(c => (c[1] ? c[0] : undefined))
 					.filter(AcquirerAuthorization.Status.is),
+				category: authorization.category ?? "purchase",
 			},
 		}
 		if (result.authorization.status.length < 1)
@@ -272,6 +278,10 @@ export namespace Authorization {
 			]),
 			reason: new selectively.Type.Array([new selectively.Type.String()]),
 			created: new selectively.Type.String(),
+			category: new selectively.Type.Union([
+				new selectively.Type.String("purchase"),
+				new selectively.Type.String("withdrawal"),
+			]),
 		}),
 		today: new selectively.Type.String(),
 	})
