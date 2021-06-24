@@ -124,7 +124,7 @@ describe("Settlement", () => {
 
 	it("toDetailedCsv", () => {
 		expect(Settlement.toDetailedCsv(settlement, authorization)).toEqual(
-			`merchant,settlement reference,operation,posting date,authorization id,authorization number,card IIN,card type,card scheme,scheme reference,issuer country,currency,payout date,payout amount,reserve release,reserve amount,gross,fee,interchange,net\r\n"SQJzzNur","example","debit","2020-02-16","12345","","","debit","mastercard","234242","SE","SEK","2020-03-02","12","","0","2","3","0","12"\r\n`
+			`merchant,settlement reference,operation,posting date,authorization id,authorization number,card IIN,card type,card scheme,scheme reference,issuer country,currency,payout date,payout amount,reserve release,reserve amount,gross,fee,interchange,net\r\n"SQJzzNur","example","authorization","2020-02-16","12345","","","debit","mastercard","234242","SE","SEK","2020-03-02","12","","0","2","3","0","12"\r\n`
 		)
 	})
 	it("toCsv", () => {
