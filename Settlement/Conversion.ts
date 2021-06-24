@@ -68,7 +68,7 @@ export namespace Conversion {
 				const authorization = authorizations.find(a => transaction.authorization == a.id)
 				result += `"${settlement.merchant}",`
 				result += `"${settlement.reference}",`
-				result += `"${transaction.card}",`
+				result += `"${transaction.type}",`
 				result += `"${transaction.created}",`
 				result += `"${transaction.authorization}",`
 				result += `"${authorization?.number ?? ""}",`
